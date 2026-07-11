@@ -214,6 +214,12 @@ footer{color:var(--mut);font-size:11px;text-align:center;margin-top:20px;line-he
 <footer>セル＝本数と平均再生(色が濃いほど伸びてる)。行タップ→使われた動画。✓＝着手マーク(全員に共有)。</footer>
 </div>
 <aside id="player">
+  <div style="display:flex;gap:6px;margin-bottom:8px">
+    <input type="text" id="p-url-in" placeholder="YouTube URLを貼る(リスト外の動画もIN/OUT・テロップ編集OK)"
+      style="flex:1;min-width:0;padding:7px 10px;border:1px solid var(--line);border-radius:8px;
+      background:var(--sur);color:var(--tx);font-size:12px">
+    <button class="chip" id="p-url-go" style="border-color:var(--acc);color:var(--acc);font-weight:800">▶ 開く</button>
+  </div>
   <div class="pbox" id="pbox">
     <div id="pph">👈 リストの動画をクリックすると<br>ここで再生されます</div>
     <div id="pframe"></div>
@@ -496,6 +502,31 @@ document.getElementById("p-yt").onclick = () => {
   if(playVid) window.open("https://www.youtube.com/watch?v=" + playVid, "_blank", "noopener");
 };
 document.getElementById("p-kobo").onclick = () => { if(playVid) sendToKobo(playVid); };
+// --- URL直貼りで任意の動画を開く(リスト外の拾い物対応) ---
+function parseYtUrl(u){
+  const m = u.match(/(?:watch\?v=|youtu\.be\/|shorts\/|embed\/)([\w-]{6,})/) ||
+            u.trim().match(/^([\w-]{11})$/);
+  return m ? {vid: m[1], short: /shorts\//.test(u)} : null;
+}
+function openByUrl(){
+  const u = document.getElementById("p-url-in").value.trim();
+  const p = parseYtUrl(u);
+  if(!p){ document.getElementById("p-url-in").value = ""; return; }
+  playInline(p.vid, "URL貼り付け動画", "", p.short);
+  document.getElementById("p-url-in").value = "";
+  // タイトルはnoembedで取れたら差し替え(失敗しても支障なし)
+  fetch("https://noembed.com/embed?url=https://www.youtube.com/watch?v=" + p.vid)
+    .then(r => r.json()).then(j => {
+      if(j.title && playVid === p.vid){
+        document.getElementById("ptitle").textContent = j.title;
+        document.getElementById("psub").textContent = j.author_name || "";
+      }
+    }).catch(() => {});
+}
+document.getElementById("p-url-go").onclick = openByUrl;
+document.getElementById("p-url-in").addEventListener("keydown", e => {
+  if(e.key === "Enter") openByUrl();
+});
 // --- ストーリーボード ---
 document.getElementById("p-sb").onclick = () => {
   if(!playVid) return;
@@ -820,6 +851,9 @@ document.getElementById("kobo-run").onclick = () => {
     };
     im.src = "sb/" + p.vid + ".jpg";
     document.getElementById("kobo-result").style.display = "";
+    // 解析した動画を右のプレイヤーにも読み込む(そのままIN/OUT・テロップ編集へ)
+    if(canDock() && playVid !== p.vid)
+      playInline(p.vid, p.title, `${p.author} ・ ${fmt(p.views)}再生`, p.length > 0 && p.length <= 90);
   }).catch(e => {
     document.getElementById("kobo-status").textContent = "エラー: " + e;
   });
