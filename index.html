@@ -50,6 +50,9 @@ th.sticky2,td.sticky2{position:sticky;left:44px;z-index:5;background:var(--sur);
 td.who .nm{font-weight:800;font-size:13px;display:flex;gap:5px;align-items:center;flex-wrap:wrap}
 td.who .nm a{color:var(--acc);text-decoration:none}
 td.who .nm a:hover{text-decoration:underline}
+td.who .nm a.guess{font-size:10px;font-weight:700;color:var(--mut);border:1px solid var(--line);
+  border-radius:4px;padding:1px 5px;text-decoration:none;flex:0 0 auto}
+td.who .nm a.guess:hover{color:var(--acc);border-color:var(--acc);text-decoration:none}
 td.who .yt{font-size:10.5px;color:var(--mut);overflow:hidden;text-overflow:ellipsis;
   white-space:nowrap;max-width:210px}
 td.num{font-variant-numeric:tabular-nums;text-align:right;white-space:nowrap}
@@ -61,6 +64,8 @@ td.cell.empty{color:var(--line);text-align:center}
 .pill{font-size:9.5px;font-weight:800;padding:2px 6px;border-radius:5px;white-space:nowrap}
 .pill.hot{background:color-mix(in srgb,var(--hot) 15%,transparent);color:var(--hot)}
 .dot{width:8px;height:8px;border-radius:2px;display:inline-block;margin-right:5px}
+.thumb{width:104px;height:58px;object-fit:cover;border-radius:6px;flex:0 0 auto;
+  background:var(--sur2);display:block}
 .pick{width:26px;height:26px;border-radius:50%;border:2px solid var(--line);background:var(--sur);
   color:var(--mut);font-size:13px;cursor:pointer;line-height:1}
 .pick.on{background:var(--ok);border-color:var(--ok);color:#fff}
@@ -148,7 +153,7 @@ footer{color:var(--mut);font-size:11px;text-align:center;margin-top:20px;line-he
 </div>
 <div id="view-pick" style="display:none">
   <div class="sub" style="margin:0 0 8px">ここに並ぶのは<b>海外の一次素材そのもの</b>(日本の競合で需要が証明された引用元チャンネルの人気動画)。「需要の証明」= その引用元から日本の競合が出した本数と最大再生。🎬を押すとそのまま台本プロンプト工房に入ります。</div>
-  <div class="tbl"><table style="min-width:720px">
+  <div class="tbl"><table style="min-width:820px">
     <thead><tr><th></th><th>✓</th><th>海外素材(元動画)</th><th style="text-align:right">素材の再生数</th>
       <th>需要の証明(日本側)</th><th>ジャンル</th></tr></thead>
     <tbody id="pick-body"></tbody>
@@ -224,10 +229,21 @@ function render(){
   const tb = document.getElementById("tbody"); tb.innerHTML = "";
   list.slice(0, limit).forEach((s, i) => {
     const PLAT = {YT: "YouTube", TT: "TikTok", IG: "Instagram"};
-    const name = s.u
-      ? `<a href="${s.u}" target="_blank" rel="noopener" onclick="event.stopPropagation()">${s.c} ↗</a>`
-      : `<span style="color:var(--mut)">${s.c}</span>`;
-    const yt = s.u ? `${PLAT[s.p] || ""}${s.s ? " ・ " + fmt(s.s) + "人" : ""}` : "";
+    let name, yt;
+    if(s.u){
+      name = `<a href="${s.u}" target="_blank" rel="noopener" onclick="event.stopPropagation()">${s.c} ↗</a>`;
+      yt = `${PLAT[s.p] || ""}${s.s ? " ・ " + fmt(s.s) + "人" : ""}`;
+    } else {
+      // YouTube未照合 = TikTok/IGアカウントの可能性大 → ハンドル推測リンクを付ける
+      const h = s.c.trim().replace(/^[@\-.\s]+/, "");
+      const links = /^[A-Za-z0-9._]+$/.test(h) && h.length >= 3
+        ? `<a class="guess" href="https://www.tiktok.com/@${h}" title="TikTokプロフィール(推測)">TT↗</a>
+           <a class="guess" href="https://www.instagram.com/${h}/" title="Instagramプロフィール(推測)">IG↗</a>`
+        : `<a class="guess" href="https://www.tiktok.com/search?q=${encodeURIComponent(s.c)}" title="TikTokで検索">TT🔍</a>
+           <a class="guess" href="https://www.google.com/search?q=${encodeURIComponent('"' + s.c + '" instagram OR tiktok')}" title="Googleで検索">🔍</a>`;
+      name = `<span style="color:var(--mut)">${s.c}</span> ${links}`;
+      yt = "";
+    }
     let cells = shows.map(ch => {
       const b = s.bd[ch];
       if(!b) return `<td class="cell empty">—</td>`;
@@ -278,7 +294,7 @@ function render(){
 }
 // ===== 動画ピッカー(海外の一次素材) =====
 let SM = [];
-let view = "rank", pickGenre = "全部", pickSort = "インパクト順", pickLimit = 100;
+let view = "rank", pickGenre = "全部", pickSort = "インパクト順", pickLimit = 100, pickMinV = 3e6;
 let genreDemand = {}, GENRES_SORTED = [];
 function initPickDerived(){
   genreDemand = {};
@@ -300,6 +316,11 @@ function renderPick(){
   sortBtn.textContent = pickSort;
   sortBtn.onclick = () => {pickSort = pickSort === "インパクト順" ? "需要順" : pickSort === "需要順" ? "素材再生順" : "インパクト順"; renderPick();};
   el.appendChild(sortBtn);
+  const mv = document.createElement("button");
+  mv.className = "chip" + (pickMinV ? " on" : "");
+  mv.textContent = "素材300万+";
+  mv.onclick = () => {pickMinV = pickMinV ? 0 : 3e6; pickLimit = 100; renderPick();};
+  el.appendChild(mv);
   for(const g of ["全部", ...GENRES_SORTED]){
     const b = document.createElement("button");
     b.className = "chip" + (g === pickGenre ? " on" : "");
@@ -308,7 +329,8 @@ function renderPick(){
     el.appendChild(b);
   }
   const q = document.getElementById("q").value.trim().toLowerCase();
-  const list = SM.filter(x => (pickGenre === "全部" || x.g === pickGenre) &&
+  const list = SM.filter(x => x.v >= pickMinV &&
+      (pickGenre === "全部" || x.g === pickGenre) &&
       (!q || (x.t + x.c).toLowerCase().includes(q)))
     .sort((a,b) => pickSort === "インパクト順" ? ((b.im||0) - (a.im||0) || b.v - a.v) : pickSort === "需要順" ? (b.jm - a.jm || b.v - a.v) : (b.v - a.v));
   const tb = document.getElementById("pick-body"); tb.innerHTML = "";
@@ -320,9 +342,14 @@ function renderPick(){
     tr.innerHTML = `
       <td><button class="chip" style="border-color:var(--acc);color:var(--acc);font-weight:800;padding:4px 9px">🎬</button></td>
       <td><button class="pick${picked.has(key) ? " on" : ""}" aria-label="着手">✓</button></td>
-      <td><a href="https://www.youtube.com/watch?v=${x.id}"
-        style="color:var(--tx);text-decoration:none;font-weight:700">${(x.im||0) >= 0.95 ? "⚡" : ""}${x.t}</a>
-        <div style="font-size:10.5px;color:var(--mut)">${x.c}${dur ? " ・ " + dur : ""}${x.s ? " ・ " + fmt(x.s) + "人" : ""}</div></td>
+      <td><div style="display:flex;gap:8px;align-items:center">
+        <a href="https://www.youtube.com/watch?v=${x.id}" style="flex:0 0 auto">
+          <img class="thumb" src="https://i.ytimg.com/vi/${x.id}/mqdefault.jpg" loading="lazy" alt=""></a>
+        <div style="min-width:0">
+          <a href="https://www.youtube.com/watch?v=${x.id}"
+            style="color:var(--tx);text-decoration:none;font-weight:700">${(x.im||0) >= 0.95 ? "⚡" : ""}${x.t}</a>
+          <div style="font-size:10.5px;color:var(--mut)">${x.c}${dur ? " ・ " + dur : ""}${x.s ? " ・ " + fmt(x.s) + "人" : ""}</div>
+        </div></div></td>
       <td class="num"><b>${fmt(x.v)}</b></td>
       <td style="font-size:11px;white-space:nowrap">最大<b>${fmt(x.jm)}</b> ・ ${x.jn}本</td>
       <td style="font-size:11.5px;white-space:nowrap">${x.g}</td>`;
