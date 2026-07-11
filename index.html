@@ -90,7 +90,13 @@ footer{color:var(--mut);font-size:11px;text-align:center;margin-top:20px;line-he
 @media(min-width:1280px){#player{display:flex}}
 #player .pbox{background:#000;border-radius:12px;overflow:hidden;margin:0 auto;
   aspect-ratio:16/9;width:100%}
-#player iframe{width:100%;height:100%;border:0;display:none}
+#pframe{width:100%;height:100%;display:none}
+#player iframe{width:100%;height:100%;border:0}
+#seglist .seg{display:flex;gap:8px;align-items:center;padding:3px 0;
+  border-bottom:1px dashed var(--line);font-variant-numeric:tabular-nums}
+#seglist .seg button{border:none;background:none;cursor:pointer;font-size:12px;padding:0 2px}
+#sbmodal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.82);z-index:50;
+  overflow:auto;padding:20px}
 #player #pph{width:100%;height:100%;display:grid;place-items:center;
   color:#8a93a1;font-size:12.5px;padding:16px;text-align:center}
 #player .pt{font-size:13px;font-weight:700;margin:8px 2px 2px;line-height:1.5}
@@ -130,6 +136,9 @@ footer{color:var(--mut);font-size:11px;text-align:center;margin-top:20px;line-he
       <div id="kobo-meta" style="font-size:12.5px;font-weight:700"></div>
       <div id="kobo-heat" style="font-size:11.5px;color:var(--mut);margin:4px 0"></div>
       <div id="kobo-com" style="font-size:11px;color:var(--mut)"></div>
+      <div id="kobo-sb" style="display:none;font-size:11.5px;margin-top:4px">
+        🎞 <a id="kobo-sb-dl" href="" download style="color:var(--acc);font-weight:700">ストーリーボード画像を保存</a>
+        <span style="color:var(--mut)">— セリフが無い(ノンバーバル)素材は、この画像もプロンプトと一緒にClaudeへ貼ると映像を読み取って台本を作れます</span></div>
       <textarea id="kobo-tr" rows="3" placeholder="ここに文字起こしを貼る → 自分のChromeに入れた拡張機能「YouTube Summary」のTranscriptコピー、またはYouTube公式の「文字起こしを表示」からコピー(タイムスタンプ付きのままでOK)"
         style="width:100%;margin-top:8px;padding:8px 10px;border:1px solid var(--line);
         border-radius:8px;background:var(--bg);color:var(--tx);font-size:12px;resize:vertical"></textarea>
@@ -181,16 +190,41 @@ footer{color:var(--mut);font-size:11px;text-align:center;margin-top:20px;line-he
 <aside id="player">
   <div class="pbox" id="pbox">
     <div id="pph">👈 リストの動画をクリックすると<br>ここで再生されます</div>
-    <iframe id="pframe" allow="autoplay; encrypted-media; picture-in-picture" allowfullscreen title="動画プレイヤー"></iframe>
+    <div id="pframe"></div>
   </div>
   <div class="pt" id="ptitle"></div>
   <div class="ps" id="psub"></div>
   <div class="pbtns" id="pbtns" style="display:none">
     <button class="chip" id="p-kobo" style="border-color:var(--acc);color:var(--acc);font-weight:700">🎬 この動画で台本を作る</button>
+    <button class="chip" id="p-sb" style="display:none">🎞 コマ送り</button>
     <button class="chip" id="p-yt">YouTubeで開く ↗</button>
     <button class="chip" id="p-close">✕ 閉じる</button>
   </div>
+  <div id="segwrap" style="display:none">
+    <div class="pbtns" style="margin-top:10px">
+      <button class="chip" id="seg-in" style="font-weight:800;border-color:var(--hot);color:var(--hot)">✂ IN</button>
+      <button class="chip" id="seg-out" style="font-weight:800">→ OUT</button>
+      <button class="chip" id="seg-copy">📋 カット表コピー</button>
+      <span id="seg-copied" style="font-size:11px;color:var(--ok);align-self:center"></span>
+    </div>
+    <div style="font-size:10.5px;color:var(--mut);margin-top:4px">
+      再生しながら「✂IN」→「→OUT」で<b>使う区間</b>を登録(複数OK)。▶で頭出し、✕で削除</div>
+    <div id="seglist"></div>
+  </div>
 </aside>
+</div>
+<div id="sbmodal">
+  <div style="max-width:1300px;margin:0 auto">
+    <div style="display:flex;gap:8px;margin-bottom:8px;align-items:center;flex-wrap:wrap">
+      <span style="color:#fff;font-weight:800;font-size:13px">🎞 ストーリーボード(シーン切り替えを自動抽出)</span>
+      <a class="chip" id="sb-dl" href="" download style="text-decoration:none">💾 画像を保存</a>
+      <button class="chip" id="sb-close">✕ 閉じる</button>
+    </div>
+    <div style="color:#ccc;font-size:11.5px;margin-bottom:10px;line-height:1.7">
+      セリフがほぼ無い(ノンバーバル)素材は、この画像を保存して<b>台本プロンプトと一緒に自分のClaudeへ貼る</b>と、
+      映像の流れを読み取った上で実況・ナレーション型の台本を作ってくれます</div>
+    <img id="sbimg" style="width:100%;border-radius:8px" alt="storyboard">
+  </div>
 </div>
 <script>
 const API = "https://script.google.com/macros/s/AKfycbzRbrv9of3ZFrN0I4UYd0Ufi8O0PORkTPJwWqrJ4a44bPiodWNq64iiiaMOD3I1D-_O/exec";
@@ -342,38 +376,124 @@ function initPickDerived(){
   for(const g in acc) genreDemand[g] = acc[g].reduce((a,b)=>a+b,0) / acc[g].length;
   GENRES_SORTED = Object.keys(genreDemand).sort((a,b) => genreDemand[b] - genreDemand[a]);
 }
-// ===== 右余白のインライン再生パネル =====
-let playVid = null;
+// ===== 右余白のインライン再生パネル(YouTube IFrame API) =====
+let playVid = null, ytPlayer = null, ytReady = false, pendingVid = null;
 const canDock = () => window.matchMedia("(min-width:1280px)").matches;
+function loadYT(){
+  if(window.YT && YT.Player){ ytReady = true; return; }
+  if(document.getElementById("ytapi")) return;
+  const s = document.createElement("script");
+  s.id = "ytapi"; s.src = "https://www.youtube.com/iframe_api";
+  document.head.appendChild(s);
+}
+window.onYouTubeIframeAPIReady = () => {
+  ytReady = true;
+  if(pendingVid){ mountYT(pendingVid); pendingVid = null; }
+};
+function mountYT(vid){
+  if(ytPlayer){ ytPlayer.loadVideoById(vid); return; }
+  ytPlayer = new YT.Player("pframe", {videoId: vid, width: "100%", height: "100%",
+    playerVars: {autoplay: 1, rel: 0, playsinline: 1}});
+}
 function playInline(vid, title, sub, isShort){
   if(!canDock()){ window.open("https://www.youtube.com/watch?v=" + vid, "_blank", "noopener"); return; }
   playVid = vid;
   const box = document.getElementById("pbox");
-  if(isShort){ box.style.aspectRatio = "9/16"; box.style.height = "min(72vh,760px)"; box.style.width = "auto"; }
+  if(isShort){ box.style.aspectRatio = "9/16"; box.style.height = "min(66vh,700px)"; box.style.width = "auto"; }
   else { box.style.aspectRatio = "16/9"; box.style.height = "auto"; box.style.width = "100%"; }
   document.getElementById("pph").style.display = "none";
-  const f = document.getElementById("pframe");
-  f.style.display = "block";
-  f.src = "https://www.youtube-nocookie.com/embed/" + vid + "?autoplay=1&rel=0";
+  document.getElementById("pframe").style.display = "block";
+  if(ytReady) mountYT(vid); else { pendingVid = vid; loadYT(); }
   document.getElementById("ptitle").textContent = title || "";
   document.getElementById("psub").textContent = sub || "";
   document.getElementById("pbtns").style.display = "";
+  document.getElementById("segwrap").style.display = "";
+  segIn = null; updateSegBtn(); renderSegs();
+  // ストーリーボードがあればボタンを出す
+  const sbBtn = document.getElementById("p-sb");
+  sbBtn.style.display = "none";
+  const im = new Image();
+  im.onload = () => { if(playVid === vid) sbBtn.style.display = ""; };
+  im.src = "sb/" + vid + ".jpg";
 }
 document.getElementById("p-close").onclick = () => {
   playVid = null;
-  const f = document.getElementById("pframe");
-  f.src = ""; f.style.display = "none";
+  if(ytPlayer && ytPlayer.stopVideo) ytPlayer.stopVideo();
+  document.getElementById("pframe").style.display = "none";
   const box = document.getElementById("pbox");
   box.style.aspectRatio = "16/9"; box.style.height = "auto"; box.style.width = "100%";
   document.getElementById("pph").style.display = "";
   document.getElementById("ptitle").textContent = "";
   document.getElementById("psub").textContent = "";
   document.getElementById("pbtns").style.display = "none";
+  document.getElementById("segwrap").style.display = "none";
 };
 document.getElementById("p-yt").onclick = () => {
   if(playVid) window.open("https://www.youtube.com/watch?v=" + playVid, "_blank", "noopener");
 };
 document.getElementById("p-kobo").onclick = () => { if(playVid) sendToKobo(playVid); };
+// --- ストーリーボード ---
+document.getElementById("p-sb").onclick = () => {
+  if(!playVid) return;
+  document.getElementById("sbimg").src = "sb/" + playVid + ".jpg";
+  const dl = document.getElementById("sb-dl");
+  dl.href = "sb/" + playVid + ".jpg"; dl.download = "storyboard_" + playVid + ".jpg";
+  document.getElementById("sbmodal").style.display = "block";
+};
+document.getElementById("sb-close").onclick = () =>
+  document.getElementById("sbmodal").style.display = "none";
+document.getElementById("sbmodal").onclick = e => {
+  if(e.target.id === "sbmodal") document.getElementById("sbmodal").style.display = "none";
+};
+// --- 使う区間(IN/OUT・複数) ---
+let segIn = null;
+let SEGS = {};
+try{ SEGS = JSON.parse(localStorage.getItem("segs") || "{}"); }catch(e){}
+const tf = s => `${Math.floor(s/60)}:${String(Math.floor(s%60)).padStart(2,"0")}.${Math.floor(s*10%10)}`;
+function updateSegBtn(){
+  document.getElementById("seg-in").textContent = segIn == null ? "✂ IN" : `✂ IN ${tf(segIn)}…`;
+}
+function saveSegs(){ try{ localStorage.setItem("segs", JSON.stringify(SEGS)); }catch(e){} }
+function renderSegs(){
+  const list = SEGS[playVid] || [];
+  document.getElementById("seglist").innerHTML = list.map((s, i) => `
+    <div class="seg"><b>${i+1}.</b> <span>${tf(s[0])} → ${tf(s[1])}</span>
+    <span style="color:var(--mut)">(${(s[1]-s[0]).toFixed(1)}秒)</span>
+    <button data-seek="${s[0]}" title="頭出し">▶</button>
+    <button data-del="${i}" title="削除" style="color:var(--hot)">✕</button></div>`).join("");
+  document.querySelectorAll("#seglist [data-seek]").forEach(b =>
+    b.onclick = () => ytPlayer && ytPlayer.seekTo(+b.dataset.seek, true));
+  document.querySelectorAll("#seglist [data-del]").forEach(b =>
+    b.onclick = () => { (SEGS[playVid]||[]).splice(+b.dataset.del, 1); saveSegs(); renderSegs(); });
+}
+document.getElementById("seg-in").onclick = () => {
+  if(!ytPlayer || !ytPlayer.getCurrentTime) return;
+  segIn = ytPlayer.getCurrentTime(); updateSegBtn();
+};
+document.getElementById("seg-out").onclick = () => {
+  if(!ytPlayer || !ytPlayer.getCurrentTime || segIn == null) return;
+  const t = ytPlayer.getCurrentTime();
+  if(t <= segIn + 0.2) return;
+  (SEGS[playVid] = SEGS[playVid] || []).push([Math.round(segIn*10)/10, Math.round(t*10)/10]);
+  SEGS[playVid].sort((a,b) => a[0] - b[0]);
+  segIn = null; updateSegBtn(); saveSegs(); renderSegs();
+};
+document.getElementById("seg-copy").onclick = () => {
+  const list = SEGS[playVid] || [];
+  if(!list.length) return;
+  const text = `元動画: https://www.youtube.com/watch?v=${playVid}\n`
+    + `タイトル: ${document.getElementById("ptitle").textContent}\n使用区間:\n`
+    + list.map((s, i) => `${i+1}. ${tf(s[0])} - ${tf(s[1])} (${(s[1]-s[0]).toFixed(1)}秒)`).join("\n")
+    + `\n合計 ${list.reduce((a,s)=>a+s[1]-s[0],0).toFixed(1)}秒`;
+  const done = () => {
+    const el = document.getElementById("seg-copied");
+    el.textContent = "コピーしました";
+    setTimeout(() => el.textContent = "", 4000);
+  };
+  if(navigator.clipboard && navigator.clipboard.writeText)
+    navigator.clipboard.writeText(text).then(done).catch(() => fallbackCopy(text, done));
+  else fallbackCopy(text, done);
+};
 function sendToKobo(vid){
   document.getElementById("kobo").style.display = "";
   document.getElementById("kobo-url").value = "https://www.youtube.com/watch?v=" + vid;
@@ -500,6 +620,15 @@ document.getElementById("kobo-run").onclick = () => {
     document.getElementById("kobo-com").textContent = p.comments.length
       ? `💬人気コメント${p.comments.length}件取得: 「${p.comments[0].t.slice(0,60)}…」`
       : "コメント取得なし";
+    const sbBox = document.getElementById("kobo-sb");
+    sbBox.style.display = "none";
+    const im = new Image();
+    im.onload = () => {
+      const dl = document.getElementById("kobo-sb-dl");
+      dl.href = "sb/" + p.vid + ".jpg"; dl.download = "storyboard_" + p.vid + ".jpg";
+      sbBox.style.display = "";
+    };
+    im.src = "sb/" + p.vid + ".jpg";
     document.getElementById("kobo-result").style.display = "";
   }).catch(e => {
     document.getElementById("kobo-status").textContent = "エラー: " + e;
@@ -551,9 +680,13 @@ ${coms}
 # 文字起こし(原語)
 ${transcriptText()}
 
+# 映像ストーリーボード(画像が添付されている場合)
+- この依頼にタイムスタンプ付きの「コマ送り画像」が添付されていたら、それが元動画のシーン展開である
+- セリフがほぼ無い(ノンバーバル)動画の場合は、文字起こしの代わりにこの画像から各場面を読み取り、「0:12 男性が◯◯する」形式の場面リストを先に作ってから、実況・ナレーション型(「〜する男性」「まさかの〜」等)の台本を作ること
+
 # 厳格ルール(必ず守る)
-- 上の文字起こしが【未貼付】のままの場合、台本は一切作らず「文字起こしを貼ってください」とだけ返すこと
-- タイトル・コメント・盛り上がりからの推測でストーリーや台詞を創作することを禁止する。台本の内容は必ず文字起こしに書かれていることだけから作る
+- 上の文字起こしが【未貼付】のままで、かつストーリーボード画像の添付も無い場合、台本は一切作らず「文字起こしまたはストーリーボード画像を貼ってください」とだけ返すこと
+- タイトル・コメント・盛り上がりからの推測でストーリーや台詞を創作することを禁止する。台本の内容は必ず文字起こし(またはストーリーボード画像に写っていること)だけから作る
 
 ${KNOWHOW}
 `;
