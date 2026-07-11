@@ -269,13 +269,15 @@ footer{color:var(--mut);font-size:11px;text-align:center;margin-top:20px;line-he
         <button class="chip" id="ed-close">✕ 閉じる</button>
       </div>
       <div style="font-size:11px;color:var(--mut);margin-bottom:6px">
-        1行=1テロップ。行をクリックすると右のプレビューに映ります。テキストを選択して「大きく/小さく」で部分強調</div>
+        1行=1テロップ。行をクリックすると右のプレビューに映ります。テキストを選択して「大きく/小さく」で部分強調。
+        動画を素材セリフの頭で止めて<b>⏱</b>を押すと行頭に@時刻が付き、その直前に言い終わるようナレが逆算配置されます</div>
       <div id="ed-rows"></div>
       <div style="display:flex;gap:6px;margin:8px 0;flex-wrap:wrap">
         <button class="chip" id="ed-add">＋ 行を追加</button>
         <button class="chip" id="ed-big">選択を《大きく》</button>
         <button class="chip" id="ed-sml">選択を〈小さく〉</button>
         <button class="chip" id="ed-br">改行 |</button>
+        <button class="chip" id="ed-anchor" title="いま動画を止めている位置(素材セリフの頭)を行頭に@時刻で記録。make_edit.pyがその直前に言い終わるようナレを逆算配置します">⏱ ここまでに言い終わる</button>
       </div>
       <div style="border-top:1px dashed var(--line);padding-top:8px">
         <div class="edsl">タイトル大きさ <input type="range" id="ed-ts" min="60" max="150" step="2"><b id="ed-tsv"></b></div>
@@ -618,7 +620,8 @@ function edPrev(){
   sEl.style.top = edStyle.serif_y + "%";
   sEl.style.fontSize = Math.round(edStyle.serif_size * scale) + "px";
   sEl.style.color = cur && cur.k === "g" ? "#4dff3a" : "#ffffff";
-  sEl.innerHTML = cur ? cur.t.split("|").filter(s => s.trim()).map(s => `<div>${edMk(s)}</div>`).join("") : "";
+  sEl.innerHTML = cur ? cur.t.replace(/^@\d+:\d+(\.\d+)?\s*/, "")
+    .split("|").filter(s => s.trim()).map(s => `<div>${edMk(s)}</div>`).join("") : "";
 }
 function edWrap(a, b){
   if(!edFocus) return;
@@ -643,6 +646,14 @@ document.getElementById("ed-add").onclick = () => {
 document.getElementById("ed-big").onclick = () => edWrap("《", "》");
 document.getElementById("ed-sml").onclick = () => edWrap("〈", "〉");
 document.getElementById("ed-br").onclick = () => edWrap("|", "");
+document.getElementById("ed-anchor").onclick = () => {
+  if(!edFocus){ alert("先にアンカーを付けたいセリフ行をクリックしてください"); return; }
+  if(!ytPlayer || !ytPlayer.getCurrentTime){ alert("プレイヤーで動画を再生してから使ってください"); return; }
+  const tag = "@" + tf(ytPlayer.getCurrentTime()) + " ";
+  edFocus.value = tag + edFocus.value.replace(/^@\d+:\d+(\.\d+)?\s*/, "");
+  edFocus.dispatchEvent(new Event("input"));
+  edFocus.focus();
+};
 document.getElementById("ed-copy").onclick = () => {
   const diff = {};
   if(edStyle.title_size !== ED_DEF.title_size) diff.title_size = edStyle.title_size;
