@@ -152,7 +152,7 @@ footer{color:var(--mut);font-size:11px;text-align:center;margin-top:20px;line-he
 <div class="more" id="more"></div>
 </div>
 <div id="view-pick" style="display:none">
-  <div class="sub" style="margin:0 0 8px">ここに並ぶのは<b>海外の一次素材そのもの</b>(日本の競合で需要が証明された引用元チャンネルの人気動画)。🎬を押すとそのまま台本プロンプト工房に入ります。</div>
+  <div class="sub" style="margin:0 0 8px">ここに並ぶのは<b>海外の一次素材そのもの</b>(日本の競合で需要が証明された引用元チャンネルの人気動画・<b>300万再生以上のみ</b>)。🎬を押すとそのまま台本プロンプト工房に入ります。</div>
   <div class="tbl"><table style="min-width:700px">
     <thead><tr><th></th><th>✓</th><th>海外素材(元動画)</th><th style="text-align:right">素材の再生数</th>
       <th>ジャンル</th></tr></thead>
@@ -294,7 +294,7 @@ function render(){
 }
 // ===== 動画ピッカー(海外の一次素材) =====
 let SM = [];
-let view = "rank", pickGenre = "全部", pickSort = "インパクト順", pickLimit = 100, pickMinV = 3e6;
+let view = "rank", pickGenre = "全部", pickSort = "インパクト順", pickLimit = 100;
 let genreDemand = {}, GENRES_SORTED = [];
 function initPickDerived(){
   genreDemand = {};
@@ -316,11 +316,6 @@ function renderPick(){
   sortBtn.textContent = pickSort;
   sortBtn.onclick = () => {pickSort = pickSort === "インパクト順" ? "素材再生順" : "インパクト順"; renderPick();};
   el.appendChild(sortBtn);
-  const mv = document.createElement("button");
-  mv.className = "chip" + (pickMinV ? " on" : "");
-  mv.textContent = "素材300万+";
-  mv.onclick = () => {pickMinV = pickMinV ? 0 : 3e6; pickLimit = 100; renderPick();};
-  el.appendChild(mv);
   for(const g of ["全部", ...GENRES_SORTED]){
     const b = document.createElement("button");
     b.className = "chip" + (g === pickGenre ? " on" : "");
@@ -329,8 +324,7 @@ function renderPick(){
     el.appendChild(b);
   }
   const q = document.getElementById("q").value.trim().toLowerCase();
-  const list = SM.filter(x => x.v >= pickMinV &&
-      (pickGenre === "全部" || x.g === pickGenre) &&
+  const list = SM.filter(x => (pickGenre === "全部" || x.g === pickGenre) &&
       (!q || (x.t + x.c).toLowerCase().includes(q)))
     .sort((a,b) => pickSort === "インパクト順" ? ((b.im||0) - (a.im||0) || b.v - a.v) : (b.v - a.v));
   const tb = document.getElementById("pick-body"); tb.innerHTML = "";
