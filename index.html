@@ -81,7 +81,22 @@ tr.exp-row td{background:var(--sur2);padding:6px 12px 10px}
 .more{color:var(--mut);font-size:11px;text-align:center;padding:14px}
 footer{color:var(--mut);font-size:11px;text-align:center;margin-top:20px;line-height:1.8}
 .chip:focus-visible,.pick:focus-visible{outline:2px solid var(--acc);outline-offset:2px}
+/* 右余白のインライン再生パネル(広い画面のみ) */
+.layout{display:flex;align-items:flex-start;justify-content:center;gap:20px}
+.wrap{flex:1 1 auto;min-width:0}
+#player{flex:0 0 clamp(420px,calc(100vw - 1180px),640px);position:sticky;top:0;
+  padding:12px 12px 0 0;display:none}
+@media(min-width:1280px){#player{display:block}}
+#player .pbox{background:#000;border-radius:12px;overflow:hidden;margin:0 auto;
+  aspect-ratio:16/9;width:100%}
+#player iframe{width:100%;height:100%;border:0;display:none}
+#player #pph{width:100%;height:100%;display:grid;place-items:center;
+  color:#8a93a1;font-size:12.5px;padding:16px;text-align:center}
+#player .pt{font-size:13px;font-weight:700;margin:8px 2px 2px;line-height:1.5}
+#player .ps{font-size:11px;color:var(--mut);margin:0 2px 8px}
+#player .pbtns{display:flex;gap:6px;flex-wrap:wrap}
 </style>
+<div class="layout">
 <div class="wrap">
 <header>
   <h1>引用元<em>ランキング</em>
@@ -162,6 +177,20 @@ footer{color:var(--mut);font-size:11px;text-align:center;margin-top:20px;line-he
 </div>
 <footer>セル＝本数と平均再生(色が濃いほど伸びてる)。行タップ→使われた動画。✓＝着手マーク(全員に共有)。</footer>
 </div>
+<aside id="player">
+  <div class="pbox" id="pbox">
+    <div id="pph">👈 リストの動画をクリックすると<br>ここで再生されます</div>
+    <iframe id="pframe" allow="autoplay; encrypted-media; picture-in-picture" allowfullscreen title="動画プレイヤー"></iframe>
+  </div>
+  <div class="pt" id="ptitle"></div>
+  <div class="ps" id="psub"></div>
+  <div class="pbtns" id="pbtns" style="display:none">
+    <button class="chip" id="p-kobo" style="border-color:var(--acc);color:var(--acc);font-weight:700">🎬 この動画で台本を作る</button>
+    <button class="chip" id="p-yt">YouTubeで開く ↗</button>
+    <button class="chip" id="p-close">✕ 閉じる</button>
+  </div>
+</aside>
+</div>
 <script>
 const API = "https://script.google.com/macros/s/AKfycbzRbrv9of3ZFrN0I4UYd0Ufi8O0PORkTPJwWqrJ4a44bPiodWNq64iiiaMOD3I1D-_O/exec";
 window.onerror = function(msg, src, line, col){
@@ -169,10 +198,14 @@ window.onerror = function(msg, src, line, col){
   if(el) el.textContent = "⚠️JSエラー: " + msg + " (line " + line + ":" + col + ")";
   return false;
 };
-// GAS埋め込み画面ではリンクの通常遷移が事故るため、外部リンクは必ずwindow.openで開く
+// 外部リンクは必ずwindow.openで開く。class="play"の動画リンクは各行のハンドラがインライン再生する
 document.addEventListener("click", e => {
   const a = e.target.closest("a[href^='http']");
-  if(a){ e.preventDefault(); e.stopPropagation(); window.open(a.href, "_blank", "noopener"); }
+  if(!a) return;
+  e.preventDefault();
+  if(a.classList.contains("play")) return;
+  e.stopPropagation();
+  window.open(a.href, "_blank", "noopener");
 }, true);
 let KNOWHOW = "";
 let D = {};
@@ -272,8 +305,13 @@ function render(){
     ex.className = "exp-row"; ex.style.display = "none";
     ex.innerHTML = `<td colspan="${5 + shows.length + (rest.length ? 1 : 0)}">${(SV[s.k] || []).map(v => `
       <div class="vrow"><span class="c" style="background:rgb(${rgb(CHS.indexOf(v.ch))})">${v.ch}</span>
-      <a href="https://www.youtube.com/watch?v=${v.id}" target="_blank" rel="noopener">${v.t}</a>
+      <a class="play" href="https://www.youtube.com/watch?v=${v.id}" target="_blank" rel="noopener">${v.t}</a>
       <span class="n">${fmt(v.v)}</span></div>`).join("")}</td>`;
+    ex.querySelectorAll("a.play").forEach((a, j) => a.onclick = ev => {
+      ev.stopPropagation();
+      const v = (SV[s.k] || [])[j];
+      if(v) playInline(v.id, v.t, `@${v.ch} ・ ${fmt(v.v)}再生`, true);
+    });
     tr.onclick = () => ex.style.display = ex.style.display === "none" ? "" : "none";
     tr.querySelector(".pick").onclick = ev => {
       ev.stopPropagation();
@@ -303,6 +341,38 @@ function initPickDerived(){
   for(const g in acc) genreDemand[g] = acc[g].reduce((a,b)=>a+b,0) / acc[g].length;
   GENRES_SORTED = Object.keys(genreDemand).sort((a,b) => genreDemand[b] - genreDemand[a]);
 }
+// ===== 右余白のインライン再生パネル =====
+let playVid = null;
+const canDock = () => window.matchMedia("(min-width:1280px)").matches;
+function playInline(vid, title, sub, isShort){
+  if(!canDock()){ window.open("https://www.youtube.com/watch?v=" + vid, "_blank", "noopener"); return; }
+  playVid = vid;
+  const box = document.getElementById("pbox");
+  if(isShort){ box.style.aspectRatio = "9/16"; box.style.height = "min(72vh,760px)"; box.style.width = "auto"; }
+  else { box.style.aspectRatio = "16/9"; box.style.height = "auto"; box.style.width = "100%"; }
+  document.getElementById("pph").style.display = "none";
+  const f = document.getElementById("pframe");
+  f.style.display = "block";
+  f.src = "https://www.youtube-nocookie.com/embed/" + vid + "?autoplay=1&rel=0";
+  document.getElementById("ptitle").textContent = title || "";
+  document.getElementById("psub").textContent = sub || "";
+  document.getElementById("pbtns").style.display = "";
+}
+document.getElementById("p-close").onclick = () => {
+  playVid = null;
+  const f = document.getElementById("pframe");
+  f.src = ""; f.style.display = "none";
+  const box = document.getElementById("pbox");
+  box.style.aspectRatio = "16/9"; box.style.height = "auto"; box.style.width = "100%";
+  document.getElementById("pph").style.display = "";
+  document.getElementById("ptitle").textContent = "";
+  document.getElementById("psub").textContent = "";
+  document.getElementById("pbtns").style.display = "none";
+};
+document.getElementById("p-yt").onclick = () => {
+  if(playVid) window.open("https://www.youtube.com/watch?v=" + playVid, "_blank", "noopener");
+};
+document.getElementById("p-kobo").onclick = () => { if(playVid) sendToKobo(playVid); };
 function sendToKobo(vid){
   document.getElementById("kobo").style.display = "";
   document.getElementById("kobo-url").value = "https://www.youtube.com/watch?v=" + vid;
@@ -337,16 +407,20 @@ function renderPick(){
       <td><button class="chip" style="border-color:var(--acc);color:var(--acc);font-weight:800;padding:4px 9px">🎬</button></td>
       <td><button class="pick${picked.has(key) ? " on" : ""}" aria-label="着手">✓</button></td>
       <td><div style="display:flex;gap:8px;align-items:center">
-        <a href="https://www.youtube.com/watch?v=${x.id}" style="flex:0 0 auto">
+        <a class="play" href="https://www.youtube.com/watch?v=${x.id}" style="flex:0 0 auto">
           <img class="thumb" src="https://i.ytimg.com/vi/${x.id}/mqdefault.jpg" loading="lazy" alt=""></a>
         <div style="min-width:0">
-          <a href="https://www.youtube.com/watch?v=${x.id}"
+          <a class="play" href="https://www.youtube.com/watch?v=${x.id}"
             style="color:var(--tx);text-decoration:none;font-weight:700">${(x.im||0) >= 0.95 ? "⚡" : ""}${x.t}</a>
           <div style="font-size:10.5px;color:var(--mut)">${x.c}${dur ? " ・ " + dur : ""}${x.s ? " ・ " + fmt(x.s) + "人" : ""}</div>
         </div></div></td>
       <td class="num"><b>${fmt(x.v)}</b></td>
       <td style="font-size:11.5px;white-space:nowrap">${x.g}</td>`;
     tr.children[0].firstElementChild.onclick = ev => { ev.stopPropagation(); sendToKobo(x.id); };
+    tr.querySelectorAll("a.play").forEach(a => a.onclick = ev => {
+      ev.stopPropagation();
+      playInline(x.id, x.t, `${x.c}${dur ? " ・ " + dur : ""} ・ ${fmt(x.v)}再生`, x.d > 0 && x.d <= 90);
+    });
     tr.querySelector(".pick").onclick = ev => {
       ev.stopPropagation();
       const on = !picked.has(key);
