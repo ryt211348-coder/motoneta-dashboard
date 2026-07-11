@@ -285,9 +285,10 @@ footer{color:var(--mut);font-size:11px;text-align:center;margin-top:20px;line-he
         <div class="edsl">セリフ大きさ <input type="range" id="ed-ss" min="46" max="120" step="2"><b id="ed-ssv"></b></div>
         <div class="edsl">セリフ高さ <input type="range" id="ed-sy" min="35" max="92" step="0.5"><b id="ed-syv"></b></div>
       </div>
-      <div style="display:flex;gap:8px;align-items:center;margin-top:8px">
+      <div style="display:flex;gap:8px;align-items:center;margin-top:8px;flex-wrap:wrap">
         <button class="chip" id="ed-copy" style="background:var(--acc);border-color:var(--acc);
           color:#fff;font-weight:800;padding:8px 14px">📋 台本をコピー</button>
+        <button class="chip" id="ed-demo" title="めたんナレを本番と同じ配置(アンカー逆算込み)で動画に重ねて試聴。MacでVOICEVOXをCORS許可モードで起動しておく必要あり">▶ デモ再生</button>
         <span id="ed-copied" style="font-size:11px;color:var(--ok)"></span>
       </div>
       <div style="font-size:10.5px;color:var(--mut);margin-top:6px;line-height:1.7">
@@ -653,6 +654,97 @@ document.getElementById("ed-anchor").onclick = () => {
   edFocus.value = tag + edFocus.value.replace(/^@\d+:\d+(\.\d+)?\s*/, "");
   edFocus.dispatchEvent(new Event("input"));
   edFocus.focus();
+};
+// --- ▶デモ再生: VOICEVOX(localhost・CORS許可モード)でナレを合成し、
+//     make_edit.pyと同じ配置(アンカー逆算・素材の間・行間0.25s)でYT再生にミックス ---
+const VVURL = "http://127.0.0.1:50021", DEMO = {speed: 1.1, gap: .25, pre: .15};
+let demoTimer = null, demoAud = [], demoCache = {};
+function srcToTl(sec, segs){
+  let t = 0;
+  for(const [s, e] of segs){
+    if(sec < s) return t;
+    if(sec <= e) return t + (sec - s);
+    t += e - s;
+  }
+  return t;
+}
+function demoStop(){
+  if(demoTimer){ clearInterval(demoTimer); demoTimer = null; }
+  demoAud.forEach(a => { try{ a.pause(); }catch(e){} });
+  demoAud = [];
+  if(ytPlayer){ try{ ytPlayer.pauseVideo(); ytPlayer.setVolume(100); }catch(e){} }
+  document.getElementById("ed-demo").textContent = "▶ デモ再生";
+}
+async function vvSynth(text){
+  const plain = text.replace(/^@\d+:\d+(\.\d+)?\s*/, "").replace(/[《》〈〉|]/g, "");
+  if(demoCache[plain]) return demoCache[plain];
+  const q = await (await fetch(`${VVURL}/audio_query?speaker=2&text=${encodeURIComponent(plain)}`,
+    {method: "POST"})).json();
+  q.speedScale = DEMO.speed;
+  const blob = await (await fetch(`${VVURL}/synthesis?speaker=2`, {method: "POST",
+    headers: {"Content-Type": "application/json"}, body: JSON.stringify(q)})).blob();
+  const a = new Audio(URL.createObjectURL(blob));
+  await new Promise((ok, ng) => { a.onloadedmetadata = ok; a.onerror = ng; });
+  demoCache[plain] = {a, d: a.duration};
+  return demoCache[plain];
+}
+document.getElementById("ed-demo").onclick = async () => {
+  const btn = document.getElementById("ed-demo");
+  if(demoTimer){ demoStop(); return; }
+  if(!ytPlayer || !ytPlayer.getCurrentTime){ alert("先にプレイヤーで動画を開いてください"); return; }
+  try{ await fetch(VVURL + "/version"); }
+  catch(e){
+    alert("VOICEVOXにつながりません。MacのターミナルでCORS許可モードで起動してください:\n\n" +
+      "cd 海外元ネタリサーチ && tools/macos-arm64/run --cors_policy_mode all\n\n" +
+      "(make_edit.pyを一度実行した場合も自動起動されます)");
+    return;
+  }
+  const raw = SEGS[playVid] || [];
+  const segs = raw.length ? raw.slice().sort((x, y) => x[0] - y[0])
+                          : [[0, (ytPlayer.getDuration() || 9999)]];
+  btn.textContent = "⏳ 合成中…";
+  const plan = []; let t = 0;
+  try{
+    for(let i = 0; i < edLines.length; i++){
+      const l = edLines[i];
+      if(l.k === "z"){ t += parseFloat(l.t) || 3; continue; }
+      if((l.k !== "w" && l.k !== "g") || !l.t.trim()) continue;
+      const {a, d} = await vvSynth(l.t);
+      const m = l.t.match(/^@(\d+):(\d+(?:\.\d+)?)\s*/);
+      if(m){
+        let st = srcToTl(+m[1] * 60 + +m[2], segs) - d - DEMO.pre;
+        if(st < t) st = t;  // 前のナレと重なる場合は詰める
+        t = st;
+      }
+      plan.push({i, start: t, a, d, done: false});
+      t += d + DEMO.gap;
+    }
+  }catch(e){ demoStop(); alert("音声合成に失敗しました: " + e); return; }
+  if(!plan.length){ demoStop(); alert("セリフ行がありません"); return; }
+  btn.textContent = "⏹ 停止";
+  let si = 0;
+  ytPlayer.setVolume(100); ytPlayer.seekTo(segs[0][0], true); ytPlayer.playVideo();
+  demoTimer = setInterval(() => {
+    let src;
+    try{ src = ytPlayer.getCurrentTime(); }catch(e){ demoStop(); return; }
+    if(src >= segs[si][1] - 0.08){  // 区間の終わり→次の採用区間へジャンプ(=カット編集の再現)
+      si++;
+      if(si >= segs.length){ demoStop(); return; }
+      ytPlayer.seekTo(segs[si][0], true);
+      return;
+    }
+    const tl = srcToTl(src, segs);
+    for(const p of plan){
+      if(!p.done && tl >= p.start && tl < p.start + p.d + 0.8){
+        p.done = true;
+        demoAud.push(p.a);
+        p.a.currentTime = 0; p.a.play();
+        edSel = p.i; edPrev();  // プレビューのテロップも同期
+      }
+    }
+    const talking = demoAud.some(a => !a.paused && !a.ended);
+    ytPlayer.setVolume(talking ? 30 : 100);  // ナレ中は素材音声をダッキング
+  }, 100);
 };
 document.getElementById("ed-copy").onclick = () => {
   const diff = {};
