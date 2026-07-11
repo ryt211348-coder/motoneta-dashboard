@@ -112,14 +112,18 @@ footer{color:var(--mut);font-size:11px;text-align:center;margin-top:20px;line-he
   font-family:'Hiragino Maru Gothic ProN','Zen Maru Gothic',sans-serif;font-weight:800;line-height:1.3;
   text-shadow:0 3px 7px rgba(0,0,0,.95),0 0 3px rgba(0,0,0,.6)}
 .edrow{display:flex;gap:5px;margin:4px 0;align-items:center}
-.edrow select{border:1px solid var(--line);background:var(--bg);color:var(--tx);
-  border-radius:6px;padding:5px 3px;font-size:11.5px;flex:0 0 92px}
-.edrow input{flex:1;min-width:0;border:1px solid var(--line);background:var(--bg);color:var(--tx);
+.edrow input.edtx{flex:1;min-width:0;border:1px solid var(--line);background:var(--bg);color:var(--tx);
   border-radius:6px;padding:6px 8px;font-size:13px}
-.edrow input:focus{outline:2px solid var(--acc)}
+.edrow input.edtx:focus{outline:2px solid var(--acc)}
 .edrow button{border:none;background:none;color:var(--mut);cursor:pointer;font-size:13px;padding:2px}
 .edrow button:hover{color:var(--tx)}
-.edrow.sel input{border-color:var(--acc)}
+.edrow.sel input.edtx{border-color:var(--acc)}
+.edtys{display:flex;gap:2px;flex:0 0 auto}
+.edty{border:1px solid var(--line) !important;background:var(--bg) !important;border-radius:5px !important;
+  font-size:10px !important;padding:3px 4px !important;color:var(--mut) !important;line-height:1}
+.edty.on{border-color:var(--acc) !important;color:var(--acc) !important;font-weight:800}
+.edvol{flex:0 0 46px;accent-color:var(--acc)}
+.edvolv{font-size:10px;color:var(--mut);min-width:20px;text-align:right;font-variant-numeric:tabular-nums}
 .edsl{display:flex;align-items:center;gap:8px;font-size:11.5px;color:var(--mut);margin:4px 0}
 .edsl input[type=range]{flex:1}
 .edsl b{color:var(--tx);font-variant-numeric:tabular-nums;min-width:34px;text-align:right}
@@ -148,10 +152,10 @@ footer{color:var(--mut);font-size:11px;text-align:center;margin-top:20px;line-he
     <div style="border-top:1px dashed var(--line);margin:8px 0 6px"></div>
     <b style="font-size:13px">🅑 動画に仕上げる(カット→テロップ→デモ試聴→Premiere)</b><br>
     <b>6. 使う区間を決める</b> — 右のプレイヤーで再生しながら「<b>✂IN</b>」→「<b>→OUT</b>」で使う区間を登録(複数OK・登録順につながります)。▶で頭出し、✕で削除。決まったら「<b>📋カット表コピー</b>」<br>
-    <b>7. テロップ台本を入れる</b> — 「<b>📝テロップ編集</b>」を開き、Claudeが出した台本を1行=1テロップで入力。行の種類: <b>タイトル</b>(全編表示)・<b>白セリフ</b>(めたんが読む)・<b>緑セリフ</b>・<b>素材の間</b>(ナレ無しで素材音声を聞かせる秒数)。テキスト選択→「《大きく》」で部分強調、「|」で改行<br>
+    <b>7. テロップ台本を入れる</b> — 「<b>📝テロップ編集</b>」を開き、Claudeが出した台本を1行=1テロップで入力。行の種類は各行のチップで切替: <b>タイトル</b>(全編表示)・<b>ナレ</b>(白・めたんが読む)・<b>緑</b>(めたんが読む)・<b>素材</b>(素材セリフ=ナレ無し・素材音声100%でテロップだけ出す)・<b>間</b>(ナレ無しで聞かせる秒数)。ナレ行の<b>🔉スライダー</b>=そのナレ中の素材音量(ダッキング量)。スプシに台本がある場合はA〜C列(種別・セリフ・素材時刻)をコピーして「<b>📥スプシ取り込み</b>」で一括変換(C列の時刻は@アンカーとして自動付与)。テキスト選択→「《大きく》」で部分強調、「|」で改行<br>
     <b>8. ナレのタイミング合わせ</b> — 素材のセリフ(叫び声・会話など)の頭で動画を一時停止 → その直前に言い終わってほしいセリフ行をクリック → 「<b>⏱ここまでに言い終わる</b>」。行頭に@時刻が付き、ナレが自動で逆算配置されます<br>
     <b>9. デモ再生で確認</b> — 「<b>▶デモ再生</b>」で、めたんナレ+カット+テロップを本番とほぼ同じ状態で試聴(ナレ中は素材音声が自動で小さくなります)。※要VOICEVOX: Macのターミナルで <code>tools/macos-arm64/run --cors_policy_mode all</code> を起動しておく(「address already in use」と出たら既に起動済みなのでそのままでOK。無いPCはこのステップを飛ばしてOK)<br>
-    <b>10. Premiere用に書き出す(Macの管理者)</b> — 「📋カット表コピー」した状態で、テロップ編集の「<b>📋台本をコピー</b>」→ 台本.txtに保存 → ターミナルで <code>python3 scripts/make_edit.py -s 台本.txt</code> → デスクトップの「元ネタ編集」フォルダにXML一式が生成 → Premiereで「ファイル→読み込み」でほぼ完成形(V1素材/V2セリフ/V3タイトル/A1素材音声/A2めたんナレ)。素材セリフの時刻一覧「素材セリフ.txt」も自動生成されるので@アンカーの下調べにも使えます<br>
+    <b>10. Premiere用に書き出す(Macの管理者)</b> — 「📋カット表コピー」した状態で、テロップ編集の「<b>📋台本をコピー</b>」→ 台本.txtに保存 → ターミナルで <code>python3 scripts/make_edit.py -s 台本.txt</code> → デスクトップの「元ネタ編集」フォルダにXML一式が生成 → Premiereで「ファイル→読み込み」でほぼ完成形(V1素材/V2セリフ/V3タイトル/A1素材音声/A2めたんナレ)。A1にはナレ中のダッキング(音量バーの値)とカット点の30msフェードが音量キーフレームで焼き込み済み。素材セリフの時刻一覧「素材セリフ.txt」も自動生成されるので@アンカーの下調べにも使えます<br>
     <span style="color:var(--mut)">※データは毎晩自動更新。引用元を自分で探す場合は「📊引用元ランキング」から</span>
   </div>
   <div class="sub" id="upd"></div>
@@ -280,15 +284,17 @@ footer{color:var(--mut);font-size:11px;text-align:center;margin-top:20px;line-he
         <button class="chip" id="ed-close">✕ 閉じる</button>
       </div>
       <div style="font-size:11px;color:var(--mut);margin-bottom:6px">
-        1行=1テロップ。行をクリックすると右のプレビューに映ります。テキストを選択して「大きく/小さく」で部分強調。
-        動画を素材セリフの頭で止めて<b>⏱</b>を押すと行頭に@時刻が付き、その直前に言い終わるようナレが逆算配置されます</div>
+        1行=1テロップ。行をクリックすると右のプレビューに映ります。行頭チップで種類を切替(<b>素材</b>=ナレ無しで素材のセリフをテロップ表示)。
+        ナレ行の🔉=そのナレ中の素材音量。テキストを選択して「大きく/小さく」で部分強調。
+        動画を素材セリフの頭で止めて<b>⏱</b>を押すと行頭に@時刻が付き、ナレ行は「その直前に言い終わる」逆算配置・素材行は「その時刻から表示」になります</div>
       <div id="ed-rows"></div>
       <div style="display:flex;gap:6px;margin:8px 0;flex-wrap:wrap">
         <button class="chip" id="ed-add">＋ 行を追加</button>
+        <button class="chip" id="ed-sheet" title="スプシでA〜C列(種別・セリフ・素材時刻)の範囲をコピーしてから押すと台本へ一括変換。女性ナレーション→ナレ/素材→素材セリフ/サブタイトル連続行→タイトル。C列の時刻は@アンカーとして自動付与">📥 スプシ取り込み</button>
         <button class="chip" id="ed-big">選択を《大きく》</button>
         <button class="chip" id="ed-sml">選択を〈小さく〉</button>
         <button class="chip" id="ed-br">改行 |</button>
-        <button class="chip" id="ed-anchor" title="いま動画を止めている位置(素材セリフの頭)を行頭に@時刻で記録。make_edit.pyがその直前に言い終わるようナレを逆算配置します">⏱ ここまでに言い終わる</button>
+        <button class="chip" id="ed-anchor" title="いま動画を止めている位置(素材セリフの頭)を行頭に@時刻で記録。ナレ行=その直前に言い終わる逆算配置/素材行=その時刻から表示">⏱ ここまでに言い終わる</button>
       </div>
       <div style="border-top:1px dashed var(--line);padding-top:8px">
         <div class="edsl">タイトル大きさ <input type="range" id="ed-ts" min="60" max="150" step="2"><b id="ed-tsv"></b></div>
@@ -568,7 +574,7 @@ function edOpen(vid, title){
   if(!edLines.length) edLines = [{k:"t", t:"タイトル1行目|2行目"}, {k:"w", t:""}];
   try{ edStyle = {...ED_DEF, ...(JSON.parse(localStorage.getItem("telopstyle")) || {})}; }
   catch(e){ edStyle = {...ED_DEF}; }
-  edSel = edLines.findIndex(l => l.k === "w" || l.k === "g");
+  edSel = edLines.findIndex(l => l.k === "w" || l.k === "g" || l.k === "m");
   document.getElementById("edcv-bg").style.backgroundImage =
     `url(https://i.ytimg.com/vi/${vid}/hqdefault.jpg)`;
   edRows(); edSliders(); edPrev();
@@ -580,25 +586,44 @@ function edSave(){
     localStorage.setItem("telopstyle", JSON.stringify(edStyle));
   }catch(e){}
 }
+const ED_TYPES = [
+  ["t", "タイトル", "タイトル(全編表示・|で改行)"],
+  ["w", "ナレ", "白セリフ(めたんが読む)"],
+  ["g", "緑", "緑セリフ(めたんが読む)"],
+  ["m", "素材", "素材セリフ(ナレ無し・素材音声100%・テロップだけ表示)"],
+  ["z", "間", "素材の間(ナレ無しで聞かせる秒数)"]];
+const edVol = l => l.v == null ? 30 : l.v;
 function edRows(){
   const box = document.getElementById("ed-rows"); box.innerHTML = "";
   edLines.forEach((l, i) => {
     const row = document.createElement("div");
     row.className = "edrow" + (i === edSel ? " sel" : "");
-    row.innerHTML = `<select>
-        <option value="t">タイトル</option><option value="w">白セリフ</option>
-        <option value="g">緑セリフ</option><option value="z">素材の間(秒)</option></select>
-      <input value="" placeholder="${l.k==='z' ? '秒数(空=3秒)' : l.k==='t' ? '|で改行・《》〈〉で大小' : 'セリフ(めたんが読む)'}">
+    const chips = ED_TYPES.map(([k, nm, tip]) =>
+      `<button class="edty${l.k === k ? " on" : ""}" data-k="${k}" title="${tip}">${nm}</button>`).join("");
+    const isNarr = l.k === "w" || l.k === "g";
+    row.innerHTML = `<span class="edtys">${chips}</span>
+      <input class="edtx" value="" placeholder="${l.k==='z' ? '秒数(空=3秒)' : l.k==='t' ? '|で改行・《》〈〉で大小'
+        : l.k==='m' ? '素材のセリフ(テロップのみ・⏱で開始時刻)' : 'セリフ(めたんが読む)'}">
+      ${isNarr ? `<input type="range" class="edvol" min="0" max="100" step="5" value="${edVol(l)}"
+        title="このナレ中の素材音量(ダッキング量)"><b class="edvolv">${edVol(l)}</b>` : ""}
       <button data-a="up" title="上へ">↑</button><button data-a="dn" title="下へ">↓</button>
       <button data-a="del" title="削除" style="color:var(--hot)">✕</button>`;
-    const sel = row.querySelector("select"), inp = row.querySelector("input");
-    sel.value = l.k; inp.value = l.t;
-    sel.onchange = () => { l.k = sel.value; edSave(); edRows(); edPrev(); };
+    const inp = row.querySelector("input.edtx");
+    inp.value = l.t;
     inp.oninput = () => { l.t = inp.value; edSave(); edPrev(); };
     const focus = () => { edSel = i; edFocus = inp;
       [...box.children].forEach((r, j) => r.classList.toggle("sel", j === i)); edPrev(); };
     inp.onfocus = focus; row.onclick = focus;
-    row.querySelectorAll("button").forEach(b => b.onclick = ev => {
+    row.querySelectorAll(".edty").forEach(b => b.onclick = ev => {
+      ev.stopPropagation();
+      l.k = b.dataset.k; edSel = i; edSave(); edRows(); edPrev();
+    });
+    const vr = row.querySelector(".edvol");
+    if(vr) vr.oninput = ev => {
+      ev.stopPropagation();
+      l.v = +vr.value; row.querySelector(".edvolv").textContent = vr.value; edSave();
+    };
+    row.querySelectorAll("button[data-a]").forEach(b => b.onclick = ev => {
       ev.stopPropagation();
       if(b.dataset.a === "del") edLines.splice(i, 1);
       if(b.dataset.a === "up" && i > 0) [edLines[i-1], edLines[i]] = [edLines[i], edLines[i-1]];
@@ -627,8 +652,8 @@ function edPrev(){
     `<div style="color:${i % 2 ? "#ff8a00" : "#ffe11a"};
       text-shadow:0 ${Math.max(2, 4*scale)}px ${Math.max(3, 8*scale)}px rgba(0,0,0,.85)">${edMk(s)}</div>`).join("");
   const sEl = document.getElementById("edcv-serif");
-  const cur = (edLines[edSel] && (edLines[edSel].k === "w" || edLines[edSel].k === "g"))
-    ? edLines[edSel] : edLines.find(l => l.k === "w" || l.k === "g");
+  const isSer = l => l && (l.k === "w" || l.k === "g" || l.k === "m");
+  const cur = isSer(edLines[edSel]) ? edLines[edSel] : edLines.find(isSer);
   sEl.style.top = edStyle.serif_y + "%";
   sEl.style.fontSize = Math.round(edStyle.serif_size * scale) + "px";
   sEl.style.color = cur && cur.k === "g" ? "#4dff3a" : "#ffffff";
@@ -654,6 +679,59 @@ document.getElementById("edmodal").onclick = e => {
 };
 document.getElementById("ed-add").onclick = () => {
   edLines.push({k: "w", t: ""}); edSave(); edRows(); edPrev();
+};
+// --- 📥スプシ台本一括取り込み ---
+// A列=種別(女性ナレーション/素材/サブタイトル…)・B列=セリフ・C列=素材動画の時刻 のタブ区切りを台本行へ変換
+function edParseTsv(text){
+  const rows = []; let row = [], cell = "", q = false;
+  for(let i = 0; i < text.length; i++){
+    const c = text[i];
+    if(q){
+      if(c === '"'){ if(text[i+1] === '"'){ cell += '"'; i++; } else q = false; }
+      else cell += c;
+    }else if(c === '"' && cell === "") q = true;
+    else if(c === "\t"){ row.push(cell); cell = ""; }
+    else if(c === "\n" || c === "\r"){
+      if(c === "\r" && text[i+1] === "\n") i++;
+      row.push(cell); rows.push(row); row = []; cell = "";
+    }else cell += c;
+  }
+  if(cell !== "" || row.length){ row.push(cell); rows.push(row); }
+  return rows;
+}
+function edSheetToLines(text){
+  const lines = []; let subs = [];
+  const flushSubs = () => { if(subs.length){ lines.push({k: "t", t: subs.join("|")}); subs = []; } };
+  for(const r of edParseTsv(text)){
+    const type = (r[0] || "").trim();
+    const body = (r[1] || "").trim().replace(/\s*\n\s*/g, "|");  // セル内改行→|改行
+    const tm = ((r[2] || "").trim().match(/\d+:\d{1,2}(?:\.\d+)?/) || [""])[0];
+    if(!type && !body) continue;
+    if(/^(種別|タイプ|区分|type)$/i.test(type)) continue;  // ヘッダ行
+    if(/サブタイトル|タイトル/.test(type)){ if(body) subs.push(body); continue; }
+    flushSubs();
+    const at = tm ? "@" + tm + " " : "";  // C列時刻→@アンカー自動付与
+    if(/素材/.test(type)) lines.push(body ? {k: "m", t: at + body} : {k: "z", t: ""});
+    else if(/緑/.test(type)) lines.push({k: "g", t: at + body});
+    else if(body) lines.push({k: "w", t: at + body});  // 女性ナレーション等→白セリフ
+  }
+  flushSubs();
+  return lines;
+}
+document.getElementById("ed-sheet").onclick = async () => {
+  let txt = "";
+  try{ txt = await navigator.clipboard.readText(); }catch(e){}
+  if(!txt || txt.indexOf("\t") < 0){
+    alert("クリップボードにスプシのデータが見つかりません。\n\nスプレッドシートで台本のA〜C列(種別・セリフ・素材時刻)の範囲を選択してコピー(⌘C)してから、もう一度押してください");
+    return;
+  }
+  const lines = edSheetToLines(txt);
+  if(!lines.length){ alert("変換できる行がありませんでした(A列に「女性ナレーション/素材/サブタイトル」等の種別が入っている範囲をコピーしてください)"); return; }
+  const cur = edLines.filter(l => l.t.trim()).length;
+  if(cur > 1 && !confirm(`いまの台本(${cur}行)をスプシの内容(${lines.length}行)で置き換えます。よろしいですか?`)) return;
+  edLines = lines;
+  edSel = Math.max(edLines.findIndex(l => l.k !== "t"), 0);
+  edSave(); edRows(); edPrev();
 };
 document.getElementById("ed-big").onclick = () => edWrap("《", "》");
 document.getElementById("ed-sml").onclick = () => edWrap("〈", "〉");
@@ -719,6 +797,19 @@ document.getElementById("ed-demo").onclick = async () => {
     for(let i = 0; i < edLines.length; i++){
       const l = edLines[i];
       if(l.k === "z"){ t += parseFloat(l.t) || 3; continue; }
+      if(l.k === "m"){  // 素材セリフ: ナレ無し・素材音声100%・テロップだけ同期表示
+        if(!l.t.trim()) continue;
+        const plain = l.t.replace(/^@\d+:\d+(\.\d+)?\s*/, "").replace(/[《》〈〉|]/g, "");
+        const d = Math.max(plain.length * 0.18, 1.0);
+        const m = l.t.match(/^@(\d+):(\d+(?:\.\d+)?)\s*/);
+        if(m){  // 素材行の@時刻=「その時刻から表示」(順方向)
+          const st = srcToTl(+m[1] * 60 + +m[2], segs);
+          if(st > t) t = st;
+        }
+        plan.push({i, start: t, d, mat: true, done: false});
+        t += d + DEMO.gap;
+        continue;
+      }
       if((l.k !== "w" && l.k !== "g") || !l.t.trim()) continue;
       const {a, d} = await vvSynth(l.t);
       const m = l.t.match(/^@(\d+):(\d+(?:\.\d+)?)\s*/);
@@ -727,7 +818,7 @@ document.getElementById("ed-demo").onclick = async () => {
         if(st < t) st = t;  // 前のナレと重なる場合は詰める
         t = st;
       }
-      plan.push({i, start: t, a, d, done: false});
+      plan.push({i, start: t, a, d, v: edVol(l), done: false});
       t += d + DEMO.gap;
     }
   }catch(e){ demoStop(); alert("音声合成に失敗しました: " + e); return; }
@@ -748,13 +839,16 @@ document.getElementById("ed-demo").onclick = async () => {
     for(const p of plan){
       if(!p.done && tl >= p.start && tl < p.start + p.d + 0.8){
         p.done = true;
+        if(p.mat){ edSel = p.i; edPrev(); continue; }  // 素材セリフ: テロップ表示のみ(音量100%)
+        p.a._v = p.v;
         demoAud.push(p.a);
         p.a.currentTime = 0; p.a.play();
         edSel = p.i; edPrev();  // プレビューのテロップも同期
       }
     }
-    const talking = demoAud.some(a => !a.paused && !a.ended);
-    ytPlayer.setVolume(talking ? 30 : 100);  // ナレ中は素材音声をダッキング
+    let vol = 100;  // ナレ中は素材音声をダッキング(行ごとの音量バーの値)
+    for(const a of demoAud) if(!a.paused && !a.ended) vol = Math.min(vol, a._v == null ? 30 : a._v);
+    ytPlayer.setVolume(vol);
   }, 100);
 };
 document.getElementById("ed-copy").onclick = () => {
@@ -767,8 +861,10 @@ document.getElementById("ed-copy").onclick = () => {
   if(Object.keys(diff).length) lines.push("@style " + JSON.stringify(diff));
   for(const l of edLines){
     if(!l.t.trim() && l.k !== "z") continue;
-    lines.push(l.k === "t" ? "!" + l.t : l.k === "g" ? "緑:" + l.t
-      : l.k === "z" ? "素材:" + l.t.trim() : l.t);
+    const vt = (l.k === "w" || l.k === "g") && edVol(l) !== 30 ? "%" + edVol(l) + " " : "";
+    lines.push(l.k === "t" ? "!" + l.t : l.k === "g" ? "緑:" + vt + l.t
+      : l.k === "m" ? "素材セリフ:" + l.t
+      : l.k === "z" ? "素材:" + l.t.trim() : vt + l.t);
   }
   const text = lines.join("\n");
   const done = () => {
@@ -1043,7 +1139,9 @@ document.getElementById("kobo-open-yt").onclick = () => {
 function looksLikeTranscript(s){
   if(!s || s.trim().length < 120) return false;
   // 自分たちの成果物を誤検知しない
-  if(/あなたはプロの放送作家|# 文字起こし|使用区間:|元動画:|@style|^!|素材:/m.test(s)) return false;
+  if(/あなたはプロの放送作家|# 文字起こし|使用区間:|元動画:|@style|^!|素材:|素材セリフ:/m.test(s)) return false;
+  // タブ区切り(スプシの台本コピー)も文字起こしではない
+  if((s.match(/\t/g) || []).length >= 3) return false;
   // タイムスタンプ((00:01)・[0:01]・行頭0:01いずれか)が5個以上あれば文字起こしとみなす
   const ts = s.match(/[\(\[\s^](\d{1,3}:\d{2})(?::\d{2})?[\)\]\s]/g);
   return !!ts && ts.length >= 5;
