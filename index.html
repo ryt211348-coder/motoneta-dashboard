@@ -1,0 +1,534 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>引用元ランキング</title>
+<meta name="robots" content="noindex">
+</head>
+<body>
+<style>
+:root{
+  --bg:#f5f6f7; --sur:#ffffff; --sur2:#eef0f2; --line:#dfe3e7;
+  --tx:#20262d; --mut:#68737e; --acc:#0e7c6b; --ok:#118a54; --warn:#b57d00; --ng:#8a93a1;
+  --hot:#d94f2b;
+}
+@media (prefers-color-scheme: dark){:root{
+  --bg:#12161b; --sur:#1b2129; --sur2:#242b35; --line:#2e3641;
+  --tx:#e7ebf0; --mut:#939eab; --acc:#4cc2ae; --ok:#3dd68c; --warn:#f0c04c; --ng:#6b7482;
+  --hot:#ff7a54;}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--tx);
+  font-family:"Hiragino Sans","Yu Gothic UI","Noto Sans JP",sans-serif;font-size:14px}
+.wrap{max-width:1100px;margin:0 auto;padding:0 12px 40px}
+header{position:sticky;top:0;z-index:20;background:var(--bg);
+  border-bottom:1px solid var(--line);padding:12px 12px 8px;margin:0 -12px 12px}
+h1{font-size:16px;font-weight:800;margin:0}
+h1 em{color:var(--acc);font-style:normal}
+.sub{color:var(--mut);font-size:11px;margin:2px 0 8px}
+input[type=search]{width:100%;padding:8px 12px;border:1px solid var(--line);border-radius:8px;
+  background:var(--sur);color:var(--tx);font-size:13px;margin:0 0 8px}
+.chips{display:flex;gap:6px;overflow-x:auto;padding-bottom:4px}
+.chips::-webkit-scrollbar{display:none}
+.chip{flex:0 0 auto;border:1px solid var(--line);background:var(--sur);color:var(--mut);
+  border-radius:99px;padding:5px 11px;font-size:12px;cursor:pointer;user-select:none}
+.chip.on{background:var(--acc);border-color:var(--acc);color:#fff;font-weight:700}
+.tbl{background:var(--sur);border:1px solid var(--line);border-radius:10px;overflow-x:auto}
+table{border-collapse:separate;border-spacing:0;width:100%;min-width:860px}
+th{font-size:10.5px;color:var(--mut);text-align:left;padding:9px 10px;
+  border-bottom:2px solid var(--line);white-space:nowrap;background:var(--sur)}
+th.ch{border-bottom-width:3px}
+td{padding:8px 10px;border-bottom:1px solid var(--line);font-size:12.5px;vertical-align:middle}
+tr.src-row{cursor:pointer}
+tr.src-row:hover td{filter:brightness(.97)}
+tr.src-row.picked td{background:color-mix(in srgb,var(--ok) 7%,transparent)}
+td.rank{font-weight:800;color:var(--mut);font-variant-numeric:tabular-nums;text-align:right;width:34px}
+tr:nth-child(-n+6) td.rank{color:var(--hot)}
+th.sticky1,td.sticky1{position:sticky;left:0;z-index:5;background:var(--sur)}
+th.sticky2,td.sticky2{position:sticky;left:44px;z-index:5;background:var(--sur);
+  border-right:1px solid var(--line);min-width:170px;max-width:230px}
+td.who .nm{font-weight:800;font-size:13px;display:flex;gap:5px;align-items:center;flex-wrap:wrap}
+td.who .nm a{color:var(--acc);text-decoration:none}
+td.who .nm a:hover{text-decoration:underline}
+td.who .yt{font-size:10.5px;color:var(--mut);overflow:hidden;text-overflow:ellipsis;
+  white-space:nowrap;max-width:210px}
+td.num{font-variant-numeric:tabular-nums;text-align:right;white-space:nowrap}
+td.num b{font-size:13.5px}
+td.cell{font-variant-numeric:tabular-nums;white-space:nowrap;min-width:96px}
+td.cell b{font-size:12.5px}
+td.cell .avg{font-size:11px;color:var(--tx);opacity:.85}
+td.cell.empty{color:var(--line);text-align:center}
+.pill{font-size:9.5px;font-weight:800;padding:2px 6px;border-radius:5px;white-space:nowrap}
+.pill.hot{background:color-mix(in srgb,var(--hot) 15%,transparent);color:var(--hot)}
+.dot{width:8px;height:8px;border-radius:2px;display:inline-block;margin-right:5px}
+.pick{width:26px;height:26px;border-radius:50%;border:2px solid var(--line);background:var(--sur);
+  color:var(--mut);font-size:13px;cursor:pointer;line-height:1}
+.pick.on{background:var(--ok);border-color:var(--ok);color:#fff}
+tr.exp-row td{background:var(--sur2);padding:6px 12px 10px}
+.vrow{display:flex;gap:8px;align-items:baseline;padding:4px 0;font-size:12px;
+  border-bottom:1px dashed var(--line)}
+.vrow:last-child{border-bottom:none}
+.vrow a{color:var(--acc);text-decoration:none;flex:1;min-width:0;overflow:hidden;
+  text-overflow:ellipsis;white-space:nowrap}
+.vrow a:hover{text-decoration:underline}
+.vrow .n{font-variant-numeric:tabular-nums;font-weight:700;flex:0 0 auto}
+.vrow .c{font-size:10.5px;flex:0 0 auto;padding:1px 6px;border-radius:4px;color:#fff}
+.more{color:var(--mut);font-size:11px;text-align:center;padding:14px}
+footer{color:var(--mut);font-size:11px;text-align:center;margin-top:20px;line-height:1.8}
+.chip:focus-visible,.pick:focus-visible{outline:2px solid var(--acc);outline-offset:2px}
+</style>
+<div class="wrap">
+<header>
+  <h1>引用元<em>ランキング</em>
+    <span style="float:right;display:flex;gap:6px">
+      <button class="chip" id="help-toggle">❓使い方</button>
+      <button class="chip" id="kobo-toggle">🎬 台本プロンプト</button>
+    </span></h1>
+  <div id="help" style="display:none;border:1px solid var(--line);border-radius:10px;
+      background:var(--sur);padding:12px 14px;margin:8px 0;font-size:12.5px;line-height:1.9">
+    <b>台本づくりの流れ(5ステップ)</b><br>
+    <b>1. ネタを選ぶ</b> — 「🎯動画ピッカー」を開く。並んでいるのは海外の元動画(日本で需要が証明済みの供給元だけ)。ジャンルで絞って、良さそうな動画の <b>✓</b> を押して着手宣言(全員に共有され、被りを防げます)<br>
+    <b>2. 解析する</b> — その行の <b>🎬</b> を押すと自動で解析が始まる(タイトル・盛り上がり・人気コメントを取得)<br>
+    <b>3. 文字起こしを貼る</b> — 自分のChromeに入れた拡張機能「<b>YouTube Summary</b>」でTranscriptをコピーして、貼り付け欄へ(YouTube公式の「文字起こしを表示」からでもOK)<br>
+    <b>4. 台本を作る</b> — 「📋 Claude用プロンプトをコピー」→ 自分のClaudeに貼るだけ。全文和訳・切り抜き提案・60秒台本・サブタイトルA/B案が出ます。<b>訴求はA案(センターピン直球)から選ぶのが基本</b><br>
+    <b>5. 編集者に渡す</b> — 台本を仕上げたら、②の欄に最終版を貼って「📋 編集指示書プロンプトをコピー」→ Claudeに貼ると「何秒を切るか」の指示書が出るので、そのまま編集者へ<br>
+    <span style="color:var(--mut)">※データは毎晩自動更新。引用元を自分で探す場合は「📊引用元ランキング」から。質問・不具合はりゅうとさんへ</span>
+  </div>
+  <div class="sub" id="upd"></div>
+  <div id="kobo" style="display:none;border:1px solid var(--line);border-radius:10px;
+      background:var(--sur);padding:10px 12px;margin-bottom:10px">
+    <div style="font-size:12px;font-weight:800;margin-bottom:6px">元動画URL → Claude用台本プロンプトを生成</div>
+    <div style="display:flex;gap:6px">
+      <input type="text" id="kobo-url" placeholder="https://www.youtube.com/watch?v=... を貼る"
+        style="flex:1;padding:8px 12px;border:1px solid var(--line);border-radius:8px;
+        background:var(--bg);color:var(--tx);font-size:13px">
+      <button class="chip" id="kobo-run" style="border-color:var(--acc);color:var(--acc);font-weight:700">解析</button>
+    </div>
+    <div id="kobo-status" style="font-size:11.5px;color:var(--mut);margin-top:6px"></div>
+    <div id="kobo-result" style="display:none;margin-top:8px">
+      <div id="kobo-meta" style="font-size:12.5px;font-weight:700"></div>
+      <div id="kobo-heat" style="font-size:11.5px;color:var(--mut);margin:4px 0"></div>
+      <div id="kobo-com" style="font-size:11px;color:var(--mut)"></div>
+      <textarea id="kobo-tr" rows="3" placeholder="ここに文字起こしを貼る → 自分のChromeに入れた拡張機能「YouTube Summary」のTranscriptコピー、またはYouTube公式の「文字起こしを表示」からコピー(タイムスタンプ付きのままでOK)"
+        style="width:100%;margin-top:8px;padding:8px 10px;border:1px solid var(--line);
+        border-radius:8px;background:var(--bg);color:var(--tx);font-size:12px;resize:vertical"></textarea>
+      <div id="kobo-trstat" style="font-size:10.5px;color:var(--mut);margin-top:2px"></div>
+      <button class="chip" id="kobo-copy" style="margin-top:8px;background:var(--acc);
+        border-color:var(--acc);color:#fff;font-weight:800;padding:8px 16px">
+        📋 Claude用プロンプトをコピー</button>
+      <span id="kobo-copied" style="font-size:11px;color:var(--ok);margin-left:8px"></span>
+      <div style="font-size:10.5px;color:var(--mut);margin-top:6px">
+        コピーしたら自分のClaudeに貼るだけ → 全文和訳(圧縮前)・切り抜き提案・60秒台本(圧縮後)・サブタイA/B案が出ます</div>
+      <div style="border-top:1px dashed var(--line);margin-top:10px;padding-top:8px">
+        <div style="font-size:12px;font-weight:800;margin-bottom:4px">② 台本が完成したら → 編集者向け指示書</div>
+        <textarea id="kobo-script" rows="3" placeholder="完成した台本(修正後の最終版)をここに貼る"
+          style="width:100%;padding:8px 10px;border:1px solid var(--line);border-radius:8px;
+          background:var(--bg);color:var(--tx);font-size:12px;resize:vertical"></textarea>
+        <button class="chip" id="kobo-edcopy" style="margin-top:6px;font-weight:700">
+          📋 編集指示書プロンプトをコピー</button>
+        <span id="kobo-edcopied" style="font-size:11px;margin-left:8px"></span>
+        <div style="font-size:10.5px;color:var(--mut);margin-top:4px">
+          Claudeに貼ると、最終台本と文字起こしを突き合わせた「何秒を切るか」の指示書が出ます(そのまま編集者へ)</div>
+      </div>
+    </div>
+  </div>
+  <div class="chips" style="margin-bottom:6px">
+    <button class="chip on" id="tab-rank">📊 引用元ランキング</button>
+    <button class="chip" id="tab-pick">🎯 動画ピッカー</button>
+  </div>
+  <input type="search" id="q" placeholder="検索">
+  <div class="chips" id="chips"></div>
+</header>
+<div id="view-rank">
+<div class="tbl"><table>
+  <thead id="thead"></thead>
+  <tbody id="tbody"></tbody>
+</table></div>
+<div class="more" id="more"></div>
+</div>
+<div id="view-pick" style="display:none">
+  <div class="sub" style="margin:0 0 8px">ここに並ぶのは<b>海外の一次素材そのもの</b>(日本の競合で需要が証明された引用元チャンネルの人気動画)。「需要の証明」= その引用元から日本の競合が出した本数と最大再生。🎬を押すとそのまま台本プロンプト工房に入ります。</div>
+  <div class="tbl"><table style="min-width:720px">
+    <thead><tr><th></th><th>✓</th><th>海外素材(元動画)</th><th style="text-align:right">素材の再生数</th>
+      <th>需要の証明(日本側)</th><th>ジャンル</th></tr></thead>
+    <tbody id="pick-body"></tbody>
+  </table></div>
+  <div class="more" id="pick-more"></div>
+</div>
+<footer>セル＝本数と平均再生(色が濃いほど伸びてる)。行タップ→使われた動画。✓＝着手マーク(全員に共有)。</footer>
+</div>
+<script>
+const API = "https://script.google.com/macros/s/AKfycbzRbrv9of3ZFrN0I4UYd0Ufi8O0PORkTPJwWqrJ4a44bPiodWNq64iiiaMOD3I1D-_O/exec";
+window.onerror = function(msg, src, line, col){
+  var el = document.getElementById("upd");
+  if(el) el.textContent = "⚠️JSエラー: " + msg + " (line " + line + ":" + col + ")";
+  return false;
+};
+// GAS埋め込み画面ではリンクの通常遷移が事故るため、外部リンクは必ずwindow.openで開く
+document.addEventListener("click", e => {
+  const a = e.target.closest("a[href^='http']");
+  if(a){ e.preventDefault(); e.stopPropagation(); window.open(a.href, "_blank", "noopener"); }
+}, true);
+let KNOWHOW = "";
+let D = {};
+let SRC = [], KPI = {}, SV = {}, CHS = [];
+let picked = new Set();
+const CH_RGB = [[63,142,217],[209,73,91],[57,168,143],[217,160,63],[122,88,201]];
+const rgb = i => CH_RGB[((i % CH_RGB.length) + CH_RGB.length) % CH_RGB.length].join(",");
+const fmt = v => v >= 1e8 ? (v/1e8).toFixed(1).replace(/\.0$/,"") + "億"
+  : v >= 1e4 ? Math.round(v/1e4) + "万" : (v||0).toLocaleString();
+const isHot = s => s.avg >= 1e6 && Object.keys(s.bd).length === 1;
+let sort = "平均", minN = 2, minAvg = 3e6, ytOnly = false, hotOnly = false,
+    pickedOnly = false, allCols = false, limit = 300;
+const CHIP_DEFS = [
+  ["平均順", () => sort = "平均"], ["本数順", () => sort = "本数"], ["最大順", () => sort = "最大"],
+  ["300万+", () => minAvg = minAvg ? 0 : 3e6],
+  ["2本+", () => minN = minN === 2 ? 1 : 2],
+  ["リンクあり", () => ytOnly = !ytOnly],
+  ["🔥", () => hotOnly = !hotOnly],
+  ["✓のみ", () => pickedOnly = !pickedOnly],
+  ["全列表示", () => allCols = !allCols],
+];
+const chipOn = l => (l.endsWith("順") && l.startsWith(sort)) ||
+  (l === "300万+" && minAvg > 0) || (l === "2本+" && minN === 2) ||
+  (l === "リンクあり" && ytOnly) || (l === "🔥" && hotOnly) ||
+  (l === "✓のみ" && pickedOnly) || (l === "全列表示" && allCols);
+let chTotals = {};
+let CH_RANKED = [];
+function initRankDerived(){
+chTotals = {};
+for(const s of SRC) for(const [ch, b] of Object.entries(s.bd)) chTotals[ch] = (chTotals[ch] || 0) + b[0];
+CH_RANKED = [...CHS].sort((a,b) => (chTotals[b] || 0) - (chTotals[a] || 0));
+}
+function render(){
+  const shows = allCols ? CH_RANKED : CH_RANKED.slice(0, 10);
+  const rest = CH_RANKED.slice(shows.length);
+  document.getElementById("thead").innerHTML = `<tr>
+    <th class="sticky1"></th><th class="sticky2">引用元アカウント</th>
+    <th style="text-align:right">平均再生</th><th style="text-align:right">合計</th>
+    ${shows.map(c => `<th class="ch" style="border-bottom-color:rgb(${rgb(CHS.indexOf(c))})">
+      <span class="dot" style="background:rgb(${rgb(CHS.indexOf(c))})"></span>@${c}</th>`).join("")}
+    ${rest.length ? `<th>他${rest.length}ch</th>` : ""}<th>✓</th></tr>`;
+  const el = document.getElementById("chips"); el.innerHTML = "";
+  for(const [label, fn] of CHIP_DEFS){
+    const b = document.createElement("button");
+    b.className = "chip" + (chipOn(label) ? " on" : ""); b.textContent = label;
+    b.onclick = () => {fn(); limit = 300; render();}; el.appendChild(b);
+  }
+  const q = document.getElementById("q").value.trim().toLowerCase();
+  const list = SRC
+    .filter(s => s.n >= minN && s.avg >= minAvg && (!ytOnly || s.u) &&
+      (!hotOnly || isHot(s)) && (!pickedOnly || picked.has(s.k)) &&
+      (!q || (s.c + s.y).toLowerCase().includes(q)))
+    .sort((a,b) => sort === "本数" ? b.n - a.n : sort === "最大" ? b.mx - a.mx : b.avg - a.avg);
+  const tb = document.getElementById("tbody"); tb.innerHTML = "";
+  list.slice(0, limit).forEach((s, i) => {
+    const PLAT = {YT: "YouTube", TT: "TikTok", IG: "Instagram"};
+    const name = s.u
+      ? `<a href="${s.u}" target="_blank" rel="noopener" onclick="event.stopPropagation()">${s.c} ↗</a>`
+      : `<span style="color:var(--mut)">${s.c}</span>`;
+    const yt = s.u ? `${PLAT[s.p] || ""}${s.s ? " ・ " + fmt(s.s) + "人" : ""}` : "";
+    let cells = shows.map(ch => {
+      const b = s.bd[ch];
+      if(!b) return `<td class="cell empty">—</td>`;
+      const alpha = Math.min(.42, .06 + b[1] / 2e7 * .4);
+      return `<td class="cell" style="background:rgba(${rgb(CHS.indexOf(ch))},${alpha.toFixed(2)})"
+        title="@${ch}: ${b[0]}本 / 平均${fmt(b[1])} / 最大${fmt(b[2])}">
+        <b>${b[0]}本</b> <span class="avg">${fmt(b[1])}</span></td>`;
+    }).join("");
+    if(rest.length){
+      const rb = rest.map(ch => s.bd[ch]).filter(Boolean);
+      if(rb.length){
+        const n = rb.reduce((a,b)=>a+b[0],0);
+        const avg = Math.round(rb.reduce((a,b)=>a+b[0]*b[1],0) / n);
+        cells += `<td class="cell" title="${rest.filter(ch=>s.bd[ch]).map(ch=>`@${ch}:${s.bd[ch][0]}本`).join(" ")}">
+          <b>${n}本</b> <span class="avg">${fmt(avg)}</span></td>`;
+      } else cells += `<td class="cell empty">—</td>`;
+    }
+    const tr = document.createElement("tr");
+    tr.className = "src-row" + (picked.has(s.k) ? " picked" : "");
+    tr.innerHTML = `<td class="rank sticky1">${i + 1}</td>
+      <td class="who sticky2"><div class="nm">${name}${isHot(s) ? ` <span class="pill hot">🔥</span>` : ""}</div>
+        ${yt ? `<div class="yt">${yt}</div>` : ""}</td>
+      <td class="num"><b>${fmt(s.avg)}</b></td><td class="num">${s.n}本</td>${cells}
+      <td><button class="pick${picked.has(s.k) ? " on" : ""}" aria-label="着手マーク">✓</button></td>`;
+    const ex = document.createElement("tr");
+    ex.className = "exp-row"; ex.style.display = "none";
+    ex.innerHTML = `<td colspan="${5 + shows.length + (rest.length ? 1 : 0)}">${(SV[s.k] || []).map(v => `
+      <div class="vrow"><span class="c" style="background:rgb(${rgb(CHS.indexOf(v.ch))})">${v.ch}</span>
+      <a href="https://www.youtube.com/watch?v=${v.id}" target="_blank" rel="noopener">${v.t}</a>
+      <span class="n">${fmt(v.v)}</span></div>`).join("")}</td>`;
+    tr.onclick = () => ex.style.display = ex.style.display === "none" ? "" : "none";
+    tr.querySelector(".pick").onclick = ev => {
+      ev.stopPropagation();
+      const on = !picked.has(s.k);
+      on ? picked.add(s.k) : picked.delete(s.k);
+      ev.target.classList.toggle("on", on);
+      tr.classList.toggle("picked", on);
+      fetch(`${API}?api=check&key=${encodeURIComponent(s.k)}&on=${on?1:0}`).catch(()=>{});
+    };
+    tb.appendChild(tr); tb.appendChild(ex);
+  });
+  const more = document.getElementById("more");
+  more.textContent = list.length > limit ? `さらに表示 (残り${list.length - limit}件)` : `${list.length}件表示中`;
+  more.style.cursor = list.length > limit ? "pointer" : "default";
+  more.onclick = () => {if(list.length > limit){limit += 300; render();}};
+  document.getElementById("upd").textContent =
+    `解析 ${KPI.ocr || 0}/${KPI.total || 0}本 ・ 引用元${SRC.length}件 ・ 更新 ${D.updated || "-"} ・ ✓${picked.size}`;
+}
+// ===== 動画ピッカー(海外の一次素材) =====
+let SM = [];
+let view = "rank", pickGenre = "全部", pickSort = "インパクト順", pickLimit = 100;
+let genreDemand = {}, GENRES_SORTED = [];
+function initPickDerived(){
+  genreDemand = {};
+  const acc = {};
+  for(const x of SM){ (acc[x.g] = acc[x.g] || []).push(x.jm); }
+  for(const g in acc) genreDemand[g] = acc[g].reduce((a,b)=>a+b,0) / acc[g].length;
+  GENRES_SORTED = Object.keys(genreDemand).sort((a,b) => genreDemand[b] - genreDemand[a]);
+}
+function sendToKobo(vid){
+  document.getElementById("kobo").style.display = "";
+  document.getElementById("kobo-url").value = "https://www.youtube.com/watch?v=" + vid;
+  window.scrollTo({top: 0, behavior: "smooth"});
+  document.getElementById("kobo-run").click();
+}
+function renderPick(){
+  const el = document.getElementById("chips"); el.innerHTML = "";
+  const sortBtn = document.createElement("button");
+  sortBtn.className = "chip on";
+  sortBtn.textContent = pickSort;
+  sortBtn.onclick = () => {pickSort = pickSort === "インパクト順" ? "需要順" : pickSort === "需要順" ? "素材再生順" : "インパクト順"; renderPick();};
+  el.appendChild(sortBtn);
+  for(const g of ["全部", ...GENRES_SORTED]){
+    const b = document.createElement("button");
+    b.className = "chip" + (g === pickGenre ? " on" : "");
+    b.textContent = g;
+    b.onclick = () => {pickGenre = g; pickLimit = 100; renderPick();};
+    el.appendChild(b);
+  }
+  const q = document.getElementById("q").value.trim().toLowerCase();
+  const list = SM.filter(x => (pickGenre === "全部" || x.g === pickGenre) &&
+      (!q || (x.t + x.c).toLowerCase().includes(q)))
+    .sort((a,b) => pickSort === "インパクト順" ? ((b.im||0) - (a.im||0) || b.v - a.v) : pickSort === "需要順" ? (b.jm - a.jm || b.v - a.v) : (b.v - a.v));
+  const tb = document.getElementById("pick-body"); tb.innerHTML = "";
+  for(const x of list.slice(0, pickLimit)){
+    const key = "v:" + x.id;
+    const dur = x.d ? (x.d >= 60 ? `${Math.floor(x.d/60)}分${x.d%60}秒` : `${x.d}秒`) : "";
+    const tr = document.createElement("tr");
+    if(picked.has(key)) tr.style.opacity = ".45";
+    tr.innerHTML = `
+      <td><button class="chip" style="border-color:var(--acc);color:var(--acc);font-weight:800;padding:4px 9px">🎬</button></td>
+      <td><button class="pick${picked.has(key) ? " on" : ""}" aria-label="着手">✓</button></td>
+      <td><a href="https://www.youtube.com/watch?v=${x.id}"
+        style="color:var(--tx);text-decoration:none;font-weight:700">${(x.im||0) >= 0.95 ? "⚡" : ""}${x.t}</a>
+        <div style="font-size:10.5px;color:var(--mut)">${x.c}${dur ? " ・ " + dur : ""}${x.s ? " ・ " + fmt(x.s) + "人" : ""}</div></td>
+      <td class="num"><b>${fmt(x.v)}</b></td>
+      <td style="font-size:11px;white-space:nowrap">最大<b>${fmt(x.jm)}</b> ・ ${x.jn}本</td>
+      <td style="font-size:11.5px;white-space:nowrap">${x.g}</td>`;
+    tr.children[0].firstElementChild.onclick = ev => { ev.stopPropagation(); sendToKobo(x.id); };
+    tr.querySelector(".pick").onclick = ev => {
+      ev.stopPropagation();
+      const on = !picked.has(key);
+      on ? picked.add(key) : picked.delete(key);
+      ev.target.classList.toggle("on", on);
+      tr.style.opacity = on ? ".45" : "";
+      fetch(`${API}?api=check&key=${encodeURIComponent(key)}&on=${on?1:0}`).catch(()=>{});
+    };
+    tb.appendChild(tr);
+  }
+  const more = document.getElementById("pick-more");
+  more.textContent = SM.length === 0 ? "素材を収集中です(数時間後に自動反映)" :
+    list.length > pickLimit ? `さらに表示 (残り${list.length - pickLimit}件)` : `${list.length}件表示中`;
+  more.style.cursor = list.length > pickLimit ? "pointer" : "default";
+  more.onclick = () => {if(list.length > pickLimit){pickLimit += 100; renderPick();}};
+}
+function switchView(v){
+  view = v;
+  document.getElementById("view-rank").style.display = v === "rank" ? "" : "none";
+  document.getElementById("view-pick").style.display = v === "pick" ? "" : "none";
+  document.getElementById("tab-rank").classList.toggle("on", v === "rank");
+  document.getElementById("tab-pick").classList.toggle("on", v === "pick");
+  v === "rank" ? render() : renderPick();
+}
+document.getElementById("tab-rank").onclick = () => switchView("rank");
+document.getElementById("tab-pick").onclick = () => switchView("pick");
+document.getElementById("q").oninput = () => {
+  limit = 300; pickLimit = 100;
+  view === "rank" ? render() : renderPick();
+};
+// 起動: 重いデータは表示後にサーバーから取得(巨大ページ埋め込みを回避)
+function b64decode(b64){
+  return new TextDecoder().decode(Uint8Array.from(atob(b64), c => c.charCodeAt(0)));
+}
+document.getElementById("upd").textContent = "データ読み込み中…";
+Promise.all([
+  fetch("data.json", {cache: "no-cache"}).then(r => r.json()),
+  fetch(API + "?api=checks").then(r => r.json()).catch(() => ({checks: []})),
+]).then(([data, ck]) => {
+  D = data;
+  KNOWHOW = data.kh || "";
+  picked = new Set(ck.checks || []);
+  SRC = D.src || []; KPI = D.kpi || {}; SV = D.sv || {}; CHS = D.chs || []; SM = D.sm || [];
+  initRankDerived();
+  initPickDerived();
+  render();
+}).catch(e => {
+  document.getElementById("upd").textContent = "データ読み込みエラー: " + e + " (リロードしてください)";
+});
+
+// ===== 台本プロンプト工房 =====
+let prep = null;
+document.getElementById("kobo-toggle").onclick = () => {
+  const k = document.getElementById("kobo");
+  k.style.display = k.style.display === "none" ? "" : "none";
+};
+document.getElementById("help-toggle").onclick = () => {
+  const h = document.getElementById("help");
+  h.style.display = h.style.display === "none" ? "" : "none";
+};
+document.getElementById("kobo-run").onclick = () => {
+  const url = document.getElementById("kobo-url").value.trim();
+  if(!url) return;
+  document.getElementById("kobo-status").textContent = "解析中…(20〜40秒かかります)";
+  document.getElementById("kobo-result").style.display = "none";
+  fetch(API + "?prep=" + encodeURIComponent(url)).then(r => r.json()).then(p => {
+    prep = p;
+    document.getElementById("kobo-status").textContent = p.errors.length ? "注意: " + p.errors.join(" / ") : "";
+    document.getElementById("kobo-meta").textContent =
+      `${p.title} ・ ${p.author} ・ ${fmt(p.views)}再生` +
+      (p.transcript.length ? ` ・ 字幕${p.transcript.length}行` :
+       " ・ ⚠️字幕は自動取得不可→プロンプト内の指示に従いYouTubeからコピペ");
+    document.getElementById("kobo-heat").textContent = p.heat.length
+      ? "🔥盛り上がり: " + p.heat.map(h => `${h.from}〜${h.to}(${h.score})`).join(" / ")
+      : "盛り上がりデータなし";
+    document.getElementById("kobo-com").textContent = p.comments.length
+      ? `💬人気コメント${p.comments.length}件取得: 「${p.comments[0].t.slice(0,60)}…」`
+      : "コメント取得なし";
+    document.getElementById("kobo-result").style.display = "";
+  }).catch(e => {
+    document.getElementById("kobo-status").textContent = "エラー: " + e;
+  });
+};
+function normalizeManualTr(raw){
+  // YouTube公式パネル(タイムスタンプ行+本文行)にも、YouTube Summary等の拡張((00:00) 本文)にも対応
+  const lines = raw.split(/\n+/).map(l => l.trim()).filter(Boolean);
+  const out = [];
+  let ts = "";
+  for(const l of lines){
+    const solo = l.match(/^[\(\[]?(\d{1,3}:\d{2}(?::\d{2})?)[\)\]]?$/);
+    if(solo){ ts = solo[1]; continue; }
+    const inline = l.match(/^[\(\[]?(\d{1,3}:\d{2}(?::\d{2})?)[\)\]]?\s+(.+)$/);
+    if(inline){ out.push(`[${inline[1]}] ${inline[2]}`); ts = ""; continue; }
+    out.push(ts ? `[${ts}] ${l}` : l);
+    ts = "";
+  }
+  return out.join("\n");
+}
+function transcriptText(){
+  if(prep && prep.transcript.length) return prep.transcript.join("\n");
+  const manual = document.getElementById("kobo-tr").value.trim();
+  if(manual) return normalizeManualTr(manual);
+  return "【未貼付】(YouTubeの「文字起こしを表示」からコピーして、ダッシュボードの貼り付け欄に入れてからコピーし直してください)";
+}
+function buildPrompt(p){
+  const heat = p.heat.length
+    ? p.heat.map(h => `- ${h.from}〜${h.to} (熱量${h.score}/1.0)`).join("\n")
+    : "(データなし)";
+  const coms = p.comments.length
+    ? p.comments.map(c => `- ${c.t}${c.like ? ` (👍${c.like})` : ""}`).join("\n")
+    : "(取得なし)";
+  return `あなたはプロの放送作家。海外バズ動画を日本向け60秒ショート動画に凝縮する専門家です。
+以下の素材を使って、手順どおりに台本を作ってください。
+
+# 元動画
+- タイトル: ${p.title}
+- チャンネル: ${p.author}
+- 再生数: ${p.views.toLocaleString()} / 長さ: ${Math.floor(p.length/60)}分${p.length%60}秒
+- URL: https://www.youtube.com/watch?v=${p.vid}
+
+# 再生バーの盛り上がりポイント(視聴者が繰り返し見た場所=訴求の核)
+${heat}
+
+# 人気コメント(視聴者が何に反応したか)
+${coms}
+
+# 文字起こし(原語)
+${transcriptText()}
+
+# 厳格ルール(必ず守る)
+- 上の文字起こしが【未貼付】のままの場合、台本は一切作らず「文字起こしを貼ってください」とだけ返すこと
+- タイトル・コメント・盛り上がりからの推測でストーリーや台詞を創作することを禁止する。台本の内容は必ず文字起こしに書かれていることだけから作る
+
+${KNOWHOW}
+`;
+}
+document.getElementById("kobo-tr").oninput = () => {
+  const n = document.getElementById("kobo-tr").value.trim().length;
+  document.getElementById("kobo-trstat").textContent =
+    n ? `文字起こし ${n.toLocaleString()}文字 → プロンプトに合体されます` : "";
+};
+document.getElementById("kobo-copy").onclick = () => {
+  if(!prep) return;
+  const noTr = !prep.transcript.length && !document.getElementById("kobo-tr").value.trim();
+  const text = buildPrompt(prep);
+  const done = () => {
+    const el = document.getElementById("kobo-copied");
+    el.style.color = noTr ? "var(--hot)" : "var(--ok)";
+    el.textContent = noTr
+      ? "コピーしましたが文字起こしが未貼付です(上の欄に貼って再コピー推奨)"
+      : "コピーしました。Claudeに貼ってください";
+    setTimeout(() => el.textContent = "", 6000);
+  };
+  if(navigator.clipboard && navigator.clipboard.writeText){
+    navigator.clipboard.writeText(text).then(done).catch(() => fallbackCopy(text, done));
+  } else fallbackCopy(text, done);
+};
+function buildEditorPrompt(p, script){
+  return `あなたは動画編集の進行管理者。以下の「完成台本」と「元動画の文字起こし」を突き合わせて、編集者向けのカット指示書を作ってください。
+
+# 元動画
+- タイトル: ${p.title}
+- URL: https://www.youtube.com/watch?v=${p.vid}
+
+# 完成台本(これが最終版。内容の変更・提案は不要)
+${script}
+
+# 文字起こし(タイムスタンプ付き)
+${transcriptText()}
+
+# 出力ルール
+- 出力はコードブロック1つだけ。前置き・解説は書かない
+- 1行目: 元動画URL / 2行目: サブタイトル(台本にあれば)
+- 以降、台本の進行順に「開始-終了 | 映像の内容 | 台本の該当セリフ(先頭10字)」の表
+- 秒数は文字起こしのタイムスタンプから該当発話を特定して決める。セリフのない映像だけの箇所も台本の流れから区間を提案する
+- 編集者がこの表だけを見てそのまま切れる粒度で書く
+- 台本にあるのに元動画に対応箇所が見つからない行は「※要確認」と付けて残す`;
+}
+document.getElementById("kobo-edcopy").onclick = () => {
+  const script = document.getElementById("kobo-script").value.trim();
+  const el = document.getElementById("kobo-edcopied");
+  if(!prep){ el.style.color = "var(--hot)"; el.textContent = "先に①でURLを解析してください"; return; }
+  if(!script){ el.style.color = "var(--hot)"; el.textContent = "完成台本を貼ってください"; return; }
+  const noTr = !prep.transcript.length && !document.getElementById("kobo-tr").value.trim();
+  const done = () => {
+    el.style.color = noTr ? "var(--hot)" : "var(--ok)";
+    el.textContent = noTr ? "コピーしましたが文字起こしが未貼付です(秒数の精度が落ちます)"
+                          : "コピーしました。Claudeに貼ってください";
+    setTimeout(() => el.textContent = "", 6000);
+  };
+  const text = buildEditorPrompt(prep, script);
+  if(navigator.clipboard && navigator.clipboard.writeText){
+    navigator.clipboard.writeText(text).then(done).catch(() => fallbackCopy(text, done));
+  } else fallbackCopy(text, done);
+};
+function fallbackCopy(text, done){
+  const ta = document.createElement("textarea");
+  ta.value = text; ta.style.position = "fixed"; ta.style.opacity = "0";
+  document.body.appendChild(ta); ta.select();
+  document.execCommand("copy"); document.body.removeChild(ta); done();
+}
+</script>
+
+</body>
+</html>
