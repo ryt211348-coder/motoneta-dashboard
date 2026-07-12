@@ -149,12 +149,13 @@ footer{color:var(--mut);font-size:11px;text-align:center;margin-top:20px;line-he
     <b>3. 文字起こし</b> — 「📺文字起こしを開く」→ YouTubeで拡張機能「<b>YouTube Summary</b>」のCopy transcriptを押す → このタブに戻るだけ(自動取り込み・貼り付け不要。初回だけChromeが権限を聞くので「許可」)。YouTube公式の「文字起こしを表示」からのコピーでもOK<br>
     <b>4. 台本を作る</b> — 「📋 Claude用プロンプトをコピー」→ 自分のClaudeに貼るだけ。全文和訳・切り抜き提案・60秒台本・サブタイトルA/B案が出ます。<b>訴求はA案(センターピン直球)から選ぶのが基本</b>。セリフがほぼ無い素材は「🎞ストーリーボード画像」も一緒にClaudeへ貼る<br>
     <b>5. 編集者に渡す場合</b> — ②の欄に最終台本を貼って「📋 編集指示書プロンプトをコピー」→ Claudeに貼ると「何秒を切るか」の指示書が出るので、そのまま編集者へ。<b>自分で動画まで仕上げる場合は下の🅑へ</b><br>
+    <b>5+. 素材動画のダウンロード</b> — プレイヤーの「<b>⬇素材DL</b>」でURLがコピーされ、<a href="https://www.litexmedia.com/mhdownload.html" target="_blank">MediaHuman YouTube Downloader</a>が起動していれば自動で追加されます。<b>⚠️全部mp3(音声だけ)になる場合はMediaHumanの環境設定で「形式」がMP3になっているのが原因</b>。「オリジナル」または「MP4」・品質=最高に設定してください<br>
     <div style="border-top:1px dashed var(--line);margin:8px 0 6px"></div>
     <b style="font-size:13px">🅑 動画に仕上げる(カット→テロップ→デモ試聴→Premiere)</b><br>
     <b>6. 使う区間を決める</b> — 右のプレイヤーで再生しながら「<b>✂IN</b>」→「<b>→OUT</b>」で使う区間を登録(複数OK・登録順につながります)。▶で頭出し、✕で削除。決まったら「<b>📋カット表コピー</b>」<br>
-    <b>7. テロップ台本を入れる</b> — 「<b>📝テロップ編集</b>」を開き、Claudeが出した台本を1行=1テロップで入力。行の種類は各行のチップで切替: <b>タイトル</b>(全編表示)・<b>ナレ</b>(白・めたんが読む)・<b>緑</b>(めたんが読む)・<b>素材</b>(素材セリフ=ナレ無し・素材音声100%でテロップだけ出す)・<b>間</b>(ナレ無しで聞かせる秒数)。ナレ行の<b>🔉スライダー</b>=そのナレ中の素材音量(ダッキング量)。スプシに台本がある場合はA〜C列(種別・セリフ・素材時刻)をコピーして「<b>📥スプシ取り込み</b>」で一括変換(C列の時刻は@アンカーとして自動付与)。テキスト選択→「《大きく》」で部分強調、「|」で改行<br>
+    <b>7. テロップ台本を入れる</b> — 「<b>📝テロップ編集</b>」を開き、Claudeが出した台本を1行=1テロップで入力。行の種類は各行のチップで切替: <b>タイトル</b>(全編表示)・<b>ナレ</b>(白・めたんが読む)・<b>緑</b>(めたんが読む)・<b>素材</b>(素材セリフ=ナレ無し・素材音声100%でテロップだけ出す)・<b>間</b>(ナレ無しで聞かせる秒数)。ナレ行の<b>🔉スライダー</b>=そのナレ中の素材音量(ダッキング量)。<b>SE</b>行=効果音(名前を候補から選ぶ・⏱で鳴らす時刻・A3に配置)。コマ送りがある動画は「🎬シーン切替」の時刻チップからSE行をワンタップ追加。スプシに台本がある場合はA〜C列(種別・セリフ・素材時刻)をコピーして「<b>📥スプシ取り込み</b>」で一括変換(C列の時刻は@アンカーとして自動付与)。テキスト選択→「《大きく》」で部分強調、「|」で改行<br>
     <b>8. ナレのタイミング合わせ</b> — 素材のセリフ(叫び声・会話など)の頭で動画を一時停止 → その直前に言い終わってほしいセリフ行をクリック → 「<b>⏱ここまでに言い終わる</b>」。行頭に@時刻が付き、ナレが自動で逆算配置されます<br>
-    <b>9. デモ再生で確認</b> — 「<b>▶デモ再生</b>」で、めたんナレ+カット+テロップを本番とほぼ同じ状態で試聴(ナレ中は素材音声が自動で小さくなります)。※要VOICEVOX: Macのターミナルで <code>tools/macos-arm64/run --cors_policy_mode all</code> を起動しておく(「address already in use」と出たら既に起動済みなのでそのままでOK。無いPCはこのステップを飛ばしてOK)<br>
+    <b>9. デモ再生で確認</b> — 「<b>▶デモ再生</b>」で、めたんナレ+カット+テロップ+SEを本番とほぼ同じ状態で試聴(ナレ中は素材音声が🔉の値まで自動で小さくなります)。SEの音はSEライブラリのあるMacでのみ鳴ります(<code>python3 scripts/se_server.py</code>・make_edit.py実行時は自動起動)。※要VOICEVOX: Macのターミナルで <code>tools/macos-arm64/run --cors_policy_mode all</code> を起動しておく(「address already in use」と出たら既に起動済みなのでそのままでOK。無いPCはこのステップを飛ばしてOK)<br>
     <b>10. Premiere用に書き出す(Macの管理者)</b> — 「📋カット表コピー」した状態で、テロップ編集の「<b>📋台本をコピー</b>」→ 台本.txtに保存 → ターミナルで <code>python3 scripts/make_edit.py -s 台本.txt</code> → デスクトップの「元ネタ編集」フォルダにXML一式が生成 → Premiereで「ファイル→読み込み」でほぼ完成形(V1素材/V2セリフ/V3タイトル/A1素材音声/A2めたんナレ)。A1にはナレ中のダッキング(音量バーの値)とカット点の30msフェードが音量キーフレームで焼き込み済み。素材セリフの時刻一覧「素材セリフ.txt」も自動生成されるので@アンカーの下調べにも使えます<br>
     <span style="color:var(--mut)">※データは毎晩自動更新。引用元を自分で探す場合は「📊引用元ランキング」から</span>
   </div>
@@ -246,8 +247,11 @@ footer{color:var(--mut);font-size:11px;text-align:center;margin-top:20px;line-he
     <button class="chip" id="p-ed">📝 テロップ編集</button>
     <button class="chip" id="p-sb" style="display:none">🎞 コマ送り</button>
     <button class="chip" id="p-yt">YouTubeで開く ↗</button>
+    <button class="chip" id="p-dl" title="動画URLをコピーします。MediaHuman YouTubeダウンローダーが起動していれば自動で追加されます">⬇ 素材DL</button>
     <button class="chip" id="p-close">✕ 閉じる</button>
   </div>
+  <div id="p-dl-hint" style="display:none;font-size:10.5px;color:var(--mut);margin-top:6px;
+    border:1px solid var(--line);border-radius:8px;padding:8px 10px;line-height:1.8"></div>
   <div id="segwrap" style="display:none">
     <div class="pbtns" style="margin-top:10px">
       <button class="chip" id="seg-in" style="font-weight:800;border-color:var(--hot);color:var(--hot)">✂ IN</button>
@@ -288,6 +292,9 @@ footer{color:var(--mut);font-size:11px;text-align:center;margin-top:20px;line-he
         ナレ行の🔉=そのナレ中の素材音量。テキストを選択して「大きく/小さく」で部分強調。
         動画を素材セリフの頭で止めて<b>⏱</b>を押すと行頭に@時刻が付き、ナレ行は「その直前に言い終わる」逆算配置・素材行は「その時刻から表示」になります</div>
       <div id="ed-rows"></div>
+      <datalist id="se-list"></datalist>
+      <div id="ed-scenes" style="display:none;font-size:10.5px;color:var(--mut);margin:6px 0;line-height:2">
+        🎬 シーン切替(SEの置きどころ候補・タップでSE行を追加):<span id="ed-scenes-chips"></span></div>
       <div style="display:flex;gap:6px;margin:8px 0;flex-wrap:wrap">
         <button class="chip" id="ed-add">＋ 行を追加</button>
         <button class="chip" id="ed-sheet" title="スプシでA〜C列(種別・セリフ・素材時刻)の範囲をコピーしてから押すと台本へ一括変換。女性ナレーション→ナレ/素材→素材セリフ/サブタイトル連続行→タイトル。C列の時刻は@アンカーとして自動付与">📥 スプシ取り込み</button>
@@ -497,6 +504,7 @@ function playInline(vid, title, sub, isShort){
   document.getElementById("ptitle").textContent = title || "";
   document.getElementById("psub").textContent = sub || "";
   document.getElementById("pbtns").style.display = "";
+  document.getElementById("p-dl-hint").style.display = "none";
   document.getElementById("segwrap").style.display = "";
   segIn = null; updateSegBtn(); renderSegs();
   // ストーリーボードがあればボタンを出す
@@ -508,6 +516,7 @@ function playInline(vid, title, sub, isShort){
 }
 document.getElementById("p-close").onclick = () => {
   playVid = null;
+  document.getElementById("p-dl-hint").style.display = "none";
   if(ytPlayer && ytPlayer.stopVideo) ytPlayer.stopVideo();
   document.getElementById("pframe").style.display = "none";
   const box = document.getElementById("pbox");
@@ -522,6 +531,23 @@ document.getElementById("p-yt").onclick = () => {
   if(playVid) window.open("https://www.youtube.com/watch?v=" + playVid, "_blank", "noopener");
 };
 document.getElementById("p-kobo").onclick = () => { if(playVid) sendToKobo(playVid); };
+// ⬇素材DL: URLコピー→MediaHumanのクリップボード監視が自動で拾う
+document.getElementById("p-dl").onclick = () => {
+  if(!playVid) return;
+  const url = "https://www.youtube.com/watch?v=" + playVid;
+  const hint = document.getElementById("p-dl-hint");
+  const show = ok => {
+    hint.style.display = "block";
+    hint.innerHTML = (ok ? "✔ <b>動画URLをコピーしました</b> — MediaHuman YouTubeダウンローダーが起動していれば自動で追加されます(されない場合はアプリの＋にペースト)。"
+      : `コピーに失敗しました。このURLを手動でMediaHumanに貼ってください: ${url}<br>`) +
+      `<br>🔧 <b>初回セットアップ</b>: <a href="https://www.litexmedia.com/mhdownload.html" target="_blank">MediaHuman YouTube Downloaderを入れる</a> → 環境設定で
+      <b>形式=「オリジナル」または「MP4」・品質=最高</b> にする<br>
+      ⚠️ <b>全部mp3(音声だけ)になる人へ</b>: MediaHumanの「形式」が<b>MP3</b>になっています。MP3設定だと全動画が音声に変換されるので、「オリジナル」/「MP4」に戻してください`;
+  };
+  if(navigator.clipboard && navigator.clipboard.writeText)
+    navigator.clipboard.writeText(url).then(() => show(true)).catch(() => show(false));
+  else show(false);
+};
 // --- URL直貼りで任意の動画を開く(リスト外の拾い物対応) ---
 function parseYtUrl(u){
   const m = u.match(/(?:watch\?v=|youtu\.be\/|shorts\/|embed\/)([\w-]{6,})/) ||
@@ -578,7 +604,37 @@ function edOpen(vid, title){
   document.getElementById("edcv-bg").style.backgroundImage =
     `url(https://i.ytimg.com/vi/${vid}/hqdefault.jpg)`;
   edRows(); edSliders(); edPrev();
+  edSeInit(vid);
   document.getElementById("edmodal").style.display = "block";
+}
+// --- SE: 候補リスト(ローカルSEサーバー優先→data.json) と シーン切替チップ ---
+const SEURL = "http://127.0.0.1:50022";
+let seList = [], seServerOk = false;
+async function edSeInit(vid){
+  try{
+    seList = await (await fetch(SEURL + "/list")).json();
+    seServerOk = true;
+  }catch(e){ seServerOk = false; seList = D.se || []; }
+  document.getElementById("se-list").innerHTML =
+    seList.map(n => `<option value="${edEsc(n)}">`).join("");
+  const box = document.getElementById("ed-scenes");
+  box.style.display = "none";
+  try{
+    const times = await (await fetch(`sb/${vid}.json`)).json();
+    if(Array.isArray(times) && times.length){
+      document.getElementById("ed-scenes-chips").innerHTML = times.map(t =>
+        ` <button class="edty" data-t="${t}" style="cursor:pointer">${tf(t)}</button>`).join("");
+      document.getElementById("ed-scenes-chips").querySelectorAll("button").forEach(b =>
+        b.onclick = () => {
+          edLines.push({k: "s", t: "@" + tf(+b.dataset.t) + " "});
+          edSel = edLines.length - 1;
+          edSave(); edRows(); edPrev();
+          const inp = document.querySelectorAll("#ed-rows .edrow input.edtx")[edSel];
+          if(inp) inp.focus();
+        });
+      box.style.display = "block";
+    }
+  }catch(e){}
 }
 function edSave(){
   try{
@@ -591,7 +647,8 @@ const ED_TYPES = [
   ["w", "ナレ", "白セリフ(めたんが読む)"],
   ["g", "緑", "緑セリフ(めたんが読む)"],
   ["m", "素材", "素材セリフ(ナレ無し・素材音声100%・テロップだけ表示)"],
-  ["z", "間", "素材の間(ナレ無しで聞かせる秒数)"]];
+  ["z", "間", "素材の間(ナレ無しで聞かせる秒数)"],
+  ["s", "SE", "効果音(A3に配置・@時刻で鳴らす・テロップ無し・時間を消費しない)"]];
 const edVol = l => l.v == null ? 30 : l.v;
 function edRows(){
   const box = document.getElementById("ed-rows"); box.innerHTML = "";
@@ -602,8 +659,9 @@ function edRows(){
       `<button class="edty${l.k === k ? " on" : ""}" data-k="${k}" title="${tip}">${nm}</button>`).join("");
     const isNarr = l.k === "w" || l.k === "g";
     row.innerHTML = `<span class="edtys">${chips}</span>
-      <input class="edtx" value="" placeholder="${l.k==='z' ? '秒数(空=3秒)' : l.k==='t' ? '|で改行・《》〈〉で大小'
-        : l.k==='m' ? '素材のセリフ(テロップのみ・⏱で開始時刻)' : 'セリフ(めたんが読む)'}">
+      <input class="edtx" value="" ${l.k==='s' ? 'list="se-list"' : ''} placeholder="${l.k==='z' ? '秒数(空=3秒)' : l.k==='t' ? '|で改行・《》〈〉で大小'
+        : l.k==='m' ? '素材のセリフ(テロップのみ・⏱で開始時刻)'
+        : l.k==='s' ? 'SE名(クリックで候補一覧・⏱で鳴らす時刻)' : 'セリフ(めたんが読む)'}"
       ${isNarr ? `<input type="range" class="edvol" min="0" max="100" step="5" value="${edVol(l)}"
         title="このナレ中の素材音量(ダッキング量)"><b class="edvolv">${edVol(l)}</b>` : ""}
       <button data-a="up" title="上へ">↑</button><button data-a="dn" title="下へ">↓</button>
@@ -711,7 +769,8 @@ function edSheetToLines(text){
     if(/サブタイトル|タイトル/.test(type)){ if(body) subs.push(body); continue; }
     flushSubs();
     const at = tm ? "@" + tm + " " : "";  // C列時刻→@アンカー自動付与
-    if(/素材/.test(type)) lines.push(body ? {k: "m", t: at + body} : {k: "z", t: ""});
+    if(/SE|効果音/i.test(type)){ if(body) lines.push({k: "s", t: at + body}); }
+    else if(/素材/.test(type)) lines.push(body ? {k: "m", t: at + body} : {k: "z", t: ""});
     else if(/緑/.test(type)) lines.push({k: "g", t: at + body});
     else if(body) lines.push({k: "w", t: at + body});  // 女性ナレーション等→白セリフ
   }
@@ -764,6 +823,15 @@ function demoStop(){
   if(ytPlayer){ try{ ytPlayer.pauseVideo(); ytPlayer.setVolume(100); }catch(e){} }
   document.getElementById("ed-demo").textContent = "▶ デモ再生";
 }
+let seCache = {};
+async function seLoad(name){
+  if(seCache[name]) return seCache[name];
+  const blob = await (await fetch(SEURL + "/se/" + encodeURIComponent(name))).blob();
+  const a = new Audio(URL.createObjectURL(blob));
+  await new Promise((ok, ng) => { a.onloadedmetadata = ok; a.onerror = ng; });
+  seCache[name] = {a, d: a.duration};
+  return seCache[name];
+}
 async function vvSynth(text){
   const plain = text.replace(/^@\d+:\d+(\.\d+)?\s*/, "").replace(/[《》〈〉|]/g, "");
   if(demoCache[plain]) return demoCache[plain];
@@ -792,11 +860,23 @@ document.getElementById("ed-demo").onclick = async () => {
   const segs = raw.length ? raw.slice().sort((x, y) => x[0] - y[0])
                           : [[0, (ytPlayer.getDuration() || 9999)]];
   btn.textContent = "⏳ 合成中…";
-  const plan = []; let t = 0;
+  const plan = [], seSkipped = []; let t = 0;
   try{
     for(let i = 0; i < edLines.length; i++){
       const l = edLines[i];
       if(l.k === "z"){ t += parseFloat(l.t) || 3; continue; }
+      if(l.k === "s"){  // SE: @時刻(順方向)で鳴らす・時間を消費しない
+        const name = l.t.replace(/^@\d+:\d+(\.\d+)?\s*/, "").trim();
+        if(!name) continue;
+        let st = t;
+        const m = l.t.match(/^@(\d+):(\d+(?:\.\d+)?)\s*/);
+        if(m) st = srcToTl(+m[1] * 60 + +m[2], segs);
+        try{
+          const {a, d} = await seLoad(name);
+          plan.push({i, start: st, a, d, se: true, done: false});
+        }catch(e){ seSkipped.push(name); }
+        continue;
+      }
       if(l.k === "m"){  // 素材セリフ: ナレ無し・素材音声100%・テロップだけ同期表示
         if(!l.t.trim()) continue;
         const plain = l.t.replace(/^@\d+:\d+(\.\d+)?\s*/, "").replace(/[《》〈〉|]/g, "");
@@ -823,6 +903,11 @@ document.getElementById("ed-demo").onclick = async () => {
     }
   }catch(e){ demoStop(); alert("音声合成に失敗しました: " + e); return; }
   if(!plan.length){ demoStop(); alert("セリフ行がありません"); return; }
+  if(seSkipped.length){
+    const el = document.getElementById("ed-copied");
+    el.textContent = `⚠SE ${seSkipped.length}個はスキップ(SEサーバー未起動か名前違い: ${seSkipped[0]}…)`;
+    setTimeout(() => el.textContent = "", 8000);
+  }
   btn.textContent = "⏹ 停止";
   let si = 0;
   ytPlayer.setVolume(100); ytPlayer.seekTo(segs[0][0], true); ytPlayer.playVideo();
@@ -840,6 +925,7 @@ document.getElementById("ed-demo").onclick = async () => {
       if(!p.done && tl >= p.start && tl < p.start + p.d + 0.8){
         p.done = true;
         if(p.mat){ edSel = p.i; edPrev(); continue; }  // 素材セリフ: テロップ表示のみ(音量100%)
+        if(p.se){ p.a._v = 100; demoAud.push(p.a); p.a.currentTime = 0; p.a.play(); continue; }  // SE: ダッキングに影響させない
         p.a._v = p.v;
         demoAud.push(p.a);
         p.a.currentTime = 0; p.a.play();
@@ -863,7 +949,7 @@ document.getElementById("ed-copy").onclick = () => {
     if(!l.t.trim() && l.k !== "z") continue;
     const vt = (l.k === "w" || l.k === "g") && edVol(l) !== 30 ? "%" + edVol(l) + " " : "";
     lines.push(l.k === "t" ? "!" + l.t : l.k === "g" ? "緑:" + vt + l.t
-      : l.k === "m" ? "素材セリフ:" + l.t
+      : l.k === "m" ? "素材セリフ:" + l.t : l.k === "s" ? "SE:" + l.t
       : l.k === "z" ? "素材:" + l.t.trim() : vt + l.t);
   }
   const text = lines.join("\n");
