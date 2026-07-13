@@ -350,7 +350,7 @@ footer{color:var(--mut);font-size:11px;text-align:center;margin-top:20px;line-he
         🎬 シーン切替(SEの置きどころ候補・タップでSE行を追加):<span id="ed-scenes-chips"></span></div>
       <div style="display:flex;gap:6px;margin:8px 0;flex-wrap:wrap">
         <button class="chip" id="ed-add">＋ 行を追加</button>
-        <button class="chip" id="ed-sheet" title="スプシでA〜C列(種別・セリフ・素材時刻)の範囲をコピーしてから押すと台本へ一括変換。女性ナレーション→ナレ/素材→素材セリフ/サブタイトル連続行→タイトル。C列の時刻は@アンカーとして自動付与">📥 スプシ取り込み</button>
+        <button class="chip" id="ed-sheet" title="スプシでA〜C列(種別・セリフ・素材時刻)の範囲をコピーしてから押すと台本へ一括変換。女性ナレーション→ナレ/登場人物→緑/素材→素材セリフ/サブタイトル連続行→タイトル。C列の「開始-終了」区間は使用区間(カット)に自動登録され、「該当セリフ」との照合で正しい行にシーン頭アンカー(@>)が付く(行ズレOK)">📥 スプシ取り込み</button>
         <button class="chip" id="ed-big">選択を《大きく》</button>
         <button class="chip" id="ed-sml">選択を〈小さく〉</button>
         <button class="chip" id="ed-br">改行 |</button>
@@ -799,7 +799,7 @@ function edPrev(){
   sEl.style.top = edStyle.serif_y + "%";
   sEl.style.fontSize = Math.round(edStyle.serif_size * scale) + "px";
   sEl.style.color = cur && cur.k === "g" ? "#4dff3a" : "#ffffff";
-  sEl.innerHTML = cur ? cur.t.replace(/^@\d+:\d+(\.\d+)?\s*/, "")
+  sEl.innerHTML = cur ? cur.t.replace(/^@>?\d+:\d+(\.\d+)?\s*/, "")
     .split("|").filter(s => s.trim()).map(s => `<div>${edMk(s)}</div>`).join("") : "";
 }
 function edWrap(a, b){
@@ -843,23 +843,47 @@ function edParseTsv(text){
 }
 function edSheetToLines(text){
   const lines = []; let subs = [];
+  const cuts = [];  // C列の「開始-終了|映像の内容|該当セリフ」(行ズレしていても後でセリフ照合)
   const flushSubs = () => { if(subs.length){ lines.push({k: "t", t: subs.join("|")}); subs = []; } };
   for(const r of edParseTsv(text)){
     const type = (r[0] || "").trim();
     const body = (r[1] || "").trim().replace(/\s*\n\s*/g, "|");  // セル内改行→|改行
-    const tm = ((r[2] || "").trim().match(/\d+:\d{1,2}(?:\.\d+)?/) || [""])[0];
+    const c = (r[2] || "").trim();
+    let at = "";
+    if(c){
+      const rm = c.match(/(\d+):(\d{1,2}(?:\.\d+)?)\s*-\s*(\d+):(\d{1,2}(?:\.\d+)?)/);
+      if(rm){  // 区間つき → 使用区間として回収し、アンカーは該当セリフ照合で後付け
+        const parts = c.split("|").map(s => s.trim()).filter(Boolean);
+        cuts.push({s: +rm[1] * 60 + +rm[2], e: +rm[3] * 60 + +rm[4],
+                   target: parts.length >= 2 ? parts[parts.length - 1] : ""});
+      }else{  // 単一時刻 → 従来どおり同じ行にアンカー
+        const tm = (c.match(/\d+:\d{1,2}(?:\.\d+)?/) || [""])[0];
+        if(tm) at = "@" + tm + " ";
+      }
+    }
     if(!type && !body) continue;
     if(/^(種別|タイプ|区分|type)$/i.test(type)) continue;  // ヘッダ行
-    if(/サブタイトル|タイトル/.test(type)){ if(body) subs.push(body); continue; }
+    if(/^サ$|サブタイトル|タイトル/.test(type)){ if(body) subs.push(body); continue; }
     flushSubs();
-    const at = tm ? "@" + tm + " " : "";  // C列時刻→@アンカー自動付与
     if(/SE|効果音/i.test(type)){ if(body) lines.push({k: "s", t: at + body}); }
     else if(/素材/.test(type)) lines.push(body ? {k: "m", t: at + body} : {k: "z", t: ""});
     else if(/緑/.test(type)) lines.push({k: "g", t: at + body});
-    else if(body) lines.push({k: "w", t: at + body});  // 女性ナレーション等→白セリフ
+    else if(/^女|ナレ/.test(type)){ if(body) lines.push({k: "w", t: at + body}); }
+    else if(type && body) lines.push({k: "g", t: at + body});  // 登場人物名(い/男/母 等)→緑セリフ
+    else if(body) lines.push({k: "w", t: at + body});
   }
   flushSubs();
-  return lines;
+  // 区間の該当セリフ(「残された少年に/近づいたのは/…」)の先頭チャンクと一致する行に @>開始時刻 を付与
+  const norm = s => s.replace(/^@>?\d+:\d+(\.\d+)?\s*/, "").replace(/[《》〈〉|、。\s]/g, "");
+  cuts.sort((a, b) => a.s - b.s);
+  for(const cu of cuts){
+    const first = cu.target ? norm(cu.target.split("/")[0]) : "";
+    if(!first) continue;
+    const hit = lines.find(l => (l.k === "w" || l.k === "g" || l.k === "m") && !/^@/.test(l.t) &&
+      norm(l.t) && (norm(l.t).indexOf(first) >= 0 || first.indexOf(norm(l.t)) >= 0));
+    if(hit) hit.t = "@>" + tf(cu.s) + " " + hit.t;  // @>=その時刻(=区間頭)から話し始める
+  }
+  return {lines, segs: cuts.map(c => [c.s, c.e]).filter(([s, e]) => e > s)};
 }
 document.getElementById("ed-sheet").onclick = async () => {
   let txt = "";
@@ -868,13 +892,24 @@ document.getElementById("ed-sheet").onclick = async () => {
     alert("クリップボードにスプシのデータが見つかりません。\n\nスプレッドシートで台本のA〜C列(種別・セリフ・素材時刻)の範囲を選択してコピー(⌘C)してから、もう一度押してください");
     return;
   }
-  const lines = edSheetToLines(txt);
+  const {lines, segs} = edSheetToLines(txt);
   if(!lines.length){ alert("変換できる行がありませんでした(A列に「女性ナレーション/素材/サブタイトル」等の種別が入っている範囲をコピーしてください)"); return; }
   const cur = edLines.filter(l => l.t.trim()).length;
   if(cur > 1 && !confirm(`いまの台本(${cur}行)をスプシの内容(${lines.length}行)で置き換えます。よろしいですか?`)) return;
   edLines = lines;
   edSel = Math.max(edLines.findIndex(l => l.k !== "t"), 0);
   edSave(); edRows(); edPrev();
+  // C列の「開始-終了」区間 → 使用区間(IN/OUT)にも自動登録=カット済み状態
+  if(segs.length && playVid){
+    SEGS[playVid] = segs;
+    saveSegs(); segIn = null; updateSegBtn(); renderSegs();
+  }
+  const anchored = lines.filter(l => /^@>/.test(l.t)).length;
+  const el = document.getElementById("ed-copied");
+  el.textContent = `✔ ${lines.length}行を取り込み` +
+    (segs.length ? ` / 使用区間${segs.length}個を登録(📋カット表コピーOK)` : "") +
+    (anchored ? ` / ${anchored}行にシーン頭アンカー(@>)` : "");
+  setTimeout(() => el.textContent = "", 10000);
 };
 document.getElementById("ed-big").onclick = () => edWrap("《", "》");
 document.getElementById("ed-sml").onclick = () => edWrap("〈", "〉");
@@ -883,7 +918,7 @@ document.getElementById("ed-anchor").onclick = () => {
   if(!edFocus){ alert("先にアンカーを付けたいセリフ行をクリックしてください"); return; }
   if(!ytPlayer || !ytPlayer.getCurrentTime){ alert("プレイヤーで動画を再生してから使ってください"); return; }
   const tag = "@" + tf(ytPlayer.getCurrentTime()) + " ";
-  edFocus.value = tag + edFocus.value.replace(/^@\d+:\d+(\.\d+)?\s*/, "");
+  edFocus.value = tag + edFocus.value.replace(/^@>?\d+:\d+(\.\d+)?\s*/, "");
   edFocus.dispatchEvent(new Event("input"));
   edFocus.focus();
 };
@@ -917,7 +952,7 @@ async function seLoad(name){
   return seCache[name];
 }
 async function vvSynth(text){
-  const plain = text.replace(/^@\d+:\d+(\.\d+)?\s*/, "").replace(/[《》〈〉|]/g, "");
+  const plain = text.replace(/^@>?\d+:\d+(\.\d+)?\s*/, "").replace(/[《》〈〉|]/g, "");
   if(demoCache[plain]) return demoCache[plain];
   const q = await (await fetch(`${VVURL}/audio_query?speaker=2&text=${encodeURIComponent(plain)}`,
     {method: "POST"})).json();
@@ -950,10 +985,10 @@ document.getElementById("ed-demo").onclick = async () => {
       const l = edLines[i];
       if(l.k === "z"){ t += parseFloat(l.t) || 3; continue; }
       if(l.k === "s"){  // SE: @時刻(順方向)で鳴らす・時間を消費しない
-        const name = l.t.replace(/^@\d+:\d+(\.\d+)?\s*/, "").trim();
+        const name = l.t.replace(/^@>?\d+:\d+(\.\d+)?\s*/, "").trim();
         if(!name) continue;
         let st = t;
-        const m = l.t.match(/^@(\d+):(\d+(?:\.\d+)?)\s*/);
+        const m = l.t.match(/^@>?(\d+):(\d+(?:\.\d+)?)\s*/);
         if(m) st = srcToTl(+m[1] * 60 + +m[2], segs);
         try{
           const {a, d} = await seLoad(name);
@@ -963,9 +998,9 @@ document.getElementById("ed-demo").onclick = async () => {
       }
       if(l.k === "m"){  // 素材セリフ: ナレ無し・素材音声100%・テロップだけ同期表示
         if(!l.t.trim()) continue;
-        const plain = l.t.replace(/^@\d+:\d+(\.\d+)?\s*/, "").replace(/[《》〈〉|]/g, "");
+        const plain = l.t.replace(/^@>?\d+:\d+(\.\d+)?\s*/, "").replace(/[《》〈〉|]/g, "");
         const d = Math.max(plain.length * 0.18, 1.0);
-        const m = l.t.match(/^@(\d+):(\d+(?:\.\d+)?)\s*/);
+        const m = l.t.match(/^@>?(\d+):(\d+(?:\.\d+)?)\s*/);
         if(m){  // 素材行の@時刻=「その時刻から表示」(順方向)
           const st = srcToTl(+m[1] * 60 + +m[2], segs);
           if(st > t) t = st;
@@ -976,9 +1011,10 @@ document.getElementById("ed-demo").onclick = async () => {
       }
       if((l.k !== "w" && l.k !== "g") || !l.t.trim()) continue;
       const {a, d} = await vvSynth(l.t);
-      const m = l.t.match(/^@(\d+):(\d+(?:\.\d+)?)\s*/);
+      const m = l.t.match(/^@(>?)(\d+):(\d+(?:\.\d+)?)\s*/);
       if(m){
-        let st = srcToTl(+m[1] * 60 + +m[2], segs) - d - DEMO.pre;
+        const tlA = srcToTl(+m[2] * 60 + +m[3], segs);
+        let st = m[1] ? tlA : tlA - d - DEMO.pre;  // @>=その時刻から話す / @=直前に言い終わる
         if(st < t) st = t;  // 前のナレと重なる場合は詰める
         t = st;
       }
