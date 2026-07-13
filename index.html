@@ -296,10 +296,13 @@ footer{color:var(--mut);font-size:11px;text-align:center;margin-top:20px;line-he
     <button class="chip" id="p-kobo" style="border-color:var(--acc);color:var(--acc);font-weight:700">🎬 この動画で台本を作る</button>
     <button class="chip" id="p-ed">📝 テロップ編集</button>
     <button class="chip" id="p-sb" style="display:none">🎞 コマ送り</button>
+    <button class="chip" id="p-com" title="この動画の人気コメントを和訳付きで表示">💬 コメント</button>
     <button class="chip" id="p-yt">YouTubeで開く ↗</button>
     <button class="chip" id="p-dl" title="動画URLをコピーします。MediaHuman YouTubeダウンローダーが起動していれば自動で追加されます">⬇ 素材DL</button>
     <button class="chip" id="p-close">✕ 閉じる</button>
   </div>
+  <div id="p-com-box" style="display:none;font-size:11.5px;margin-top:6px;border:1px solid var(--line);
+    border-radius:8px;padding:8px 10px;line-height:1.7;max-height:38vh;overflow:auto"></div>
   <div id="p-dl-hint" style="display:none;font-size:10.5px;color:var(--mut);margin-top:6px;
     border:1px solid var(--line);border-radius:8px;padding:8px 10px;line-height:1.8"></div>
   <div id="segwrap" style="display:none">
@@ -555,6 +558,7 @@ function playInline(vid, title, sub, isShort){
   document.getElementById("psub").textContent = sub || "";
   document.getElementById("pbtns").style.display = "";
   document.getElementById("p-dl-hint").style.display = "none";
+  document.getElementById("p-com-box").style.display = "none";
   document.getElementById("segwrap").style.display = "";
   segIn = null; updateSegBtn(); renderSegs();
   // ストーリーボードがあればボタンを出す
@@ -567,6 +571,7 @@ function playInline(vid, title, sub, isShort){
 document.getElementById("p-close").onclick = () => {
   playVid = null;
   document.getElementById("p-dl-hint").style.display = "none";
+  document.getElementById("p-com-box").style.display = "none";
   if(ytPlayer && ytPlayer.stopVideo) ytPlayer.stopVideo();
   document.getElementById("pframe").style.display = "none";
   const box = document.getElementById("pbox");
@@ -581,6 +586,35 @@ document.getElementById("p-yt").onclick = () => {
   if(playVid) window.open("https://www.youtube.com/watch?v=" + playVid, "_blank", "noopener");
 };
 document.getElementById("p-kobo").onclick = () => { if(playVid) sendToKobo(playVid); };
+// 💬コメント(和訳付き): GASの?comments=APIから取得(LanguageApp和訳・6hキャッシュ)
+const comCache = {};
+function renderComments(box, r){
+  if(!r.comments || !r.comments.length){
+    box.innerHTML = "コメントを取得できませんでした" +
+      (r.errors && r.errors.length ? `<span style="color:var(--mut)">(${edEsc(r.errors.join(" / "))})</span>` : "");
+    return;
+  }
+  box.innerHTML = r.comments.map(c => `
+    <div style="border-bottom:1px dashed var(--line);padding:5px 0">
+      <div>${edEsc(c.ja || c.t)}${c.like ? ` <span style="color:var(--mut);font-size:10px">👍${edEsc(c.like)}</span>` : ""}</div>
+      ${c.ja && c.ja !== c.t ? `<div style="color:var(--mut);font-size:10.5px">${edEsc(c.t)}</div>` : ""}
+    </div>`).join("") +
+    '<div style="color:var(--mut);font-size:10px;margin-top:4px">人気コメント上位・和訳は自動翻訳</div>';
+}
+document.getElementById("p-com").onclick = async () => {
+  const box = document.getElementById("p-com-box");
+  if(box.style.display === "block"){ box.style.display = "none"; return; }
+  if(!playVid) return;
+  box.style.display = "block";
+  const vid = playVid;
+  if(comCache[vid]){ renderComments(box, comCache[vid]); return; }
+  box.innerHTML = "⏳ コメント取得・和訳中…(初回は数秒)";
+  try{
+    const r = await (await fetch(API + "?comments=" + vid)).json();
+    comCache[vid] = r;
+    if(playVid === vid) renderComments(box, r);
+  }catch(e){ box.innerHTML = "取得失敗(通信エラー): " + edEsc(String(e)); }
+};
 // ⬇素材DL: URLコピー→MediaHumanのクリップボード監視が自動で拾う
 document.getElementById("p-dl").onclick = () => {
   if(!playVid) return;
@@ -1185,7 +1219,7 @@ document.getElementById("kobo-run").onclick = () => {
       ? "🔥盛り上がり: " + p.heat.map(h => `${h.from}〜${h.to}(${h.score})`).join(" / ")
       : "盛り上がりデータなし";
     document.getElementById("kobo-com").textContent = p.comments.length
-      ? `💬人気コメント${p.comments.length}件取得: 「${p.comments[0].t.slice(0,60)}…」`
+      ? `💬人気コメント${p.comments.length}件取得: 「${(p.comments[0].ja || p.comments[0].t).slice(0,60)}…」`
       : "コメント取得なし";
     const sbBox = document.getElementById("kobo-sb");
     sbBox.style.display = "none";
