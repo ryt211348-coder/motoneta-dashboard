@@ -132,6 +132,56 @@ footer{color:var(--mut);font-size:11px;text-align:center;margin-top:20px;line-he
 #player .pt{font-size:13px;font-weight:700;margin:8px 2px 2px;line-height:1.5}
 #player .ps{font-size:11px;color:var(--mut);margin:0 2px 8px}
 #player .pbtns{display:flex;gap:6px;flex-wrap:wrap}
+/* ===== スマホ最適化(640px以下のみ。デスクトップ表示には影響しない) ===== */
+@media (max-width: 640px){
+  /* ヘッダー: 固定をやめる(チップ折り返しで縦に伸びても画面を圧迫しない) */
+  header{position:static;margin-bottom:10px}
+  h1 > span{float:none !important;margin-top:8px}
+  /* ボタン・チップ: 指で押せる高さ40px以上+折り返し */
+  .chip{min-height:40px;display:inline-flex;align-items:center;justify-content:center;
+    padding:8px 14px;font-size:13px;white-space:normal;text-align:left}
+  .chips{flex-wrap:wrap;overflow-x:visible}
+  .pick{width:40px;height:40px;font-size:16px}
+  .more{padding:16px;font-size:12px}
+  /* 入力欄: 16px以上でiOSの自動ズームを防ぐ(インラインstyleより優先させる) */
+  input[type=search], input[type=text], textarea, .edrow input.edtx{font-size:16px !important}
+  input[type=search]{padding:10px 12px}
+  /* マトリクス/テーブル: 横スクロールで見る(慣性スクロール) */
+  .tbl{-webkit-overflow-scrolling:touch}
+  th.sticky2, td.sticky2{min-width:132px;max-width:160px}
+  td.who .yt{max-width:150px}
+  /* 長いURL・チャンネル名のはみ出し防止 */
+  #kobo, #help, footer{overflow-wrap:anywhere}
+  /* 動画ピッカー: 行をカード化して1カラム縦積み(タップ領域を広く) */
+  #view-pick .tbl{background:transparent;border:none;border-radius:0;overflow:visible}
+  #view-pick table{min-width:0 !important;width:100%;display:block}
+  #view-pick thead{display:none}
+  #view-pick tbody{display:block}
+  #view-pick tbody tr{display:grid;grid-template-columns:auto auto 1fr auto;
+    grid-template-areas:"info info info info" "btn check views genre";
+    gap:8px 10px;align-items:center;background:var(--sur);
+    border:1px solid var(--line);border-radius:10px;padding:10px;margin:0 0 8px}
+  #view-pick tbody td{display:block;border-bottom:none;padding:0}
+  #view-pick tbody td:nth-child(1){grid-area:btn}
+  #view-pick tbody td:nth-child(2){grid-area:check}
+  #view-pick tbody td:nth-child(3){grid-area:info;min-width:0;overflow-wrap:anywhere}
+  #view-pick tbody td:nth-child(4){grid-area:views;text-align:left}
+  #view-pick tbody td:nth-child(5){grid-area:genre;text-align:right;white-space:normal !important}
+  #view-pick .thumb{width:88px;height:50px}
+  /* ストーリーボードモーダル: 画面内に収める */
+  #sbmodal{padding:10px}
+  /* テロップ編集モーダル: パネル全幅化・9:16プレビューは幅基準で画面内に収める */
+  #edmodal{padding:8px}
+  .edwrap{gap:10px}
+  .edleft{flex:1 1 100%;padding:10px}
+  .edright{flex:1 1 100%;display:flex;justify-content:center}
+  #edcv{height:auto;width:min(100%,320px)}
+  /* テロップ行: 折り返してタップしやすく(入力欄は1行占有) */
+  .edrow{flex-wrap:wrap}
+  .edrow input.edtx{flex:1 1 100%;min-height:40px}
+  .edrow button{min-width:32px;min-height:32px;font-size:15px}
+  .edty{padding:7px 7px !important;font-size:11px !important}
+}
 </style>
 <div class="layout">
 <div class="wrap">
