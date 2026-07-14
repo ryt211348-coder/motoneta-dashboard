@@ -202,7 +202,7 @@ footer{color:var(--mut);font-size:11px;text-align:center;margin-top:20px;line-he
     <b>1. ネタを選ぶ</b> — 「🎯動画ピッカー」を開く。並んでいるのは海外の元動画(日本で需要が証明済みの供給元だけ)。ジャンルで絞って、良さそうな動画の <b>✓</b> を押して着手宣言(全員に共有され、被りを防げます)<br>
     <b>2. 解析する</b> — その行の <b>🎬</b> を押すと自動で解析が始まる(タイトル・盛り上がり・人気コメントを取得)。リストに無い動画はプレイヤー上の欄にYouTube URLを直貼りでもOK<br>
     <b>3. 文字起こし</b> — 「📺文字起こしを開く」→ YouTubeで拡張機能「<b>YouTube Summary</b>」のCopy transcriptを押す → このタブに戻るだけ(自動取り込み・貼り付け不要。初回だけChromeが権限を聞くので「許可」)。YouTube公式の「文字起こしを表示」からのコピーでもOK<br>
-    <b>4. 台本を作る</b> — 「📋 Claude用プロンプトをコピー」→ 自分のClaudeに貼るだけ。全文和訳・切り抜き提案・60秒台本・サブタイトルA/B案が出ます。<b>訴求はA案(センターピン直球)から選ぶのが基本</b>。セリフがほぼ無い素材は「🎞ストーリーボード画像」も一緒にClaudeへ貼る<br>
+    <b>4. 台本を作る</b> — 「📋 Claude用プロンプトをコピー」→ 自分のClaudeに貼るだけ。全文和訳・切り抜き提案・60秒台本・サブタイトルA/B案が出ます。<b>訴求はA案(センターピン直球)から選ぶのが基本</b>。セリフがほぼ無い素材は「🎞ストーリーボード画像」も一緒にClaudeへ貼る。「<b>🎞1秒コマ(密)</b>」ボタンが出る動画は、密シートを全部貼ると映像をコマ単位で読んで叩き台(展開ベタ書き)の精度が上がる<br>
     <b>5. 編集者に渡す場合</b> — ②の欄に最終台本を貼って「📋 編集指示書プロンプトをコピー」→ Claudeに貼ると「何秒を切るか」の指示書が出るので、そのまま編集者へ。<b>自分で動画まで仕上げる場合は下の🅑へ</b><br>
     <b>5+. 素材動画のダウンロード</b> — プレイヤーの「<b>⬇素材DL</b>」でURLがコピーされ、<a href="https://www.litexmedia.com/mhdownload.html" target="_blank">MediaHuman YouTube Downloader</a>が起動していれば自動で追加されます。<b>⚠️全部mp3(音声だけ)になる場合はMediaHumanの環境設定で「形式」がMP3になっているのが原因</b>。「オリジナル」または「MP4」・品質=最高に設定してください<br>
     <div style="border-top:1px dashed var(--line);margin:8px 0 6px"></div>
@@ -301,6 +301,7 @@ footer{color:var(--mut);font-size:11px;text-align:center;margin-top:20px;line-he
     <button class="chip" id="p-kobo" style="border-color:var(--acc);color:var(--acc);font-weight:700">🎬 この動画で台本を作る</button>
     <button class="chip" id="p-ed">📝 テロップ編集</button>
     <button class="chip" id="p-sb" style="display:none">🎞 コマ送り</button>
+    <button class="chip" id="p-sbd" style="display:none" title="1秒(等間隔)の高密度コマシート。全枚数をClaudeへ貼ると映像を人間の目レベルで読んで叩き台が作れます">🎞 1秒コマ(密)</button>
     <button class="chip" id="p-com" title="この動画の人気コメントを和訳付きで表示">💬 コメント</button>
     <button class="chip" id="p-yt">YouTubeで開く ↗</button>
     <button class="chip" id="p-dl" title="動画URLをコピーします。MediaHuman YouTubeダウンローダーが起動していれば自動で追加されます">⬇ 素材DL</button>
@@ -326,14 +327,15 @@ footer{color:var(--mut);font-size:11px;text-align:center;margin-top:20px;line-he
 <div id="sbmodal">
   <div style="max-width:1300px;margin:0 auto">
     <div style="display:flex;gap:8px;margin-bottom:8px;align-items:center;flex-wrap:wrap">
-      <span style="color:#fff;font-weight:800;font-size:13px">🎞 ストーリーボード(シーン切り替えを自動抽出)</span>
+      <span style="color:#fff;font-weight:800;font-size:13px" id="sb-title">🎞 ストーリーボード(シーン切り替えを自動抽出)</span>
       <a class="chip" id="sb-dl" href="" download style="text-decoration:none">💾 画像を保存</a>
       <button class="chip" id="sb-close">✕ 閉じる</button>
     </div>
-    <div style="color:#ccc;font-size:11.5px;margin-bottom:10px;line-height:1.7">
+    <div style="color:#ccc;font-size:11.5px;margin-bottom:10px;line-height:1.7" id="sb-desc">
       セリフがほぼ無い(ノンバーバル)素材は、この画像を保存して<b>台本プロンプトと一緒に自分のClaudeへ貼る</b>と、
       映像の流れを読み取った上で実況・ナレーション型の台本を作ってくれます</div>
     <img id="sbimg" style="width:100%;border-radius:8px" alt="storyboard">
+    <div id="sbimgs" style="display:none"></div>
   </div>
 </div>
 <div id="edmodal">
@@ -572,6 +574,20 @@ function playInline(vid, title, sub, isShort){
   const im = new Image();
   im.onload = () => { if(playVid === vid) sbBtn.style.display = ""; };
   im.src = "sb/" + vid + ".jpg";
+  // 1秒コマ(密)があればボタンを出す
+  const sbdBtn = document.getElementById("p-sbd");
+  sbdBtn.style.display = "none";
+  probeSbd(vid).then(m => { if(m && playVid === vid) sbdBtn.style.display = ""; });
+}
+// 1秒コマ(密)のマニフェスト(sbd/<id>.json)取得。無ければnull
+const sbdCache = {};
+async function probeSbd(vid){
+  if(sbdCache[vid] !== undefined) return sbdCache[vid];
+  try{
+    const r = await fetch("sbd/" + vid + ".json");
+    sbdCache[vid] = r.ok ? await r.json() : null;
+  }catch(e){ sbdCache[vid] = null; }
+  return sbdCache[vid];
 }
 document.getElementById("p-close").onclick = () => {
   playVid = null;
@@ -665,9 +681,38 @@ document.getElementById("p-url-in").addEventListener("keydown", e => {
 // --- ストーリーボード ---
 document.getElementById("p-sb").onclick = () => {
   if(!playVid) return;
+  document.getElementById("sb-title").textContent = "🎞 ストーリーボード(シーン切り替えを自動抽出)";
+  document.getElementById("sb-desc").innerHTML =
+    "セリフがほぼ無い(ノンバーバル)素材は、この画像を保存して<b>台本プロンプトと一緒に自分のClaudeへ貼る</b>と、" +
+    "映像の流れを読み取った上で実況・ナレーション型の台本を作ってくれます";
+  document.getElementById("sbimg").style.display = "";
+  document.getElementById("sbimgs").style.display = "none";
   document.getElementById("sbimg").src = "sb/" + playVid + ".jpg";
   const dl = document.getElementById("sb-dl");
+  dl.style.display = "";
   dl.href = "sb/" + playVid + ".jpg"; dl.download = "storyboard_" + playVid + ".jpg";
+  document.getElementById("sbmodal").style.display = "block";
+};
+// --- 1秒コマ(密): 複数枚を縦に並べて表示・1枚ずつ保存 ---
+document.getElementById("p-sbd").onclick = async () => {
+  if(!playVid) return;
+  const m = await probeSbd(playVid);
+  if(!m) return;
+  document.getElementById("sb-title").textContent =
+    `🎞 1秒コマ(密) — ${m.interval}秒間隔・全${m.sheets}枚`;
+  document.getElementById("sb-desc").innerHTML =
+    "<b>全部の画像を保存して、台本プロンプトと一緒に自分のClaudeへ貼る</b>と、映像を人間の目レベル(コマ単位)で読んで" +
+    "叩き台(展開ベタ書き)が作れます。1コマずつ時系列に実況→叩き台に起こすのが手順(claude.aiは1メッセージ20枚まで)";
+  document.getElementById("sbimg").style.display = "none";
+  document.getElementById("sb-dl").style.display = "none";
+  const box = document.getElementById("sbimgs");
+  box.style.display = "";
+  box.innerHTML = m.files.map((f, i) => `
+    <div style="display:flex;gap:8px;align-items:center;margin:12px 0 4px">
+      <span style="color:#ccc;font-size:11.5px;font-weight:700">${i + 1} / ${m.files.length}</span>
+      <a class="chip" href="sbd/${f}" download style="text-decoration:none">💾 保存</a>
+    </div>
+    <img src="sbd/${f}" loading="lazy" style="width:100%;border-radius:8px" alt="dense ${i + 1}">`).join("");
   document.getElementById("sbmodal").style.display = "block";
 };
 document.getElementById("sb-close").onclick = () =>
