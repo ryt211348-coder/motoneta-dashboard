@@ -66,6 +66,11 @@ td.cell.empty{color:var(--line);text-align:center}
 .dot{width:8px;height:8px;border-radius:2px;display:inline-block;margin-right:5px}
 .thumb{width:104px;height:58px;object-fit:cover;border-radius:6px;flex:0 0 auto;
   background:var(--sur2);display:block}
+#copy-toast{position:fixed;left:50%;bottom:28px;transform:translateX(-50%) translateY(8px);
+  background:var(--sur);color:var(--tx);border:1px solid var(--line);border-radius:10px;
+  padding:10px 16px;font-size:12.5px;font-weight:700;opacity:0;pointer-events:none;
+  transition:.25s;z-index:99;box-shadow:0 6px 24px rgba(0,0,0,.35);max-width:92vw}
+#copy-toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
 .pick{width:26px;height:26px;border-radius:50%;border:2px solid var(--line);background:var(--sur);
   color:var(--mut);font-size:13px;cursor:pointer;line-height:1}
 .pick.on{background:var(--ok);border-color:var(--ok);color:#fff}
@@ -1137,6 +1142,62 @@ function sendToKobo(vid){
   window.scrollTo({top: 0, behavior: "smooth"});
   document.getElementById("kobo-run").click();
 }
+// ── サムネ右クリック → 画像＋リンク＋再生数(色付き)をまとめてコピー（Googleドキュメント貼り付け用・スマホ企画ダッシュボードと同仕様）──
+function copyToast(msg){
+  let t = document.getElementById("copy-toast");
+  if(!t){ t = document.createElement("div"); t.id = "copy-toast"; document.body.appendChild(t); }
+  t.textContent = msg; t.classList.add("show");
+  clearTimeout(t._tm); t._tm = setTimeout(() => t.classList.remove("show"), 2000);
+}
+function copyThumbCard(x, img){
+  const url = "https://youtu.be/" + x.id;
+  const esc = s => String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
+  // 素材は300万再生+のみなので色段階はこのダッシュボード用（〜500万/〜1000万/〜3000万/〜1億/1億+ 青→赤）
+  const vcol = x.v < 5e6 ? "#64b5f6" : x.v < 1e7 ? "#1976d2" : x.v < 3e7 ? "#ef6c00" :
+               x.v < 1e8 ? "#e53935" : "#b71c1c";
+  const dur = x.d ? (x.d >= 60 ? `${Math.floor(x.d/60)}分${x.d%60}秒` : `${x.d}秒`) : "";
+  const meta = fmt(x.v) + "回再生" + (dur ? "　" + dur : "") + (x.g ? "　" + x.g : "") + (x.c ? "　" + x.c : "");
+  // 倍率バッジ（×N.N＋登録者数）: ≥3赤/≥1.5橙/≥0.7青/未満灰
+  let powHtml = "", powText = "";
+  if(x.s > 0){
+    const pw = x.v / x.s;
+    const pcol = pw >= 3 ? "#d32f2f" : pw >= 1.5 ? "#ef6c00" : pw >= 0.7 ? "#1976d2" : "#90a4ae";
+    const ps = "×" + (pw >= 10 ? Math.round(pw) : pw.toFixed(1)) + "　登録" + fmt(x.s) + "人";
+    powHtml = '<br><b style="color:' + pcol + '">' + esc(ps) + "</b>";
+    powText = "\n" + ps;
+  }
+  const html = '<img src="' + img.src + '" width="260" height="146" style="width:260px;height:146px"><br>'
+    + '<a href="' + url + '">' + url + "</a><br>"
+    + '<b style="color:' + vcol + '">' + esc(x.t) + "</b><br>"
+    + '<span style="color:' + vcol + '">' + esc(meta) + "</span>" + powHtml;
+  const text = url + "\n" + x.t + "\n" + meta + powText;
+  const okMsg = "📋 サムネ＋リンク・再生数をコピーしました（そのままドキュメントに貼れます）";
+  // 方式1: 隠し要素を選択して execCommand('copy')（file:// でも確実に動く）
+  const box = document.createElement("div");
+  box.style.cssText = "position:fixed;left:-9999px;top:0;opacity:0;background:#fff;color:#000";
+  box.innerHTML = html;
+  document.body.appendChild(box);
+  const sel = window.getSelection();
+  const saved = sel.rangeCount ? sel.getRangeAt(0) : null;
+  const range = document.createRange();
+  range.selectNodeContents(box);
+  sel.removeAllRanges(); sel.addRange(range);
+  let ok = false;
+  try{ ok = document.execCommand("copy"); }catch(e){ ok = false; }
+  sel.removeAllRanges();
+  if(saved) sel.addRange(saved);
+  box.remove();
+  if(ok){ copyToast(okMsg); return; }
+  // 方式2: 非同期Clipboard API（方式1が使えない環境向け）
+  if(navigator.clipboard && window.ClipboardItem){
+    navigator.clipboard.write([new ClipboardItem({
+      "text/html": new Blob([html], {type: "text/html"}),
+      "text/plain": new Blob([text], {type: "text/plain"})
+    })]).then(() => copyToast(okMsg), () => copyToast("⚠ コピーできませんでした"));
+  }else{
+    fallbackCopy(text, () => copyToast("📋 リンク・再生数をコピーしました（画像はこの環境では不可）"));
+  }
+}
 function renderPick(){
   const el = document.getElementById("chips"); el.innerHTML = "";
   const sortBtn = document.createElement("button");
@@ -1166,7 +1227,8 @@ function renderPick(){
       <td><button class="pick${picked.has(key) ? " on" : ""}" aria-label="着手">✓</button></td>
       <td><div style="display:flex;gap:8px;align-items:center">
         <a class="play" href="https://www.youtube.com/watch?v=${x.id}" style="flex:0 0 auto">
-          <img class="thumb" src="https://i.ytimg.com/vi/${x.id}/mqdefault.jpg" loading="lazy" alt=""></a>
+          <img class="thumb" src="https://i.ytimg.com/vi/${x.id}/mqdefault.jpg" loading="lazy" alt=""
+            title="右クリックでサムネ＋情報をコピー"></a>
         <div style="min-width:0">
           <a class="play" href="https://www.youtube.com/watch?v=${x.id}"
             style="color:var(--tx);text-decoration:none;font-weight:700">${(x.im||0) >= 0.95 ? "⚡" : ""}${x.t}</a>
@@ -1175,6 +1237,8 @@ function renderPick(){
       <td class="num"><b>${fmt(x.v)}</b></td>
       <td style="font-size:11.5px;white-space:nowrap">${x.g}</td>`;
     tr.children[0].firstElementChild.onclick = ev => { ev.stopPropagation(); sendToKobo(x.id); };
+    const timg = tr.querySelector("img.thumb");
+    timg.oncontextmenu = ev => { ev.preventDefault(); copyThumbCard(x, timg); };
     tr.querySelectorAll("a.play").forEach(a => a.onclick = ev => {
       ev.stopPropagation();
       playInline(x.id, x.t, `${x.c}${dur ? " ・ " + dur : ""} ・ ${fmt(x.v)}再生`, x.d > 0 && x.d <= 90);
