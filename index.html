@@ -226,6 +226,32 @@ footer{color:var(--mut);font-size:11px;text-align:center;margin-top:20px;line-he
       <button class="chip" id="kobo-run" style="border-color:var(--acc);color:var(--acc);font-weight:700">解析</button>
     </div>
     <div id="kobo-status" style="font-size:11.5px;color:var(--mut);margin-top:6px"></div>
+
+    <!-- ♻️型移植モード(解析前から使える=参考動画から元素材を探す入口) -->
+    <div id="tp" style="border-top:1px dashed var(--line);margin-top:10px;padding-top:8px">
+      <label style="display:flex;align-items:center;gap:6px;font-size:12px;font-weight:800;cursor:pointer">
+        <input type="checkbox" id="tp-on" style="width:15px;height:15px">
+        ♻️ 型移植モード（競合の伸びた切り抜きの"構成"で上位互換を作る）</label>
+      <div id="tp-body" style="display:none;margin-top:8px">
+        <div style="font-size:10.5px;color:var(--mut);margin-bottom:8px;line-height:1.5">
+          <b>①参考動画</b>（競合が伸ばした切り抜き）のURLから<b>元素材</b>（一次情報の生映像）を特定 → <b>②元素材を上の「解析」欄で解析</b> → <b>③参考動画の文字起こしを下に貼る</b> → 参考動画の構成をそのまま踏襲した"上位互換"プロンプトが出ます。参考動画の勝ち筋（展開の順番・山の位置）は維持し、元素材から情報を足して<b>尺・情報量・分かりやすさで上回る</b>のが狙いです。</div>
+        <div style="display:flex;gap:6px">
+          <input type="text" id="tp-refurl" placeholder="① 参考動画（競合切り抜き）のURLを貼る"
+            style="flex:1;padding:8px 12px;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--tx);font-size:13px">
+          <button class="chip" id="tp-find" style="border-color:var(--acc);color:var(--acc);font-weight:700">🔍 元素材を特定</button>
+        </div>
+        <div id="tp-credit" style="font-size:11.5px;margin-top:6px;line-height:1.5"></div>
+        <textarea id="tp-reftr" rows="3" placeholder="③ 参考動画の文字起こし（日本語ナレ）をここに貼る。参考動画をYouTubeで開き「文字起こしを表示」または拡張機能でコピー"
+          style="width:100%;margin-top:8px;padding:8px 10px;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--tx);font-size:12px;resize:vertical"></textarea>
+        <div id="tp-reftrstat" style="font-size:10.5px;color:var(--mut);margin-top:2px"></div>
+        <button class="chip" id="tp-copy" style="margin-top:8px;background:var(--acc);border-color:var(--acc);color:#fff;font-weight:800;padding:8px 16px">
+          📋 型移植プロンプトをコピー</button>
+        <span id="tp-copied" style="font-size:11px;margin-left:8px"></span>
+        <div style="font-size:10.5px;color:var(--mut);margin-top:6px;line-height:1.5">
+          元素材＝上の「解析」欄で解析した動画（文字起こし・盛り上がり・コマ送りを使用）／参考動画＝ここに貼った構成の見本。両方の文字起こしをAIが照合して、参考動画の構成のまま上位互換を作ります。コマ送り画像（🎞1秒コマ）も一緒に貼ると照合精度が上がります。</div>
+      </div>
+    </div>
+
     <div id="kobo-result" style="display:none;margin-top:8px">
       <div id="kobo-meta" style="font-size:12.5px;font-weight:700"></div>
       <div id="kobo-heat" style="font-size:11.5px;color:var(--mut);margin:4px 0"></div>
@@ -251,6 +277,7 @@ footer{color:var(--mut);font-size:11px;text-align:center;margin-top:20px;line-he
       <span id="kobo-copied" style="font-size:11px;color:var(--ok);margin-left:8px"></span>
       <div style="font-size:10.5px;color:var(--mut);margin-top:6px">
         コピーしたら自分のClaudeに貼るだけ → サムネ言語化・全文和訳(話者付き)・展開マップ→冒頭→60秒台本(700字叩き台)→サブタイA/B案(後付け)・使用区間リストが出ます。700字→500字へ削って仕上げてください</div>
+
       <div style="border-top:1px dashed var(--line);margin-top:10px;padding-top:8px">
         <div style="font-size:12px;font-weight:800;margin-bottom:4px">② 台本が完成したら → 編集者向け指示書</div>
         <textarea id="kobo-script" rows="3" placeholder="完成した台本(修正後の最終版)をここに貼る"
@@ -1535,6 +1562,128 @@ document.getElementById("kobo-copy").onclick = async () => {
       ? "コピーしましたが文字起こしが未貼付です(📺文字起こしを開く→拡張機能でコピー→戻って再コピー)"
       : grabbed ? "文字起こしを自動取り込みして合体コピーしました。Claudeに貼ってください"
                 : "コピーしました。Claudeに貼ってください";
+    setTimeout(() => el.textContent = "", 6000);
+  };
+  if(navigator.clipboard && navigator.clipboard.writeText){
+    navigator.clipboard.writeText(text).then(done).catch(() => fallbackCopy(text, done));
+  } else fallbackCopy(text, done);
+};
+
+// ===== ♻️型移植モード =====
+document.getElementById("tp-on").onchange = e => {
+  document.getElementById("tp-body").style.display = e.target.checked ? "" : "none";
+};
+// 参考動画URL → OCRクレジットから元素材(引用元チャンネル)と候補を特定
+document.getElementById("tp-find").onclick = () => {
+  const box = document.getElementById("tp-credit");
+  const p = parseYtUrl(document.getElementById("tp-refurl").value.trim());
+  if(!p){ box.innerHTML = `<span style="color:var(--hot)">URLを認識できませんでした</span>`; return; }
+  const cr = D.cr || {};
+  if(!(p.vid in cr)){
+    box.innerHTML = `<span style="color:var(--mut)">この参考動画はDB未収録、またはOCRで引用元クレジットを読めませんでした。<b>参考動画の文字起こしと映像から元素材を推定</b>して、その元素材を上の欄で解析してください（伸びているURLの文字起こし＋スクショで、どの動画かはAIがある程度特定できます）。</span>`;
+    return;
+  }
+  const s = SRC[cr[p.vid]];
+  const subs = s.s ? `登録${fmt(s.s)}` : "登録不明";
+  const plat = s.p || "";
+  const link = s.u ? `<a href="${s.u}" target="_blank" rel="noopener" style="color:var(--acc);font-weight:700">🔗 引用元チャンネルを開く</a>` : "";
+  // sm(元素材候補)を同じ引用元でフィルタ(300万+のみ収録)
+  const cands = SM.filter(m => m.k === s.k).sort((a,b)=>b.v-a.v).slice(0,8);
+  let candHtml = "";
+  if(cands.length){
+    candHtml = `<div style="margin-top:5px;font-weight:700">元素材の候補（この引用元の300万+素材）:</div>`
+      + cands.map(m => `<div style="margin:2px 0"><a href="https://www.youtube.com/watch?v=${m.id}" target="_blank" rel="noopener" style="color:var(--tx)">${m.t}</a> <span style="color:var(--mut)">(${fmt(m.v)}再生${m.d?" ・ "+Math.floor(m.d/60)+"分"+(m.d%60)+"秒":""})</span> <button class="chip" style="padding:1px 8px;font-size:10.5px" onclick="tpUseSource('${m.id}')">これを元素材に</button></div>`).join("");
+  }else{
+    candHtml = `<div style="margin-top:4px;color:var(--mut)">収録済みの候補素材はありません。上の「🔗引用元チャンネルを開く」から、参考動画と同じ映像の元動画を探して、そのURLを上の欄で解析してください。</div>`;
+  }
+  box.innerHTML = `<div>この参考動画の引用元（＝元素材のチャンネル）: <b>${s.c || s.k}</b> <span style="color:var(--mut)">(${subs}${plat?" ・ "+plat:""})</span> ${link}</div>${candHtml}`;
+};
+// 候補を上の「解析」欄に入れて解析(=元素材として読み込む)
+function tpUseSource(vid){
+  document.getElementById("kobo-url").value = "https://www.youtube.com/watch?v=" + vid;
+  document.getElementById("kobo-run").click();
+  document.getElementById("kobo-url").scrollIntoView({behavior:"smooth", block:"center"});
+}
+document.getElementById("tp-reftr").oninput = () => {
+  const n = document.getElementById("tp-reftr").value.trim().length;
+  document.getElementById("tp-reftrstat").textContent =
+    n ? `参考動画の文字起こし ${n.toLocaleString()}文字` : "";
+};
+function buildTransplantPrompt(p){
+  const heat = p.heat.length
+    ? p.heat.map(h => `- ${h.from}〜${h.to} (熱量${h.score}/1.0)`).join("\n")
+    : "(データなし)";
+  const refTr = normalizeManualTr(document.getElementById("tp-reftr").value.trim()) || "【未貼付】";
+  const refUrl = document.getElementById("tp-refurl").value.trim();
+  return `あなたはプロの放送作家。海外バズ動画を日本向けショート動画に凝縮する専門家です。
+今回は【♻️型移植モード】です。競合が既に成功させた「参考動画（切り抜き）」の構成をそのまま踏襲しつつ、その元になった「元素材（一次情報の生映像）」の情報を使って、参考動画の"上位互換"を作ります。
+
+# このモードの狙い（最重要・絶対に読み飛ばさない）
+- 参考動画は競合が伸ばした完成形。その勝ち筋＝「展開の順番・どこで何を見せるか・盛り上げ方・山の位置」は完全に維持する（構成を作り直さない・順番を入れ替えない）
+- ただし丸コピーは2番煎じになる。付加価値は"上位互換"で出す:
+  1. 参考動画が尺の都合で削った/浅く流した情報を、元素材から拾って補う（視聴者の満足・納得に必要な情報だけ。背景・因果・数字・後日談など1〜2手）
+  2. より分かりやすく（因果・固有名・数字を足すと理解が深まる所を厚くする。ただし冗長な水増しはしない）
+  3. ショートとしての完成度を上げる（後述の冒頭2秒とサブタイトルは参考動画をなぞらず新規に強く作る＝ここだけは別物にする）
+- 尺は参考動画より伸ばしてよい（情報量を増やす方向）。増やすのは"視聴者が知りたい情報"だけで、間延びさせない
+
+# 元素材（一次情報・生の映像＝情報の供給源）
+- タイトル: ${p.title}
+- チャンネル: ${p.author}
+- 再生数: ${p.views.toLocaleString()} / 長さ: ${Math.floor(p.length/60)}分${p.length%60}秒
+- URL: https://www.youtube.com/watch?v=${p.vid}
+- 再生バーの盛り上がり(視聴者が繰り返し見た所):
+${heat}
+- 文字起こし(原語):
+${transcriptText()}
+
+# 参考動画（競合の伸びた切り抜き＝維持する"構成の見本"）
+- URL: ${refUrl || "(未入力)"}
+- 文字起こし(日本語ナレ):
+${refTr}
+
+# 映像コマ送り(添付されている場合)
+- この依頼にタイムスタンプ付きの「コマ送り画像」が添付されていたら、それが元素材のシーン展開。参考動画の文字起こしと突き合わせて、参考動画がどの場面を使ったかを画像で確認すること
+
+# 手順(この順で全部出力。台本の書き方・文体・表記・冒頭フックの型・サムネ言語化の基準は末尾の『台本ノウハウ』に全て従い、手順番号だけ下記の型移植版で読み替える)
+0.【2つの照合】参考動画と元素材の文字起こし(＋コマ送り画像があれば映像)を突き合わせ、参考動画が元素材のどの区間をどの順番で使ったかを対応表にする(例: 参考0:00-0:08 → 元素材3:12-3:20)。省略・順番の入れ替えがあればそれも記す。※参考動画と元素材が明らかに別物だと判断したら、台本を作らず「この2つは別素材の可能性が高い」と報告して止める
+1.【参考動画の構成マップ】参考動画の展開を、冒頭フックの位置・起承転結・山(盛り上がり)の位置つきで1行ずつ書き出す。これが"維持する骨格"。以降この順番を崩さない
+2.【元素材から補える情報】元素材にあって参考動画が使わなかった情報のうち、上位互換に効くものだけを列挙(背景・因果・数字・固有名・後日談・伏線回収など)。各項目に「なぜ視聴者満足に必要か」を一言。不要な情報(嫉妬を生む/本筋に絡まない/水増し)は"足さない"と明記
+3.【冒頭フック】※ここだけは参考動画をなぞらない。『台本ノウハウ』の手順0(サムネ・冒頭の言語化)＋冒頭フック型カタログで新規に作り、4軸(不快感/謎/恐怖/自分ごと化)で18点以上。参考動画の冒頭より強いものを目指す
+4.【上位互換台本(叩き台)】参考動画の構成・順番のまま、手順2で選んだ情報を差し込んで台本化する
+   - 参考動画のナレは"言い換える"(同じ意味を別の語順・別の語感で。丸写しは2番煎じ)。元素材から足した情報はその流れに自然に溶かす
+   - 尺は参考動画+追加情報分でよい(参考が60秒なら70〜90秒級も可)。ただし『台本ノウハウ』のテンポ・文体・表記ルールは全適用。ナレはです・ます調で統一
+   - 素材に語らせる箇所(ナレ無し)は（）で示す。音・セリフ（黙れ！）のほか画の指定（飲むシーン）（詰んだ表情）もこの形
+   - これは映像照合で仕上げる叩き台。セリフ・時刻は映像で確定する前提で、シーンは多めに残す
+5.【使用区間リスト】台本と同じ順で、使う元素材の区間を秒数付きで列挙(編集者がそのまま切れる形)。山は必ず含める。小さくて見えない対象は赤丸・ズーム指定を添える
+6.【サブタイトルA案】センターピン直球。『台本ノウハウ』手順8に従い5案。冒頭ナレと情報を重複させない
+7.【サブタイトルB案】別角度。手順9に従い3案
+8.【提出前セルフレビュー】①参考動画の勝ち筋(順番・山)を壊していないか ②上位互換の付加価値(足した情報)が明確か ③参考ナレの丸写しになっていないか ④『台本ノウハウ』の失敗チェック・テンポ・表記に違反がないか を1周確認し、直してから提出。直した点を1行報告
+
+# 厳格ルール
+- 元素材の文字起こしが【未貼付】で、かつコマ送り画像の添付も無い場合は、台本を作らず「元素材の文字起こしを貼ってください」と返す
+- 参考動画の文字起こしが【未貼付】の場合は、構成の見本が無いので「参考動画の文字起こしを貼ってください」と返す(このモードは両方の文字起こしが揃って初めて成立する)
+- 台本の内容は必ず文字起こし(またはコマ送り画像に写っていること)だけから作る。タイトル・盛り上がりからの創作は禁止
+
+${KNOWHOW}
+`;
+}
+document.getElementById("tp-copy").onclick = async () => {
+  if(!prep){
+    const el = document.getElementById("tp-copied");
+    el.style.color = "var(--hot)"; el.textContent = "先に上の欄で元素材を「解析」してください";
+    setTimeout(() => el.textContent = "", 5000); return;
+  }
+  await koboGrabClipboard();
+  const noElTr = !prep.transcript.length && !document.getElementById("kobo-tr").value.trim();
+  const noRefTr = !document.getElementById("tp-reftr").value.trim();
+  const text = buildTransplantPrompt(prep);
+  const done = () => {
+    const el = document.getElementById("tp-copied");
+    const miss = [noElTr && "元素材の文字起こし", noRefTr && "参考動画の文字起こし"].filter(Boolean);
+    el.style.color = miss.length ? "var(--hot)" : "var(--ok)";
+    el.textContent = miss.length
+      ? `コピーしましたが未貼付: ${miss.join(" / ")}`
+      : "型移植プロンプトをコピーしました。Claudeに貼ってください";
     setTimeout(() => el.textContent = "", 6000);
   };
   if(navigator.clipboard && navigator.clipboard.writeText){
