@@ -702,7 +702,8 @@ document.getElementById("p-sbd").onclick = async () => {
     `🎞 1秒コマ(密) — ${m.interval}秒間隔・全${m.sheets}枚`;
   document.getElementById("sb-desc").innerHTML =
     "<b>全部の画像を保存して、台本プロンプトと一緒に自分のClaudeへ貼る</b>と、映像を人間の目レベル(コマ単位)で読んで" +
-    "叩き台(展開ベタ書き)が作れます。1コマずつ時系列に実況→叩き台に起こすのが手順(claude.aiは1メッセージ20枚まで)";
+    "叩き台(展開ベタ書き)が作れます。1コマずつ時系列に実況→叩き台に起こすのが手順。" +
+    "claude.aiは1メッセージ20枚までなので、<b>20枚を超える長尺は20枚ずつ複数メッセージに分けて時系列順に送る</b>(前の分の実況の続きとして)";
   document.getElementById("sbimg").style.display = "none";
   document.getElementById("sb-dl").style.display = "none";
   const box = document.getElementById("sbimgs");
