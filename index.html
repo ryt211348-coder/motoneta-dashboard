@@ -202,8 +202,9 @@ footer{color:var(--mut);font-size:11px;text-align:center;margin-top:20px;line-he
     <b>1. ネタを選ぶ</b> — 「🎯動画ピッカー」を開く。並んでいるのは海外の元動画(日本で需要が証明済みの供給元だけ)。ジャンルで絞って、良さそうな動画の <b>✓</b> を押して着手宣言(全員に共有され、被りを防げます)<br>
     <b>2. 解析する</b> — その行の <b>🎬</b> を押すと自動で解析が始まる(タイトル・盛り上がり・人気コメントを取得)。リストに無い動画はプレイヤー上の欄にYouTube URLを直貼りでもOK<br>
     <b>3. 文字起こし</b> — 「📺文字起こしを開く」→ YouTubeで拡張機能「<b>YouTube Summary</b>」のCopy transcriptを押す → このタブに戻るだけ(自動取り込み・貼り付け不要。初回だけChromeが権限を聞くので「許可」)。YouTube公式の「文字起こしを表示」からのコピーでもOK<br>
-    <b>4. 台本を作る</b> — 「📋 Claude用プロンプトをコピー」→ 自分のClaudeに貼るだけ。サムネ言語化・全文和訳(話者ラベル付き)・展開マップ(起承転結)→<b>冒頭→60秒台本(500字前後・叩き台)→サブタイトルA/B案(後付け)</b>・使用区間リストの順で出ます。<b>訴求はA案(センターピン直球)から選ぶのが基本</b>。<b>長尺素材は「🖼サムネを開く」で画像もClaudeへ貼る</b>(サムネがクリックの生命線→その理由をショートの冒頭訴求に変換します)。セリフがほぼ無い素材は「🎞ストーリーボード画像」も一緒にClaudeへ貼る。「<b>🎞1秒コマ(密)</b>」ボタンが出る動画は、密シートを全部貼ると映像をコマ単位で読んで叩き台(展開ベタ書き)の精度が上がる。60秒台本は<b>映像照合前の叩き台</b>なので、そのまま使わず映像と照らしてセリフ・時刻を確定させる<br>
+    <b>4. 台本を作る</b> — 「📋 Claude用プロンプトをコピー」→ 自分のClaudeに貼るだけ。サムネ言語化・全文和訳(話者ラベル付き)・展開マップ(起承転結)→<b>冒頭→60秒台本(700字叩き台・削り候補マーク付き)→サブタイトルA/B案(後付け)</b>・使用区間リストの順で出ます。<b>700字→500字前後へ削るのがライターの腕の見せ所</b>(シーンを削る。1シーンを膨らませない)。<b>訴求はA案(センターピン直球)から選ぶのが基本</b>。<b>長尺素材は「🖼サムネを開く」で画像もClaudeへ貼る</b>(サムネがクリックの生命線→その理由をショートの冒頭訴求に変換します)。セリフがほぼ無い素材は「🎞ストーリーボード画像」も一緒にClaudeへ貼る。「<b>🎞1秒コマ(密)</b>」ボタンが出る動画は、密シートを全部貼ると映像をコマ単位で読んで叩き台(展開ベタ書き)の精度が上がる。60秒台本は<b>映像照合前の叩き台</b>なので、そのまま使わず映像と照らしてセリフ・時刻を確定させる<br>
     <b>5. 編集者に渡す場合</b> — ②の欄に最終台本を貼って「📋 編集指示書プロンプトをコピー」→ Claudeに貼ると「何秒を切るか」の指示書が出るので、そのまま編集者へ。<b>自分で動画まで仕上げる場合は下の🅑へ</b><br>
+    <b>5.5 台本が完成したら③に登録</b> — 工房の「<b>③初稿と完成形を登録</b>」に、最初の台本(初稿)とフィードバック反映後の完成形を貼って送信するだけ。<b>あなたの直しがAIのノウハウになり、次からの叩き台の精度が上がります</b>。余裕があれば「差分分析プロンプト」も自分のClaudeで回すと、なぜ直されたかの言語化が自分のスキルにもなります<br>
     <b>5+. 素材動画のダウンロード</b> — プレイヤーの「<b>⬇素材DL</b>」でURLがコピーされ、<a href="https://www.litexmedia.com/mhdownload.html" target="_blank">MediaHuman YouTube Downloader</a>が起動していれば自動で追加されます。<b>⚠️全部mp3(音声だけ)になる場合はMediaHumanの環境設定で「形式」がMP3になっているのが原因</b>。「オリジナル」または「MP4」・品質=最高に設定してください<br>
     <div style="border-top:1px dashed var(--line);margin:8px 0 6px"></div>
     <b style="font-size:13px">🅑 動画に仕上げる(カット→テロップ→デモ試聴→Premiere)</b><br>
@@ -249,7 +250,7 @@ footer{color:var(--mut);font-size:11px;text-align:center;margin-top:20px;line-he
         📋 Claude用プロンプトをコピー</button>
       <span id="kobo-copied" style="font-size:11px;color:var(--ok);margin-left:8px"></span>
       <div style="font-size:10.5px;color:var(--mut);margin-top:6px">
-        コピーしたら自分のClaudeに貼るだけ → サムネ言語化・全文和訳(話者付き)・展開マップ→冒頭→60秒台本(500字前後・叩き台)→サブタイA/B案(後付け)・使用区間リストが出ます</div>
+        コピーしたら自分のClaudeに貼るだけ → サムネ言語化・全文和訳(話者付き)・展開マップ→冒頭→60秒台本(700字叩き台)→サブタイA/B案(後付け)・使用区間リストが出ます。700字→500字へ削って仕上げてください</div>
       <div style="border-top:1px dashed var(--line);margin-top:10px;padding-top:8px">
         <div style="font-size:12px;font-weight:800;margin-bottom:4px">② 台本が完成したら → 編集者向け指示書</div>
         <textarea id="kobo-script" rows="3" placeholder="完成した台本(修正後の最終版)をここに貼る"
@@ -260,6 +261,26 @@ footer{color:var(--mut);font-size:11px;text-align:center;margin-top:20px;line-he
         <span id="kobo-edcopied" style="font-size:11px;margin-left:8px"></span>
         <div style="font-size:10.5px;color:var(--mut);margin-top:4px">
           Claudeに貼ると、最終台本と文字起こしを突き合わせた「何秒を切るか」の指示書が出ます(そのまま編集者へ)</div>
+      </div>
+      <div style="border-top:1px dashed var(--line);margin-top:10px;padding-top:8px">
+        <div style="font-size:12px;font-weight:800;margin-bottom:4px">③ 初稿と完成形(FB反映後)を登録 → AIが賢くなる</div>
+        <div style="font-size:10.5px;color:var(--mut);margin-bottom:6px">
+          あなたの初稿と、フィードバックを経た完成形を登録するだけでOK。夜間に差分がノウハウ化され、次からの台本プロンプトに反映されます。</div>
+        <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:6px">
+          <input type="text" id="diff-who" placeholder="名前" style="flex:0 0 110px;padding:6px 8px;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--tx);font-size:12px">
+          <input type="text" id="diff-vid" placeholder="元動画URL(任意)" style="flex:1;min-width:160px;padding:6px 8px;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--tx);font-size:12px">
+        </div>
+        <textarea id="diff-first" rows="3" placeholder="① 初稿(最初にAI/自分が書いた台本)"
+          style="width:100%;padding:8px 10px;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--tx);font-size:12px;resize:vertical"></textarea>
+        <textarea id="diff-final" rows="3" placeholder="② 完成形(フィードバック反映後の最終台本)"
+          style="width:100%;margin-top:6px;padding:8px 10px;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--tx);font-size:12px;resize:vertical"></textarea>
+        <div style="display:flex;gap:8px;align-items:center;margin-top:6px;flex-wrap:wrap">
+          <button class="chip" id="diff-send" style="background:var(--acc);border-color:var(--acc);color:#fff;font-weight:800">📤 登録して送信</button>
+          <button class="chip" id="diff-prompt" style="font-weight:700">📋 差分分析プロンプトをコピー(任意)</button>
+          <span id="diff-status" style="font-size:11px"></span>
+        </div>
+        <textarea id="diff-block" rows="2" placeholder="(任意) 差分分析プロンプトをClaudeに貼って出た「OKF取り込みブロック(海外元ネタ)」をここに貼ってから送信すると、分析付きで蓄積されます"
+          style="width:100%;margin-top:6px;padding:8px 10px;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--tx);font-size:11px;resize:vertical"></textarea>
       </div>
     </div>
   </div>
@@ -1564,6 +1585,65 @@ function fallbackCopy(text, done){
   document.body.appendChild(ta); ta.select();
   document.execCommand("copy"); document.body.removeChild(ta); done();
 }
+// ===== ③ 差分還流(初稿→完成形): 登録POST + 差分分析プロンプト =====
+function diffStatus(msg, ok){
+  const el = document.getElementById("diff-status");
+  el.style.color = ok ? "var(--ok)" : "var(--hot)";
+  el.textContent = msg;
+  setTimeout(() => { if(el.textContent === msg) el.textContent = ""; }, 8000);
+}
+document.getElementById("diff-prompt").onclick = () => {
+  const first = document.getElementById("diff-first").value.trim();
+  const fin = document.getElementById("diff-final").value.trim();
+  if(!first || !fin){ diffStatus("初稿と完成形の両方を貼ってください", false); return; }
+  const text = `あなたは60秒ショート台本の統括ディレクター。同じ動画の「初稿」と「フィードバックを経た完成形」を比較して、なぜ直されたのかの型を抽出してください。
+
+# 初稿
+${first}
+
+# 完成形
+${fin}
+
+# やること
+1. 差分を1箇所ずつ「❌初稿→✅完成形」で列挙し、それぞれに「なぜ直されたか」を視聴者心理で1文添える(語感・テンポ・情報量・構成・訴求のどの軸かも明記)
+2. 差分から一般化できる原則があれば「次から初稿の時点でこう書く」の形で書く(この動画に固有の内容は原則にしない)
+3. 出力の最後に、以下の形式のブロックを付ける(このブロックはノウハウDBに自動蓄積されます):
+
+=== OKF取り込みブロック(海外元ネタ) ===
+## 差分の型
+- ❌(初稿の書き方) → ✅(完成形の書き方) | なぜ: (1文) | 軸: (語感/テンポ/情報量/構成/訴求)
+## 一般化した原則
+- (次から初稿で満たすべきこと)
+=== ブロックここまで ===`;
+  const done = () => diffStatus("プロンプトをコピーしました。Claudeに貼って、出力のブロックを下の欄へ", true);
+  if(navigator.clipboard && navigator.clipboard.writeText){
+    navigator.clipboard.writeText(text).then(done).catch(() => fallbackCopy(text, done));
+  } else fallbackCopy(text, done);
+};
+document.getElementById("diff-send").onclick = () => {
+  const first = document.getElementById("diff-first").value.trim();
+  const fin = document.getElementById("diff-final").value.trim();
+  if(!first || !fin){ diffStatus("初稿と完成形の両方を貼ってください", false); return; }
+  const btn = document.getElementById("diff-send");
+  btn.disabled = true;
+  diffStatus("送信中…", true);
+  fetch(API + "?api=diffpush", {
+    method: "POST",
+    headers: {"Content-Type": "text/plain"},  // preflight回避(GASはこれで受かる)
+    body: JSON.stringify({
+      who: document.getElementById("diff-who").value.trim(),
+      vid: document.getElementById("diff-vid").value.trim(),
+      first: first, final: fin,
+      block: document.getElementById("diff-block").value.trim(),
+    }),
+  }).then(r => r.json()).then(j => {
+    btn.disabled = false;
+    if(j.ok){
+      diffStatus("✔ 登録しました。夜間にノウハウ化されます。ありがとうございます!", true);
+      ["diff-first","diff-final","diff-block","diff-vid"].forEach(id => document.getElementById(id).value = "");
+    } else diffStatus("エラー: " + (j.error || "不明"), false);
+  }).catch(e => { btn.disabled = false; diffStatus("送信エラー: " + e, false); });
+};
 </script>
 
 </body>
