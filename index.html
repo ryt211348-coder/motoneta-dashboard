@@ -3,7 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>引用元ランキング</title>
+<title>海外ショート ディレクターツール</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%8E%AC%3C/text%3E%3C/svg%3E">
 <meta name="robots" content="noindex">
 </head>
 <body>
@@ -191,7 +192,7 @@ footer{color:var(--mut);font-size:11px;text-align:center;margin-top:20px;line-he
 <div class="layout">
 <div class="wrap">
 <header>
-  <h1>引用元<em>ランキング</em>
+  <h1>海外ショート <em>ディレクターツール</em>
     <span style="float:right;display:flex;gap:6px">
       <button class="chip" id="help-toggle">❓使い方</button>
       <button class="chip" id="kobo-toggle">🎬 台本プロンプト</button>
@@ -295,9 +296,12 @@ footer{color:var(--mut);font-size:11px;text-align:center;margin-top:20px;line-he
       <div style="font-size:10.5px;color:var(--mut);margin-bottom:6px">
         あなたの初稿と、フィードバックを経た完成形を登録するだけでOK。夜間に差分がノウハウ化され、次からの台本プロンプトに反映されます。</div>
       <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:6px">
-        <input type="text" id="diff-who" placeholder="名前" style="flex:0 0 110px;padding:6px 8px;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--tx);font-size:12px">
-        <input type="text" id="diff-vid" placeholder="元動画URL(任意)" style="flex:1;min-width:160px;padding:6px 8px;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--tx);font-size:12px">
+        <select id="diff-who" style="flex:0 0 130px;padding:6px 8px;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--tx);font-size:12px">
+          <option value="">作成者を選択</option>
+        </select>
+        <input type="text" id="diff-vid" placeholder="元動画URL(任意)" style="flex:1;min-width:150px;padding:6px 8px;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--tx);font-size:12px">
       </div>
+      <input type="text" id="diff-posturl" placeholder="投稿後のYouTube URL(任意) — 貼ると成果と自動でひも付き、伸びた型だけがノウハウ化されます" style="width:100%;margin-bottom:6px;padding:6px 8px;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--tx);font-size:12px">
       <textarea id="diff-first" rows="3" placeholder="① 初稿(最初にAI/自分が書いた台本)"
         style="width:100%;padding:8px 10px;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--tx);font-size:12px;resize:vertical"></textarea>
       <textarea id="diff-final" rows="3" placeholder="② 完成形(フィードバック反映後の最終台本)"
@@ -437,6 +441,16 @@ footer{color:var(--mut);font-size:11px;text-align:center;margin-top:20px;line-he
 </div>
 <script>
 const API = "https://script.google.com/macros/s/AKfycbzRbrv9of3ZFrN0I4UYd0Ufi8O0PORkTPJwWqrJ4a44bPiodWNq64iiiaMOD3I1D-_O/exec";
+// ディレクター・チャンネル定義(実績/差分還流/週次レポートで共通)。作成者名はここが唯一の正
+const WRITERS = ["こうよう", "あいき", "まなか"];
+const CH_NAMES = {tame: "タメニナルハナシ", aiki: "アイキマン"};       // ch id(ASCII) → 表示名
+const CH_WRITERS = {tame: ["こうよう"], aiki: ["あいき", "まなか"]};    // ch id → 所属作成者
+const WRITER_CH = {"こうよう": "tame", "あいき": "aiki", "まなか": "aiki"}; // 作成者 → 主ch id
+function fillWriterSelect(sel, withBlank){
+  if(!sel) return;
+  sel.innerHTML = (withBlank ? '<option value="">作成者を選択</option>' : "")
+    + WRITERS.map(w => `<option value="${w}">${w}</option>`).join("");
+}
 window.onerror = function(msg, src, line, col){
   var el = document.getElementById("upd");
   if(el) el.textContent = "⚠️JSエラー: " + msg + " (line " + line + ":" + col + ")";
@@ -1735,6 +1749,7 @@ function fallbackCopy(text, done){
   document.execCommand("copy"); document.body.removeChild(ta); done();
 }
 // ===== ③ 差分還流(初稿→完成形): 登録POST + 差分分析プロンプト =====
+fillWriterSelect(document.getElementById("diff-who"), true);  // 作成者ドロップダウンを一元定義から生成
 function diffStatus(msg, ok){
   const el = document.getElementById("diff-status");
   el.style.color = ok ? "var(--ok)" : "var(--hot)";
@@ -1770,9 +1785,17 @@ ${fin}
   } else fallbackCopy(text, done);
 };
 document.getElementById("diff-send").onclick = () => {
+  const who = document.getElementById("diff-who").value;
   const first = document.getElementById("diff-first").value.trim();
   const fin = document.getElementById("diff-final").value.trim();
+  const posturl = document.getElementById("diff-posturl").value.trim();
+  // --- 品質ガード: 誤爆(未検証・雑な完成形)がノウハウを汚染しないよう入口で弾く ---
+  if(!who){ diffStatus("作成者を選んでください", false); return; }
   if(!first || !fin){ diffStatus("初稿と完成形の両方を貼ってください", false); return; }
+  if(first.length < 40 || fin.length < 40){ diffStatus("初稿・完成形が短すぎます(台本全文を貼ってください)", false); return; }
+  if(first === fin){ diffStatus("初稿と完成形が同一です。修正後の完成形を貼ってください", false); return; }
+  // 投稿URL未入力は成果ひも付け不可 → ブロックせずソフト確認
+  if(!posturl && !confirm("投稿後URLが未入力です。成果とのひも付けができず「伸びた型」の裏取りに使えません。\nこのまま送りますか?(URLは後で貼り直せません)")) return;
   const btn = document.getElementById("diff-send");
   btn.disabled = true;
   diffStatus("送信中…", true);
@@ -1780,16 +1803,17 @@ document.getElementById("diff-send").onclick = () => {
     method: "POST",
     headers: {"Content-Type": "text/plain"},  // preflight回避(GASはこれで受かる)
     body: JSON.stringify({
-      who: document.getElementById("diff-who").value.trim(),
+      who: who,
       vid: document.getElementById("diff-vid").value.trim(),
+      posted: posturl,
       first: first, final: fin,
       block: document.getElementById("diff-block").value.trim(),
     }),
   }).then(r => r.json()).then(j => {
     btn.disabled = false;
     if(j.ok){
-      diffStatus("✔ 登録しました。夜間にノウハウ化されます。ありがとうございます!", true);
-      ["diff-first","diff-final","diff-block","diff-vid"].forEach(id => document.getElementById(id).value = "");
+      diffStatus("✔ 登録しました。投稿後に伸びた型だけがノウハウ化されます。ありがとうございます!", true);
+      ["diff-first","diff-final","diff-block","diff-vid","diff-posturl"].forEach(id => document.getElementById(id).value = "");
     } else diffStatus("エラー: " + (j.error || "不明"), false);
   }).catch(e => { btn.disabled = false; diffStatus("送信エラー: " + e, false); });
 };
