@@ -360,7 +360,29 @@ footer{color:var(--mut);font-size:11px;text-align:center;margin-top:20px;line-he
   <div id="perf-empty" style="color:var(--mut);font-size:12.5px;margin-top:10px"></div>
 </div>
 <div id="view-rep" style="display:none">
-  <div class="sub" style="margin:0 0 10px">週次レポート(だいちマン形式)は近日このタブに追加されます。数値は自動集計、所見だけ各自のClaudeで書き戻す方式です。</div>
+  <style>
+    #view-rep .rcards{display:flex;gap:10px;flex-wrap:wrap;margin:10px 0}
+    #view-rep .rcard{flex:1 1 120px;min-width:110px;border:1px solid var(--line);border-radius:10px;background:var(--sur);padding:10px 12px}
+    #view-rep .rcard .rk{font-size:11px;color:var(--mut)}
+    #view-rep .rcard .rv{font-size:19px;font-weight:800;margin-top:2px}
+    #view-rep .rcard .rw{font-size:11px;margin-top:2px}
+    #view-rep .up{color:#1f9d55}#view-rep .dn{color:#d23f3f}
+    #view-rep h3{font-size:14px;margin:16px 0 6px;border-left:4px solid var(--acc);padding-left:8px}
+    #view-rep .corrbar{height:14px;border-radius:3px;background:var(--acc);display:inline-block;vertical-align:middle}
+    #view-rep .shoken{border:1px solid var(--line);border-radius:10px;background:var(--sur);padding:10px 12px;margin:8px 0}
+    #view-rep .shoken .hl{font-size:15px;font-weight:800;margin-bottom:4px}
+  </style>
+  <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin:4px 0 2px">
+    <select id="rep-ch" style="padding:7px 10px;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--tx);font-size:13px"></select>
+    <button class="chip" id="rep-shoken-copy" style="font-weight:700">📋 所見プロンプトをコピー</button>
+    <span style="font-size:10.5px;color:var(--mut)">→ 各自のClaudeに貼る→出たJSONを下に貼り「反映」</span>
+  </div>
+  <div id="rep-body"></div>
+  <details style="margin-top:12px"><summary style="cursor:pointer;font-size:12px;color:var(--mut)">所見JSONを貼る(任意・だいちマン調の分析文)</summary>
+    <textarea id="rep-shoken-in" rows="3" placeholder="所見プロンプトをClaudeに貼って返ってきたJSONをここに貼る" style="width:100%;margin-top:6px;padding:8px 10px;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--tx);font-size:12px;resize:vertical"></textarea>
+    <button class="chip" id="rep-shoken-apply" style="margin-top:6px;font-weight:700">反映</button>
+    <span id="rep-shoken-status" style="font-size:11px;margin-left:8px"></span>
+  </details>
 </div>
 <footer>セル＝本数と平均再生(色が濃いほど伸びてる)。行タップ→使われた動画。✓＝着手マーク(全員に共有)。</footer>
 </div>
@@ -2024,7 +2046,132 @@ function renderPerf(){
       <td>${resCell}</td></tr>`;
   }).join("");
 }
-function renderReport(){ /* 段階4で実装 */ }
+// ===== 📊 週次レポート: 数値はJS自動集計、所見だけ各自のClaude(APIコストゼロ) =====
+function rankdata(xs){
+  const idx = xs.map((_,i)=>i).sort((a,b)=>xs[a]-xs[b]);
+  const r = new Array(xs.length).fill(0);
+  let i=0;
+  while(i<xs.length){ let j=i; while(j+1<xs.length && xs[idx[j+1]]===xs[idx[i]]) j++; const avg=(i+j)/2+1; for(let k=i;k<=j;k++) r[idx[k]]=avg; i=j+1; }
+  return r;
+}
+function pearson(xs,ys){
+  const n=xs.length; if(n<3) return null;
+  const mx=xs.reduce((a,b)=>a+b,0)/n, my=ys.reduce((a,b)=>a+b,0)/n;
+  let cov=0,sx=0,sy=0;
+  for(let i=0;i<n;i++){ cov+=(xs[i]-mx)*(ys[i]-my); sx+=(xs[i]-mx)**2; sy+=(ys[i]-my)**2; }
+  sx=Math.sqrt(sx); sy=Math.sqrt(sy);
+  return (sx===0||sy===0)?null:cov/(sx*sy);
+}
+function spearman(xs,ys){
+  const px=[],py=[]; for(let i=0;i<xs.length;i++){ if(xs[i]!=null&&ys[i]!=null){ px.push(xs[i]); py.push(ys[i]); } }
+  if(px.length<3) return null;
+  const r=pearson(rankdata(px),rankdata(py));
+  return r==null?null:Math.round(r*100)/100;
+}
+function mean(xs){ xs=xs.filter(x=>x!=null); return xs.length?xs.reduce((a,b)=>a+b,0)/xs.length:0; }
+// チャンネル別の週集計(PERF=?api=perf のエンベロープ配列)
+function perfChannels(){ return [...new Set(PERF.map(e=>e.ch))]; }
+function analyzeChannel(ch){
+  const envs = PERF.filter(e=>e.ch===ch).sort((a,b)=>String(b.week).localeCompare(String(a.week)));
+  if(!envs.length) return null;
+  const latest = envs[0], prev = envs[1];
+  const rows = latest.rows || [];
+  const sum = k => rows.reduce((a,r)=>a+(+r[k]||0),0);
+  const totals = { n: rows.length, views: sum("v"), likes: sum("lk"), avgRet: mean(rows.map(r=>+r.ret||0)), avgCtr: mean(rows.map(r=>+r.ctr||0)) };
+  let wow = null;
+  if(prev){ const pv=(prev.rows||[]).reduce((a,r)=>a+(+r.v||0),0), pl=(prev.rows||[]).reduce((a,r)=>a+(+r.lk||0),0);
+    wow = { views: pv?Math.round((totals.views-pv)/pv*1000)/10:null, likes: pl?Math.round((totals.likes-pl)/pl*1000)/10:null }; }
+  const top = [...rows].sort((a,b)=>b.v-a.v).slice(0,10);
+  const cr = rows.filter(r=>(+r.v||0)>=100);
+  const vv = cr.map(r=>+r.v||0);
+  const corr = [
+    {k:"いいね数", r:spearman(vv,cr.map(r=>+r.lk||0))},
+    {k:"視聴維持率", r:spearman(vv,cr.map(r=>+r.ret||0))},
+    {k:"CTR", r:spearman(vv,cr.map(r=>+r.ctr||0))},
+  ].filter(c=>c.r!=null);
+  return { ch, name: CH_NAMES[ch]||ch, week: latest.week, totals, wow, top, corr, n_corr: cr.length };
+}
+function shokenKey(a){ return "shoken:"+a.ch+":"+a.week; }
+function buildShokenPrompt(a){
+  const t=a.totals;
+  const corrTxt = a.corr.map(c=>`- 再生数 × ${c.k}: スピアマン相関 ${c.r}`).join("\n");
+  const topTxt = a.top.slice(0,5).map((r,i)=>`${i+1}. ${r.t}（${fmt(r.v)}再生 / いいね${fmt(r.lk)} / 維持${r.ret||"-"}%）`).join("\n");
+  return `あなたは「だいちマン」風のYouTubeチャンネル分析役。以下の週次の数値だけを根拠に、断定的で実践的な所見を書いてください。数字の出どころは説明しなくてよいです。
+
+# チャンネル: ${a.name} / 週: ${a.week}
+- 投稿本数: ${t.n} / 週間再生: ${fmt(t.views)} / いいね合計: ${fmt(t.likes)} / 平均視聴維持率: ${t.avgRet.toFixed(1)}% / 平均CTR: ${t.avgCtr.toFixed(1)}%
+${a.wow ? `- 前週比: 再生 ${a.wow.views==null?"-":a.wow.views+"%"} / いいね ${a.wow.likes==null?"-":a.wow.likes+"%"}` : "- 前週比: データなし"}
+# 伸びた動画TOP5
+${topTxt}
+# 「伸び」との相関(スピアマン, n=${a.n_corr})
+${corrTxt || "(相関を出すには本数が足りません)"}
+
+# 出力(必ず下記キーの厳密なJSONだけを出す。前置き不要)
+{"headline":"今週を一言で(15字前後)","summary_note":"今週のサマリー所見(2〜3文)","correlation_note":"何が伸びを決めたかの読み(2〜3文・n<10なら参考値と明記)","actions":[{"title":"来週のアクション見出し","body":"具体策1〜2文"}]}`;
+}
+function renderReport(){
+  document.getElementById("chips").innerHTML = "";
+  const sel = document.getElementById("rep-ch");
+  const chs = perfChannels();
+  const body = document.getElementById("rep-body");
+  if(!chs.length){ sel.innerHTML=""; body.innerHTML = `<div style="color:var(--mut);font-size:12.5px;margin-top:10px">まだ実績データがありません。「📈実績」タブで各自のStudio CSVを取り込むと、ここに週次レポートが出ます。</div>`; return; }
+  if(sel.options.length !== chs.length || ![...sel.options].every((o,i)=>o.value===chs[i]))
+    sel.innerHTML = chs.map(c=>`<option value="${c}">${CH_NAMES[c]||c}</option>`).join("");
+  const ch = sel.value || chs[0]; sel.value = ch;
+  const a = analyzeChannel(ch);
+  if(!a){ body.innerHTML=""; return; }
+  const t=a.totals;
+  const wowTag = (v) => v==null ? "" : `<span class="${v>=0?"up":"dn"}">${v>=0?"▲":"▼"}${Math.abs(v)}%</span>`;
+  const card = (k,v,w) => `<div class="rcard"><div class="rk">${k}</div><div class="rv">${v}</div><div class="rw">${w||""}</div></div>`;
+  let html = `<div class="rcards">`
+    + card("週間再生", fmt(t.views), a.wow?wowTag(a.wow.views):"")
+    + card("いいね", fmt(t.likes), a.wow?wowTag(a.wow.likes):"")
+    + card("平均維持率", t.avgRet.toFixed(1)+"%", "")
+    + card("平均CTR", t.avgCtr.toFixed(1)+"%", "")
+    + card("投稿本数", t.n, a.week+"週")
+    + `</div>`;
+  // 所見(あれば)
+  const nar = (()=>{ try{ return JSON.parse(localStorage.getItem(shokenKey(a))||"null"); }catch(e){ return null; } })();
+  if(nar){
+    html += `<div class="shoken"><div class="hl">${escapeHtml(nar.headline||"")}</div>`
+      + (nar.summary_note?`<div>${escapeHtml(nar.summary_note)}</div>`:"")
+      + (nar.correlation_note?`<div style="margin-top:6px;color:var(--mut)">🔎 ${escapeHtml(nar.correlation_note)}</div>`:"")
+      + `</div>`;
+  }
+  // TOP10
+  html += `<h3>伸びた動画 TOP${Math.min(10,a.top.length)}</h3><div class="tbl"><table style="min-width:520px"><thead><tr><th>#</th><th>動画</th><th style="text-align:right">再生</th><th style="text-align:right">いいね</th><th style="text-align:right">維持%</th></tr></thead><tbody>`
+    + a.top.map((r,i)=>`<tr><td>${i+1}</td><td style="max-width:280px"><a href="https://www.youtube.com/watch?v=${r.id}" target="_blank" rel="noopener" style="color:var(--tx)">${escapeHtml(r.t)}</a></td><td style="text-align:right;font-weight:700">${fmt(r.v)}</td><td style="text-align:right">${fmt(r.lk)}</td><td style="text-align:right">${r.ret||"-"}</td></tr>`).join("")
+    + `</tbody></table></div>`;
+  // 相関
+  if(a.corr.length){
+    html += `<h3>「伸び」を決めた指標 <span style="font-size:11px;color:var(--mut);font-weight:400">(スピアマン相関 n=${a.n_corr}${a.n_corr<10?" ・参考値":""})</span></h3><div style="margin-top:4px">`
+      + a.corr.map(c=>`<div style="margin:3px 0;font-size:12.5px"><span style="display:inline-block;width:88px">${c.k}</span><span class="corrbar" style="width:${Math.round(Math.abs(c.r)*120)}px;background:${c.r>=0?"var(--acc)":"#d23f3f"}"></span> <b>${c.r}</b></div>`).join("")
+      + `</div>`;
+  }
+  if(nar && nar.actions && nar.actions.length){
+    html += `<h3>来週のアクション</h3>` + nar.actions.map(ac=>`<div class="shoken"><b>${escapeHtml(ac.title||"")}</b><div style="margin-top:2px">${escapeHtml(ac.body||"")}</div></div>`).join("");
+  }
+  body.innerHTML = html;
+}
+document.getElementById("rep-ch").onchange = renderReport;
+document.getElementById("rep-shoken-copy").onclick = () => {
+  const a = analyzeChannel(document.getElementById("rep-ch").value);
+  if(!a){ return; }
+  const text = buildShokenPrompt(a);
+  const done = () => { const s=document.getElementById("rep-shoken-status"); s.style.color="var(--ok)"; s.textContent="コピー完了。各自のClaudeに貼ってください"; setTimeout(()=>s.textContent="",6000); };
+  if(navigator.clipboard&&navigator.clipboard.writeText) navigator.clipboard.writeText(text).then(done).catch(()=>fallbackCopy(text,done)); else fallbackCopy(text,done);
+};
+document.getElementById("rep-shoken-apply").onclick = () => {
+  const a = analyzeChannel(document.getElementById("rep-ch").value);
+  const s = document.getElementById("rep-shoken-status");
+  if(!a){ return; }
+  try{
+    const j = JSON.parse(document.getElementById("rep-shoken-in").value.trim());
+    localStorage.setItem(shokenKey(a), JSON.stringify(j));
+    s.style.color="var(--ok)"; s.textContent="反映しました"; renderReport();
+  }catch(e){ s.style.color="var(--hot)"; s.textContent="JSONの形式が不正です"; }
+};
+
 
 // ===== 開封時リマインド(今週やること) =====
 function todayISO(){ return new Date().toISOString().slice(0,10); }
