@@ -315,9 +315,12 @@ footer{color:var(--mut);font-size:11px;text-align:center;margin-top:20px;line-he
         style="width:100%;margin-top:6px;padding:8px 10px;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--tx);font-size:11px;resize:vertical"></textarea>
     </div>
   </div>
+  <div id="reminder" style="display:none;margin-bottom:8px;border:1px solid var(--acc);border-radius:10px;background:var(--sur);padding:8px 12px;font-size:12.5px;line-height:1.6"></div>
   <div class="chips" style="margin-bottom:6px">
     <button class="chip on" id="tab-rank">📊 引用元ランキング</button>
     <button class="chip" id="tab-pick">🎯 動画ピッカー</button>
+    <button class="chip" id="tab-perf">📈 実績</button>
+    <button class="chip" id="tab-rep">📊 週次レポート</button>
   </div>
   <input type="search" id="q" placeholder="検索">
   <div class="chips" id="chips"></div>
@@ -337,6 +340,27 @@ footer{color:var(--mut);font-size:11px;text-align:center;margin-top:20px;line-he
     <tbody id="pick-body"></tbody>
   </table></div>
   <div class="more" id="pick-more"></div>
+</div>
+<div id="view-perf" style="display:none">
+  <div class="sub" style="margin:0 0 10px">投稿後の実績をここに集約。各自の<b>YouTube Studioの動画CSV</b>を取り込むと、投稿動画×再生数が作成者別に並び、③で登録した台本とも自動でひも付きます。<b>分析は投稿3日後から</b>(直後は後伸びするため)。</div>
+  <div style="border:1px solid var(--line);border-radius:10px;background:var(--sur);padding:10px 12px;margin-bottom:10px">
+    <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+      <select id="perf-who" style="padding:7px 10px;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--tx);font-size:13px"></select>
+      <label class="chip" for="perf-csv" style="cursor:pointer;font-weight:700">📄 CSVを選ぶ</label>
+      <input type="file" id="perf-csv" accept=".csv" multiple style="display:none">
+      <span id="perf-csvname" style="font-size:11.5px;color:var(--mut)"></span>
+    </div>
+    <div id="perf-preview" style="display:none;margin-top:10px"></div>
+    <div id="perf-import-status" style="font-size:11.5px;margin-top:6px"></div>
+  </div>
+  <div class="tbl"><table style="min-width:640px">
+    <thead><tr><th></th><th>投稿動画</th><th style="text-align:right">再生数</th><th>投稿日</th><th>作成者</th><th>台本→結果</th></tr></thead>
+    <tbody id="perf-body"></tbody>
+  </table></div>
+  <div id="perf-empty" style="color:var(--mut);font-size:12.5px;margin-top:10px"></div>
+</div>
+<div id="view-rep" style="display:none">
+  <div class="sub" style="margin:0 0 10px">週次レポート(だいちマン形式)は近日このタブに追加されます。数値は自動集計、所見だけ各自のClaudeで書き戻す方式です。</div>
 </div>
 <footer>セル＝本数と平均再生(色が濃いほど伸びてる)。行タップ→使われた動画。✓＝着手マーク(全員に共有)。</footer>
 </div>
@@ -1374,19 +1398,33 @@ function renderPick(){
   more.style.cursor = list.length > pickLimit ? "pointer" : "default";
   more.onclick = () => {if(list.length > pickLimit){pickLimit += 100; renderPick();}};
 }
+// タブ登録(データ駆動)。新タブはここに1行足すだけ
+const TABS = [
+  {id:"rank", panel:"view-rank", render:render,       search:true},
+  {id:"pick", panel:"view-pick", render:renderPick,   search:true},
+  {id:"perf", panel:"view-perf", render:renderPerf,   search:false},
+  {id:"rep",  panel:"view-rep",  render:renderReport, search:false},
+];
 function switchView(v){
   view = v;
-  document.getElementById("view-rank").style.display = v === "rank" ? "" : "none";
-  document.getElementById("view-pick").style.display = v === "pick" ? "" : "none";
-  document.getElementById("tab-rank").classList.toggle("on", v === "rank");
-  document.getElementById("tab-pick").classList.toggle("on", v === "pick");
-  v === "rank" ? render() : renderPick();
+  const t = TABS.find(x => x.id === v) || TABS[0];
+  for(const x of TABS){
+    document.getElementById(x.panel).style.display = x.id === v ? "" : "none";
+    const btn = document.getElementById("tab-" + x.id);
+    if(btn) btn.classList.toggle("on", x.id === v);
+  }
+  // 検索窓はrank/pickだけ。右のインライン再生パネルもrank/pick以外は畳む(他タブへの食い込み防止)
+  document.getElementById("q").style.display = t.search ? "" : "none";
+  document.getElementById("player").style.display = (v === "rank" || v === "pick") ? "" : "none";
+  t.render();
 }
-document.getElementById("tab-rank").onclick = () => switchView("rank");
-document.getElementById("tab-pick").onclick = () => switchView("pick");
+for(const t of TABS){
+  const btn = document.getElementById("tab-" + t.id);
+  if(btn) btn.onclick = () => switchView(t.id);
+}
 document.getElementById("q").oninput = () => {
   limit = 300; pickLimit = 100;
-  view === "rank" ? render() : renderPick();
+  (TABS.find(t => t.id === view) || TABS[0]).render();
 };
 // 起動: 重いデータは表示後にサーバーから取得(巨大ページ埋め込みを回避)
 function b64decode(b64){
@@ -1401,9 +1439,13 @@ Promise.all([
   KNOWHOW = data.kh || "";
   picked = new Set(ck.checks || []);
   SRC = D.src || []; KPI = D.kpi || {}; SV = D.sv || {}; CHS = D.chs || []; SM = D.sm || [];
+  SCRIPT_RESULTS = D.script_results || {};
+  fillWriterSelect(document.getElementById("perf-who"), true);  // 実績タブの作成者セレクト
   initRankDerived();
   initPickDerived();
   render();
+  renderReminder();  // 開封時リマインド(data.jsonに焼かれた reminders から)
+  loadPerf();  // 投稿後実績(共有)を取得。実績タブ表示前でもリマインドに使う
 }).catch(e => {
   document.getElementById("upd").textContent = "データ読み込みエラー: " + e + " (リロードしてください)";
 });
@@ -1817,6 +1859,197 @@ document.getElementById("diff-send").onclick = () => {
     } else diffStatus("エラー: " + (j.error || "不明"), false);
   }).catch(e => { btn.disabled = false; diffStatus("送信エラー: " + e, false); });
 };
+
+// ===== 📈 実績タブ: Studio CSV取り込み → 共有(perfpush) → 投稿動画×実績 =====
+let PERF = [];                 // ?api=perf のエンベロープ配列 {ch,week,uploader,uploaded_at,rows[]}
+let SCRIPT_RESULTS = {};       // video_id → {writer,note} (段階3で data.json から供給。台本→結果表示用)
+let perfStaged = null;         // 取り込み前のプレビュー行
+let perf3day = true, perfSort = "views";
+const CSV_COLMAP = {
+  video_id: ["コンテンツ","Content","動画","Video"],
+  title: ["動画のタイトル","タイトル","Video title","Title"],
+  published_at: ["動画公開時刻","公開日時","Video publish time","公開日"],
+  views: ["視聴回数","Views"],
+  likes: ["高評価数","高く評価した人の数","Likes"],
+  avg_view_pct: ["平均再生率 (%)","平均視聴率 (%)","Average percentage viewed (%)"],
+  ctr: ["インプレッションのクリック率 (%)","Impressions click-through rate (%)"],
+};
+const DEMO_AGE = ["視聴者の年齢","Viewer age"];
+function toNum(v){ if(v==null) return 0; const s=String(v).trim().replace(/,/g,"").replace(/%/g,""); if(s===""||s==="-"||s==="—") return 0; const f=parseFloat(s); return isNaN(f)?0:f; }
+function normTitle(t){ return String(t).normalize("NFKC").replace(/\s+/g,"").toLowerCase(); }
+function pickCol(row, keys){ for(const k of keys){ if(k in row && String(row[k]).trim()!=="") return row[k]; } return ""; }
+function isoMonday(d){ d = d ? new Date(d) : new Date(); const off=(d.getDay()+6)%7; d.setDate(d.getDate()-off); return d.toISOString().slice(0,10); }
+function daysAgo(pub){ if(!pub) return 999; const t=new Date(String(pub).slice(0,10)); if(isNaN(t)) return 999; return Math.floor((Date.now()-t.getTime())/86400000); }
+// 引用符・BOM・改行対応の自己完結CSVパーサ
+function parseCSVGrid(text){
+  text = text.replace(/^﻿/,"");
+  const rows=[]; let row=[], f="", q=false;
+  for(let i=0;i<text.length;i++){
+    const c=text[i];
+    if(q){ if(c==='"'){ if(text[i+1]==='"'){ f+='"'; i++; } else q=false; } else f+=c; }
+    else if(c==='"') q=true;
+    else if(c===","){ row.push(f); f=""; }
+    else if(c==="\n"){ row.push(f); rows.push(row); row=[]; f=""; }
+    else if(c!=="\r") f+=c;
+  }
+  if(f!=="" || row.length){ row.push(f); rows.push(row); }
+  return rows;
+}
+function csvToObjects(text){
+  const g = parseCSVGrid(text).filter(r => r.length && !(r.length===1 && r[0]===""));
+  if(!g.length) return [];
+  const hdr = g[0].map(h => h.trim());
+  return g.slice(1).map(cells => { const o={}; hdr.forEach((h,i)=>o[h]=(cells[i]||"").trim()); return o; });
+}
+function perfWho(){ return document.getElementById("perf-who").value; }
+// ファイル選択 → パース → プレビュー(行ごとに作成者)
+document.getElementById("perf-csv").onchange = (ev) => {
+  const files = [...ev.target.files];
+  if(!files.length) return;
+  document.getElementById("perf-csvname").textContent = files.map(f=>f.name).join(", ");
+  const st = document.getElementById("perf-import-status");
+  const who = perfWho();
+  if(!who){ st.style.color="var(--hot)"; st.textContent="先に作成者を選んでください"; return; }
+  let vids=[], readErr=false, done=0;
+  files.forEach(file => {
+    const rd = new FileReader();
+    rd.onload = () => {
+      const text = rd.result;
+      if(text.indexOf("�") >= 0){ readErr = true; }
+      const objs = csvToObjects(text);
+      const hdr = objs.length ? Object.keys(objs[0]) : [];
+      if(DEMO_AGE.some(k => hdr.includes(k))){ /* 属性CSVは週次レポート用。実績表では未使用 */ }
+      else if(CSV_COLMAP.title.some(k => hdr.includes(k))){
+        objs.forEach(r => {
+          const t = String(pickCol(r, CSV_COLMAP.title)).trim();
+          if(!t || t==="合計" || t==="Total") return;
+          vids.push({
+            id: String(pickCol(r, CSV_COLMAP.video_id)).trim(),
+            t: t, pub: String(pickCol(r, CSV_COLMAP.published_at)).slice(0,10),
+            v: toNum(pickCol(r, CSV_COLMAP.views)), lk: toNum(pickCol(r, CSV_COLMAP.likes)),
+            ret: toNum(pickCol(r, CSV_COLMAP.avg_view_pct)), ctr: toNum(pickCol(r, CSV_COLMAP.ctr)),
+            w: who, fmt: "", g: ""
+          });
+        });
+      }
+      if(++done === files.length){
+        if(readErr && !vids.length){ st.style.color="var(--hot)"; st.textContent="文字コードを判別できません。Studioで『UTF-8』のCSVを書き出して入れてください"; return; }
+        perfStaged = vids;
+        renderPerfPreview();
+      }
+    };
+    rd.readAsText(file, "utf-8");
+  });
+};
+function renderPerfPreview(){
+  const box = document.getElementById("perf-preview");
+  if(!perfStaged || !perfStaged.length){ box.style.display="none"; return; }
+  const ch = WRITER_CH[perfWho()];
+  const writers = CH_WRITERS[ch] || WRITERS;
+  const multi = writers.length > 1;   // アイキマンは2人 → 行ごとに作成者を選ぶ
+  box.style.display = "";
+  box.innerHTML = `<div style="font-size:11.5px;color:var(--mut);margin-bottom:6px">${CH_NAMES[ch]||ch} の動画 ${perfStaged.length}本を確認 → 「取り込む」で共有${multi?"（作成者が2人いるので各行で選んでください）":""}</div>`
+    + `<div class="tbl" style="max-height:280px;overflow:auto"><table style="min-width:520px"><thead><tr><th>タイトル</th><th style="text-align:right">再生</th><th>投稿日</th><th>作成者</th></tr></thead><tbody>`
+    + perfStaged.map((r,i) => `<tr><td style="max-width:280px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${escapeHtml(r.t)}</td>`
+      + `<td style="text-align:right">${fmt(r.v)}</td><td style="white-space:nowrap">${r.pub||"-"}</td>`
+      + `<td>${multi ? `<select data-i="${i}" class="perf-wsel" style="padding:3px 6px;border:1px solid var(--line);border-radius:6px;background:var(--bg);color:var(--tx);font-size:11px">${writers.map(w=>`<option${w===r.w?" selected":""}>${w}</option>`).join("")}</select>` : writers[0]}</td></tr>`).join("")
+    + `</tbody></table></div>`
+    + `<button class="chip" id="perf-import" style="margin-top:8px;background:var(--acc);border-color:var(--acc);color:#fff;font-weight:800">📤 取り込む(共有)</button>`;
+  if(!multi) perfStaged.forEach(r => r.w = writers[0]);
+  box.querySelectorAll(".perf-wsel").forEach(sel => sel.onchange = e => { perfStaged[+e.target.dataset.i].w = e.target.value; });
+  document.getElementById("perf-import").onclick = importPerf;
+}
+function escapeHtml(s){ return String(s).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c])); }
+function importPerf(){
+  const who = perfWho(), ch = WRITER_CH[who];
+  if(!perfStaged || !perfStaged.length) return;
+  const st = document.getElementById("perf-import-status");
+  st.style.color = "var(--mut)"; st.textContent = "共有中…";
+  const btn = document.getElementById("perf-import"); if(btn) btn.disabled = true;
+  fetch(API + "?api=perfpush", {
+    method: "POST", headers: {"Content-Type":"text/plain"},
+    body: JSON.stringify({ ch: ch, week: isoMonday(), uploader: who, rows: perfStaged }),
+  }).then(r => r.json()).then(j => {
+    if(btn) btn.disabled = false;
+    if(j.ok){
+      st.style.color = "var(--ok)"; st.textContent = `✔ ${perfStaged.length}本を共有しました(週 ${j.week})。ありがとうございます!`;
+      perfStaged = null; document.getElementById("perf-preview").style.display = "none";
+      document.getElementById("perf-csv").value = ""; document.getElementById("perf-csvname").textContent = "";
+      loadPerf(() => switchView("perf"));
+    } else { st.style.color = "var(--hot)"; st.textContent = "エラー: " + (j.error || "不明"); }
+  }).catch(e => { if(btn) btn.disabled=false; st.style.color="var(--hot)"; st.textContent = "共有エラー: " + e; });
+}
+function loadPerf(cb){
+  fetch(API + "?api=perf").then(r => r.json()).then(j => { PERF = j.perf || []; if(cb) cb(); })
+    .catch(() => { PERF = []; if(cb) cb(); });
+}
+// 各動画の最新スナップ(MAX week)に畳む
+function perfLatest(){
+  const by = {};
+  for(const env of PERF) for(const r of (env.rows||[])){
+    const cur = by[r.id];
+    if(!cur || env.week > cur._week){ by[r.id] = Object.assign({}, r, {_ch: env.ch, _week: env.week}); }
+  }
+  return Object.values(by);
+}
+function renderPerf(){
+  document.getElementById("chips").innerHTML = "";
+  // フィルタチップ
+  const chips = document.getElementById("chips");
+  const mk = (label, on, fn) => { const b=document.createElement("button"); b.className="chip"+(on?" on":""); b.textContent=label; b.onclick=fn; chips.appendChild(b); };
+  mk("投稿3日+", perf3day, () => { perf3day = !perf3day; renderPerf(); });
+  mk(perfSort==="views"?"再生順":"投稿日順", true, () => { perfSort = perfSort==="views"?"pub":"views"; renderPerf(); });
+  let rows = perfLatest();
+  if(perf3day) rows = rows.filter(r => daysAgo(r.pub) >= 3);
+  rows.sort((a,b) => perfSort==="views" ? b.v - a.v : String(b.pub).localeCompare(String(a.pub)));
+  const tb = document.getElementById("perf-body");
+  const empty = document.getElementById("perf-empty");
+  if(!rows.length){
+    tb.innerHTML = "";
+    empty.textContent = PERF.length ? "投稿3日以上の動画がありません(様子見中の動画のみ)。" : "まだ実績が取り込まれていません。上で各自のStudio CSVを取り込んでください。";
+    return;
+  }
+  empty.textContent = "";
+  tb.innerHTML = rows.map(r => {
+    const res = SCRIPT_RESULTS[r.id];
+    const resCell = res ? `<span style="color:var(--ok)">✔ ${escapeHtml(res.note||"登録済み")}</span>` : '<span style="color:var(--mut)">—</span>';
+    const link = r.id ? `https://www.youtube.com/watch?v=${r.id}` : "#";
+    return `<tr>
+      <td style="width:96px"><img loading="lazy" src="https://i.ytimg.com/vi/${r.id}/mqdefault.jpg" style="width:88px;border-radius:6px;display:block"></td>
+      <td style="max-width:300px"><a href="${link}" target="_blank" rel="noopener" style="color:var(--tx)">${escapeHtml(r.t)}</a>
+        <div style="font-size:10.5px;color:var(--mut)">${daysAgo(r.pub)}日前${r.ret?` ・ 維持${r.ret}%`:""}</div></td>
+      <td style="text-align:right;font-weight:700">${fmt(r.v)}</td>
+      <td style="white-space:nowrap">${r.pub||"-"}</td>
+      <td>${escapeHtml(r.w||"-")}</td>
+      <td>${resCell}</td></tr>`;
+  }).join("");
+}
+function renderReport(){ /* 段階4で実装 */ }
+
+// ===== 開封時リマインド(今週やること) =====
+function todayISO(){ return new Date().toISOString().slice(0,10); }
+function renderReminder(){
+  const box = document.getElementById("reminder");
+  const rem = (D && D.reminders) || {};
+  if(localStorage.getItem("reminder-dismiss") === todayISO()){ box.style.display = "none"; return; }
+  const lines = [];
+  (rem.csv_missing || []).forEach(m =>
+    lines.push(`📥 <b>${m.name}</b>: 今週(${m.week}〜)のStudio CSVがまだ未アップです → <a href="#" data-go="perf" style="color:var(--acc);font-weight:700">実績タブで取り込む</a>`));
+  (rem.unregistered || []).forEach(u =>
+    lines.push(`📝 <b>${u.name}</b>: 投稿3日以上なのに③未登録の動画が${u.count}本 → <a href="#" data-go="kobo" style="color:var(--acc);font-weight:700">③で登録</a>`));
+  if(!lines.length){ box.style.display = "none"; return; }
+  box.style.display = "";
+  box.innerHTML = `<div style="display:flex;justify-content:space-between;align-items:start;gap:8px">
+      <div><b>今週やること</b><br>${lines.join("<br>")}</div>
+      <button id="reminder-x" title="今日は閉じる" style="border:none;background:none;color:var(--mut);cursor:pointer;font-size:16px;line-height:1">✕</button></div>`;
+  box.querySelectorAll("[data-go]").forEach(a => a.onclick = (e) => {
+    e.preventDefault();
+    const g = a.dataset.go;
+    if(g === "perf") switchView("perf");
+    else if(g === "kobo"){ const k = document.getElementById("kobo"); if(k.style.display === "none") document.getElementById("kobo-toggle").click(); document.getElementById("diff-first").scrollIntoView({behavior:"smooth", block:"center"}); }
+  });
+  document.getElementById("reminder-x").onclick = () => { localStorage.setItem("reminder-dismiss", todayISO()); box.style.display = "none"; };
+}
 </script>
 
 </body>
