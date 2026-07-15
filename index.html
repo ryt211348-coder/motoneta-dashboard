@@ -202,7 +202,7 @@ footer{color:var(--mut);font-size:11px;text-align:center;margin-top:20px;line-he
     <b>1. ネタを選ぶ</b> — 「🎯動画ピッカー」を開く。並んでいるのは海外の元動画(日本で需要が証明済みの供給元だけ)。ジャンルで絞って、良さそうな動画の <b>✓</b> を押して着手宣言(全員に共有され、被りを防げます)<br>
     <b>2. 解析する</b> — その行の <b>🎬</b> を押すと自動で解析が始まる(タイトル・盛り上がり・人気コメントを取得)。リストに無い動画はプレイヤー上の欄にYouTube URLを直貼りでもOK<br>
     <b>3. 文字起こし</b> — 「📺文字起こしを開く」→ YouTubeで拡張機能「<b>YouTube Summary</b>」のCopy transcriptを押す → このタブに戻るだけ(自動取り込み・貼り付け不要。初回だけChromeが権限を聞くので「許可」)。YouTube公式の「文字起こしを表示」からのコピーでもOK<br>
-    <b>4. 台本を作る</b> — 「📋 Claude用プロンプトをコピー」→ 自分のClaudeに貼るだけ。全文和訳・切り抜き提案・60秒台本・サブタイトルA/B案が出ます。<b>訴求はA案(センターピン直球)から選ぶのが基本</b>。セリフがほぼ無い素材は「🎞ストーリーボード画像」も一緒にClaudeへ貼る。「<b>🎞1秒コマ(密)</b>」ボタンが出る動画は、密シートを全部貼ると映像をコマ単位で読んで叩き台(展開ベタ書き)の精度が上がる<br>
+    <b>4. 台本を作る</b> — 「📋 Claude用プロンプトをコピー」→ 自分のClaudeに貼るだけ。サムネ言語化・全文和訳・切り抜き提案・60秒台本(叩き台)・サブタイトルA/B案が出ます。<b>訴求はA案(センターピン直球)から選ぶのが基本</b>。<b>長尺素材は「🖼サムネを開く」で画像もClaudeへ貼る</b>(サムネがクリックの生命線→その理由をショートの冒頭訴求に変換します)。セリフがほぼ無い素材は「🎞ストーリーボード画像」も一緒にClaudeへ貼る。「<b>🎞1秒コマ(密)</b>」ボタンが出る動画は、密シートを全部貼ると映像をコマ単位で読んで叩き台(展開ベタ書き)の精度が上がる。60秒台本は<b>映像照合前の叩き台</b>なので、そのまま使わず映像と照らしてセリフ・時刻を確定させる<br>
     <b>5. 編集者に渡す場合</b> — ②の欄に最終台本を貼って「📋 編集指示書プロンプトをコピー」→ Claudeに貼ると「何秒を切るか」の指示書が出るので、そのまま編集者へ。<b>自分で動画まで仕上げる場合は下の🅑へ</b><br>
     <b>5+. 素材動画のダウンロード</b> — プレイヤーの「<b>⬇素材DL</b>」でURLがコピーされ、<a href="https://www.litexmedia.com/mhdownload.html" target="_blank">MediaHuman YouTube Downloader</a>が起動していれば自動で追加されます。<b>⚠️全部mp3(音声だけ)になる場合はMediaHumanの環境設定で「形式」がMP3になっているのが原因</b>。「オリジナル」または「MP4」・品質=最高に設定してください<br>
     <div style="border-top:1px dashed var(--line);margin:8px 0 6px"></div>
@@ -235,6 +235,10 @@ footer{color:var(--mut);font-size:11px;text-align:center;margin-top:20px;line-he
       <div style="display:flex;gap:8px;align-items:center;margin-top:8px;flex-wrap:wrap">
         <button class="chip" id="kobo-open-yt" style="font-weight:700">📺 文字起こしを開く</button>
         <span style="font-size:10.5px;color:var(--mut)">→ YouTubeで拡張機能のCopy transcriptを押して、このタブに戻ってくるだけ(自動取り込み)。貼り付けは不要</span>
+      </div>
+      <div style="display:flex;gap:8px;align-items:center;margin-top:6px;flex-wrap:wrap">
+        <button class="chip" id="kobo-open-thumb" style="font-weight:700">🖼 サムネを開く</button>
+        <span style="font-size:10.5px;color:var(--mut)">→ 開いた画像をコピーしてプロンプトと一緒にClaudeへ貼る。<b>長尺素材では必須</b>(クリック理由の言語化→ショートの冒頭訴求に変換されます)</span>
       </div>
       <textarea id="kobo-tr" rows="3" placeholder="(手動で貼る場合はここへ) 通常は「📺文字起こしを開く」→拡張機能YouTube SummaryのCopy transcript→このタブに戻れば自動で取り込まれます。YouTube公式の「文字起こしを表示」からのコピーでもOK"
         style="width:100%;margin-top:8px;padding:8px 10px;border:1px solid var(--line);
@@ -1187,6 +1191,9 @@ function sendToKobo(vid){
   document.getElementById("kobo-url").value = "https://www.youtube.com/watch?v=" + vid;
   window.scrollTo({top: 0, behavior: "smooth"});
   document.getElementById("kobo-run").click();
+  // ピッカー由来なら登録者数をプロンプトに載せる(×倍率=属人性判定用)
+  const x = (SM || []).find(v => v.id === vid);
+  koboSubs = x && x.s > 0 ? x.s : 0;
 }
 // ── サムネ右クリック → 画像＋リンク＋再生数(色付き)をまとめてコピー（Googleドキュメント貼り付け用・スマホ企画ダッシュボードと同仕様）──
 function copyToast(msg){
@@ -1341,6 +1348,7 @@ Promise.all([
 
 // ===== 台本プロンプト工房 =====
 let prep = null;
+let koboSubs = 0;  // ピッカー経由のときだけ入る登録者数(×倍率の属人性判定用)
 document.getElementById("kobo-toggle").onclick = () => {
   const k = document.getElementById("kobo");
   k.style.display = k.style.display === "none" ? "" : "none";
@@ -1352,6 +1360,7 @@ document.getElementById("help-toggle").onclick = () => {
 document.getElementById("kobo-run").onclick = () => {
   const url = document.getElementById("kobo-url").value.trim();
   if(!url) return;
+  koboSubs = 0;  // URL直貼りは登録者不明(ピッカー経由ならsendToKoboが直後に上書き)
   document.getElementById("kobo-status").textContent = "解析中…(20〜40秒かかります)";
   document.getElementById("kobo-result").style.display = "none";
   fetch(API + "?prep=" + encodeURIComponent(url)).then(r => r.json()).then(p => {
@@ -1418,8 +1427,15 @@ function buildPrompt(p){
 # 元動画
 - タイトル: ${p.title}
 - チャンネル: ${p.author}
-- 再生数: ${p.views.toLocaleString()} / 長さ: ${Math.floor(p.length/60)}分${p.length%60}秒
+- 再生数: ${p.views.toLocaleString()} / 長さ: ${Math.floor(p.length/60)}分${p.length%60}秒${koboSubs > 0 ? `
+- 登録者数: ${koboSubs.toLocaleString()}人 (×倍率=再生÷登録者: ${(p.views/koboSubs).toFixed(1)})` : ""}
+- サムネURL: https://i.ytimg.com/vi/${p.vid}/maxresdefault.jpg
 - URL: https://www.youtube.com/watch?v=${p.vid}
+
+# サムネ・タイトル(クリック理由の言語化用)
+- この依頼にサムネ画像が添付されていたら、必ず手順0【サムネ・タイトルの言語化】で読むこと
+- 長尺素材(90秒超)は手順0が必須。画像が無ければタイトルと×倍率だけで行い「サムネ画像を貼るとクリック理由の精度が上がります」と一言添える
+- ×倍率が1未満の場合は属人性(ファンが見ているだけ)の疑いを必ず報告する
 
 # 再生バーの盛り上がりポイント(視聴者が繰り返し見た場所=訴求の核)
 ${heat}
@@ -1449,6 +1465,15 @@ document.getElementById("kobo-tr").oninput = () => {
 document.getElementById("kobo-open-yt").onclick = () => {
   if(!prep) return;
   window.open("https://www.youtube.com/watch?v=" + prep.vid, "_blank");
+};
+document.getElementById("kobo-open-thumb").onclick = () => {
+  if(!prep) return;
+  // maxresが無い動画は404画像(120px)が返るのでhqへフォールバック
+  const max = `https://i.ytimg.com/vi/${prep.vid}/maxresdefault.jpg`;
+  const im = new Image();
+  im.onload = () => window.open(im.width > 200 ? max : `https://i.ytimg.com/vi/${prep.vid}/hqdefault.jpg`, "_blank");
+  im.onerror = () => window.open(`https://i.ytimg.com/vi/${prep.vid}/hqdefault.jpg`, "_blank");
+  im.src = max;
 };
 // --- クリップボードから文字起こしを自動取り込み ---
 // (YouTubeで拡張機能のCopy transcript→このタブに戻るだけで貼り付け不要にする)
