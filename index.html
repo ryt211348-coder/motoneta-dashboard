@@ -129,12 +129,13 @@ footer{color:var(--mut);font-size:11px;text-align:center;margin-top:20px;line-he
 .edcl input[type=color]{width:28px;height:24px;border:1px solid var(--line);border-radius:6px;
   background:var(--bg);padding:1px;cursor:pointer}
 .edrow{display:flex;gap:5px;margin:4px 0;align-items:center}
-.edrow input.edtx{flex:1;min-width:0;border:1px solid var(--line);background:var(--bg);color:var(--tx);
+.edrow .edtx{flex:1;min-width:0;border:1px solid var(--line);background:var(--bg);color:var(--tx);
   border-radius:6px;padding:6px 8px;font-size:13px}
-.edrow input.edtx:focus{outline:2px solid var(--acc)}
+.edrow textarea.edtx{resize:none;overflow:hidden;line-height:1.5;font-family:inherit}
+.edrow .edtx:focus{outline:2px solid var(--acc)}
 .edrow button{border:none;background:none;color:var(--mut);cursor:pointer;font-size:13px;padding:2px}
 .edrow button:hover{color:var(--tx)}
-.edrow.sel input.edtx{border-color:var(--acc)}
+.edrow.sel .edtx{border-color:var(--acc)}
 .edtys{display:flex;gap:2px;flex:0 0 auto}
 .edty{border:1px solid var(--line) !important;background:var(--bg) !important;border-radius:5px !important;
   font-size:10px !important;padding:3px 4px !important;color:var(--mut) !important;line-height:1}
@@ -161,7 +162,7 @@ footer{color:var(--mut);font-size:11px;text-align:center;margin-top:20px;line-he
   .pick{width:40px;height:40px;font-size:16px}
   .more{padding:16px;font-size:12px}
   /* 入力欄: 16px以上でiOSの自動ズームを防ぐ(インラインstyleより優先させる) */
-  input[type=search], input[type=text], textarea, .edrow input.edtx{font-size:16px !important}
+  input[type=search], input[type=text], textarea, .edrow .edtx{font-size:16px !important}
   input[type=search]{padding:10px 12px}
   /* マトリクス/テーブル: 横スクロールで見る(慣性スクロール) */
   .tbl{-webkit-overflow-scrolling:touch}
@@ -195,7 +196,7 @@ footer{color:var(--mut);font-size:11px;text-align:center;margin-top:20px;line-he
   #edcv{height:auto;width:min(100%,320px)}
   /* テロップ行: 折り返してタップしやすく(入力欄は1行占有) */
   .edrow{flex-wrap:wrap}
-  .edrow input.edtx{flex:1 1 100%;min-height:40px}
+  .edrow .edtx{flex:1 1 100%;min-height:40px}
   .edrow button{min-width:32px;min-height:32px;font-size:15px}
   .edty{padding:7px 7px !important;font-size:11px !important}
 }
@@ -221,7 +222,7 @@ footer{color:var(--mut);font-size:11px;text-align:center;margin-top:20px;line-he
     <div style="border-top:1px dashed var(--line);margin:8px 0 6px"></div>
     <b style="font-size:13px">🅑 動画に仕上げる(カット→テロップ→デモ試聴→Premiere)</b><br>
     <b>6. 使う区間を決める</b> — 右のプレイヤーで再生しながら「<b>✂IN</b>」→「<b>→OUT</b>」で使う区間を登録(複数OK・登録順につながります)。▶で頭出し、✕で削除。決まったら「<b>📋カット表コピー</b>」<br>
-    <b>7. テロップ台本を入れる</b> — 「<b>📝テロップ編集</b>」を開き、Claudeが出した台本を1行=1テロップで入力。行の種類は各行のチップで切替: <b>タイトル</b>(全編表示)・<b>ナレ</b>(白・めたんが読む)・<b>緑</b>(めたんが読む)・<b>素材</b>(素材セリフ=ナレ無し・素材音声100%でテロップだけ出す)・<b>間</b>(ナレ無しで聞かせる秒数)。ナレ行の<b>🔉スライダー</b>=そのナレ中の素材音量(ダッキング量)。<b>SE</b>行=効果音(名前を候補から選ぶ・⏱で鳴らす時刻・A3に配置)。コマ送りがある動画は「🎬シーン切替」の時刻チップからSE行をワンタップ追加。スプシに台本がある場合はA〜C列(種別・セリフ・素材時刻)をコピーして「<b>📥スプシ取り込み</b>」で一括変換(C列の時刻は@アンカーとして自動付与)。テキスト選択→「《大きく》」で部分強調、「|」で改行。プレビューは<b>テロップを上下ドラッグで位置調整・ダブルクリックで該当行へ</b>。タイトル/緑セリフの色はカラーピッカーで変更可(標準はチームテンプレの黄/橙・緑のままでOK)、「📱UIかぶり」でショートUIとの重なりを確認<br>
+    <b>7. テロップ台本を入れる</b> — 「<b>📝テロップ編集</b>」を開き、Claudeが出した台本を1行=1テロップで入力。行の種類は各行のチップで切替: <b>タイトル</b>(全編表示)・<b>ナレ</b>(白・めたんが読む)・<b>緑</b>(めたんが読む)・<b>素材</b>(素材セリフ=ナレ無し・素材音声100%でテロップだけ出す)・<b>間</b>(ナレ無しで聞かせる秒数)。ナレ行の<b>🔉スライダー</b>=そのナレ中の素材音量(ダッキング量)。<b>SE</b>行=効果音(名前を候補から選ぶ・⏱で鳴らす時刻・A3に配置)。コマ送りがある動画は「🎬シーン切替」の時刻チップからSE行をワンタップ追加。スプシに台本がある場合はA〜C列(種別・セリフ・素材時刻)をコピーして「<b>📥スプシ取り込み</b>」で一括変換(C列の時刻は@アンカーとして自動付与)。テキスト選択→「《大きく》」で部分強調、<b>Enterキーでそのまま改行</b>。プレビューは<b>テロップを上下ドラッグで位置調整・ダブルクリックで該当行へ</b>。タイトル/緑セリフの色はカラーピッカー、タイトル黒背景・セリフ影(ぼかし/ふくらみ)もスライダーで変更可(標準はチームテンプレ準拠)、「📱UIかぶり」でショートUIとの重なりを確認<br>
     <b>8. ナレのタイミング合わせ</b> — 素材のセリフ(叫び声・会話など)の頭で動画を一時停止 → その直前に言い終わってほしいセリフ行をクリック → 「<b>⏱ここまでに言い終わる</b>」。行頭に@時刻が付き、ナレが自動で逆算配置されます<br>
     <b>9. デモ再生で確認</b> — 「<b>▶デモ再生</b>」で、めたんナレ+カット+テロップ+SEを本番とほぼ同じ状態で試聴(ナレ中は素材音声が🔉の値まで自動で小さくなります)。SEの音はSEライブラリのあるMacでのみ鳴ります(<code>python3 scripts/se_server.py</code>・make_edit.py実行時は自動起動)。※要VOICEVOX: Macのターミナルで <code>tools/macos-arm64/run --cors_policy_mode all</code> を起動しておく(「address already in use」と出たら既に起動済みなのでそのままでOK。無いPCはこのステップを飛ばしてOK)<br>
     <b>10. Premiere用に書き出す(Macの管理者)</b> — 「📋カット表コピー」した状態で、テロップ編集の「<b>📋台本をコピー</b>」→ 台本.txtに保存 → ターミナルで <code>python3 scripts/make_edit.py -s 台本.txt</code> → デスクトップの「元ネタ編集」フォルダにXML一式が生成 → Premiereで「ファイル→読み込み」でほぼ完成形(V1素材/V2セリフ/V3タイトル/A1素材音声/A2めたんナレ)。A1にはナレ中のダッキング(音量バーの値)とカット点の30msフェードが音量キーフレームで焼き込み済み。素材セリフの時刻一覧「素材セリフ.txt」も自動生成されるので@アンカーの下調べにも使えます<br>
@@ -481,7 +482,7 @@ footer{color:var(--mut);font-size:11px;text-align:center;margin-top:20px;line-he
         <button class="chip" id="ed-sheet" title="スプシでA〜C列(種別・セリフ・素材時刻)の範囲をコピーしてから押すと台本へ一括変換。女性ナレーション→ナレ/登場人物→緑/素材→素材セリフ/サブタイトル連続行→タイトル。C列の「開始-終了」区間は使用区間(カット)に自動登録され、「該当セリフ」との照合で正しい行にシーン頭アンカー(@>)が付く(行ズレOK)">📥 スプシ取り込み</button>
         <button class="chip" id="ed-big">選択を《大きく》</button>
         <button class="chip" id="ed-sml">選択を〈小さく〉</button>
-        <button class="chip" id="ed-br">改行 |</button>
+        <button class="chip" id="ed-br" title="カーソル位置で改行(Enterキーでも改行できます)">⏎ 改行</button>
         <button class="chip" id="ed-anchor" title="いま動画を止めている位置(素材セリフの頭)を行頭に@時刻で記録。ナレ行=その直前に言い終わる逆算配置/素材行=その時刻から表示">⏱ ここまでに言い終わる</button>
       </div>
       <div style="border-top:1px dashed var(--line);padding-top:8px">
@@ -489,7 +490,11 @@ footer{color:var(--mut);font-size:11px;text-align:center;margin-top:20px;line-he
         <div class="edsl">タイトル高さ <input type="range" id="ed-ty" min="5" max="35" step="0.5"><b id="ed-tyv"></b></div>
         <div class="edsl">セリフ大きさ <input type="range" id="ed-ss" min="46" max="120" step="2"><b id="ed-ssv"></b></div>
         <div class="edsl">セリフ高さ <input type="range" id="ed-sy" min="35" max="92" step="0.5"><b id="ed-syv"></b></div>
+        <div class="edsl" title="セリフの影のぼかし具合(Premiereのソフトシャドウ)">セリフ影ぼかし <input type="range" id="ed-sb" min="0" max="30" step="1"><b id="ed-sbv"></b></div>
+        <div class="edsl" title="影を文字の周りに丸く太らせる量(アピアランスのラウンド結合風)">セリフ影ふくらみ <input type="range" id="ed-sp" min="0" max="16" step="1"><b id="ed-spv"></b></div>
         <div style="display:flex;gap:14px;flex-wrap:wrap;align-items:center;margin-top:6px">
+          <label class="edcl" style="cursor:pointer" title="タイトルの文字幅に合わせた角丸の黒背景">
+            <input type="checkbox" id="ed-bg" style="accent-color:var(--acc)">タイトル黒背景</label>
           <span class="edcl" title="タイトル1行目/2行目の色(標準=黄/橙。チームテンプレの色なので普段はそのまま)">タイトル色
             <input type="color" id="ed-c1"><input type="color" id="ed-c2"></span>
           <span class="edcl" title="緑セリフの色">緑セリフ色 <input type="color" id="ed-cg"></span>
@@ -514,6 +519,7 @@ footer{color:var(--mut);font-size:11px;text-align:center;margin-top:20px;line-he
       <div id="edcv">
       <div id="edcv-bg"></div><div id="edcv-title"></div><div id="edcv-serif"></div>
       <div id="edcv-dz">
+        <div class="dzr" style="left:0;right:0;top:0;height:8%">検索・上部UI</div>
         <div class="dzr" style="right:1.5%;width:13%;top:44%;height:41%">ボ<br>タ<br>ン<br>列</div>
         <div class="dzr" style="left:0;right:0;bottom:0;height:13.5%">タイトル・チャンネル帯</div>
       </div>
@@ -869,8 +875,10 @@ document.getElementById("sbmodal").onclick = e => {
   if(e.target.id === "sbmodal") document.getElementById("sbmodal").style.display = "none";
 };
 // --- テロップ編集UI ---
-const ED_DEF = {title_size: 92, serif_size: 78, title_y: 11.5, serif_y: 66,
-                title_c1: "#ffe11a", title_c2: "#ff8a00", serif_green: "#4dff3a"};  // 色はチームテンプレ標準
+const ED_DEF = {title_size: 92, serif_size: 78, title_y: 15, serif_y: 66,
+                title_c1: "#ffe11a", title_c2: "#ff8a00", serif_green: "#4dff3a",  // 色はチームテンプレ標準
+                serif_shadow: 16, serif_spread: 8,  // セリフ影: ぼかし半径/ふくらみ(ラウンド結合風)
+                title_bg: 1};                       // タイトルの黒背景(1=あり)
 let edVid = null, edLines = [], edStyle = {...ED_DEF}, edSel = 0, edFocus = null;
 const edEsc = t => t.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
 const edMk = t => edEsc(t)
@@ -912,7 +920,7 @@ async function edSeInit(vid){
           edLines.push({k: "s", t: "@" + tf(+b.dataset.t) + " "});
           edSel = edLines.length - 1;
           edSave(); edRows(); edPrev();
-          const inp = document.querySelectorAll("#ed-rows .edrow input.edtx")[edSel];
+          const inp = document.querySelectorAll("#ed-rows .edrow .edtx")[edSel];
           if(inp) inp.focus();
         });
       box.style.display = "block";
@@ -941,17 +949,22 @@ function edRows(){
     const chips = ED_TYPES.map(([k, nm, tip]) =>
       `<button class="edty${l.k === k ? " on" : ""}" data-k="${k}" title="${tip}">${nm}</button>`).join("");
     const isNarr = l.k === "w" || l.k === "g";
+    const isTa = l.k !== "s" && l.k !== "z";  // テロップ系はtextarea(Enterでそのまま改行できる)
     row.innerHTML = `<span class="edtys">${chips}</span>
-      <input class="edtx" value="" ${l.k==='s' ? 'list="se-list"' : ''} placeholder="${l.k==='z' ? '秒数(空=3秒)' : l.k==='t' ? '|で改行・《》〈〉で大小'
+      ${isTa ? '<textarea class="edtx" rows="1"' : `<input class="edtx" value="" ${l.k==='s' ? 'list="se-list"' : ''}`}
+        placeholder="${l.k==='z' ? '秒数(空=3秒)' : l.k==='t' ? 'Enterで改行・《》〈〉で大小'
         : l.k==='m' ? '素材のセリフ(テロップのみ・⏱で開始時刻)'
-        : l.k==='s' ? 'SE名(クリックで候補一覧・⏱で鳴らす時刻)' : 'セリフ(めたんが読む)'}">
+        : l.k==='s' ? 'SE名(クリックで候補一覧・⏱で鳴らす時刻)' : 'セリフ(めたんが読む・Enterで改行)'}">${isTa ? '</textarea>' : ''}
       ${isNarr ? `<input type="range" class="edvol" min="0" max="100" step="5" value="${edVol(l)}"
         title="このナレ中の素材音量(ダッキング量)"><b class="edvolv">${edVol(l)}</b>` : ""}
       <button data-a="up" title="上へ">↑</button><button data-a="dn" title="下へ">↓</button>
       <button data-a="del" title="削除" style="color:var(--hot)">✕</button>`;
-    const inp = row.querySelector("input.edtx");
-    inp.value = l.t;
-    inp.oninput = () => { l.t = inp.value; edSave(); edPrev(); };
+    const inp = row.querySelector(".edtx");
+    const fit = () => { if(isTa){ inp.style.height = "auto"; inp.style.height = inp.scrollHeight + "px"; } };
+    inp.value = isTa ? l.t.replace(/\|/g, "\n") : l.t;  // 内部記法は|のまま・表示は実改行
+    fit();
+    inp.oninput = () => { l.t = isTa ? inp.value.replace(/\n/g, "|") : inp.value; fit(); edSave(); edPrev(); };
+    inp._fit = fit;  // DOM追加後に高さを再計算(追加前はscrollHeight=0)
     const focus = () => { edSel = i; edFocus = inp;
       [...box.children].forEach((r, j) => r.classList.toggle("sel", j === i)); edPrev(); };
     inp.onfocus = focus; row.onclick = focus;
@@ -972,10 +985,13 @@ function edRows(){
       edSave(); edRows(); edPrev();
     });
     box.appendChild(row);
+    const tx = row.querySelector(".edtx");
+    if(tx && tx._fit) tx._fit();
   });
 }
 function edSliders(){
-  const map = [["ts","title_size"],["ty","title_y"],["ss","serif_size"],["sy","serif_y"]];
+  const map = [["ts","title_size"],["ty","title_y"],["ss","serif_size"],["sy","serif_y"],
+               ["sb","serif_shadow"],["sp","serif_spread"]];
   for(const [id, key] of map){
     const r = document.getElementById("ed-" + id), v = document.getElementById("ed-" + id + "v");
     r.value = edStyle[key]; v.textContent = edStyle[key];
@@ -986,6 +1002,9 @@ function edSliders(){
     c.value = edStyle[key];
     c.oninput = () => { edStyle[key] = c.value; edSave(); edPrev(); };
   }
+  const bg = document.getElementById("ed-bg");
+  bg.checked = !!edStyle.title_bg;
+  bg.onchange = () => { edStyle.title_bg = bg.checked ? 1 : 0; edSave(); edPrev(); };
 }
 document.getElementById("ed-reset").onclick = () => {
   edStyle = {...ED_DEF}; edSave(); edSliders(); edPrev();
@@ -1026,7 +1045,7 @@ edDrag(document.getElementById("edcv-title"), "title_y", 5, 35);
 edDrag(document.getElementById("edcv-serif"), "serif_y", 35, 92);
 function edJump(i){
   if(i < 0) return;
-  const inp = document.querySelectorAll("#ed-rows .edrow input.edtx")[i];
+  const inp = document.querySelectorAll("#ed-rows .edrow .edtx")[i];
   if(inp){ inp.focus(); inp.scrollIntoView({block: "center", behavior: "smooth"}); }
 }
 document.getElementById("edcv-title").ondblclick = () =>
@@ -1042,15 +1061,27 @@ function edPrev(){
   const title = edLines.find(l => l.k === "t");
   tEl.style.top = edStyle.title_y + "%";
   tEl.style.fontSize = Math.round(edStyle.title_size * scale) + "px";
-  tEl.innerHTML = !title ? "" : title.t.split("|").filter(s => s.trim()).map((s, i) =>
-    `<div style="color:${i % 2 ? edStyle.title_c2 : edStyle.title_c1};
-      text-shadow:0 ${Math.max(2, 4*scale)}px ${Math.max(3, 8*scale)}px rgba(0,0,0,.85)">${edMk(s)}</div>`).join("");
+  tEl.innerHTML = !title ? "" : title.t.split("|").filter(s => s.trim()).map((s, i) => {
+    const bg = edStyle.title_bg
+      ? "background:rgba(0,0,0,.85);padding:.05em .38em .1em;border-radius:.16em;display:inline-block"
+      : `text-shadow:0 ${Math.max(2, 4*scale)}px ${Math.max(3, 8*scale)}px rgba(0,0,0,.85)`;
+    return `<div style="margin:.08em 0"><span style="color:${i % 2 ? edStyle.title_c2 : edStyle.title_c1};${bg}">${edMk(s)}</span></div>`;
+  }).join("");
   const sEl = document.getElementById("edcv-serif");
   const isSer = l => l && (l.k === "w" || l.k === "g" || l.k === "m");
   const cur = isSer(edLines[edSel]) ? edLines[edSel] : edLines.find(isSer);
   sEl.style.top = edStyle.serif_y + "%";
   sEl.style.fontSize = Math.round(edStyle.serif_size * scale) + "px";
   sEl.style.color = cur && cur.k === "g" ? edStyle.serif_green : "#ffffff";
+  {  // ラウンド結合風の丸いソフトシャドウ(8方向にふくらみ+ぼかしで近似)
+    const blur = Math.max(1, edStyle.serif_shadow * scale);
+    const sp = (edStyle.serif_spread || 0) * scale;
+    const off = 5 * scale;
+    const dirs = [[1,0],[-1,0],[0,1],[0,-1],[.7,.7],[.7,-.7],[-.7,.7],[-.7,-.7]];
+    sEl.style.textShadow = dirs.map(([dx, dy]) =>
+      `${dx*sp}px ${dy*sp + off*0.4}px ${blur*0.7}px rgba(0,0,0,.9)`).join(",")
+      + `,0 ${off}px ${blur}px rgba(0,0,0,.95),0 0 ${blur*1.4}px rgba(0,0,0,.85)`;
+  }
   sEl.innerHTML = cur ? cur.t.replace(/^@>?\d+:\d+(\.\d+)?\s*/, "")
     .split("|").filter(s => s.trim()).map(s => `<div>${edMk(s)}</div>`).join("") : "";
 }
@@ -1165,7 +1196,8 @@ document.getElementById("ed-sheet").onclick = async () => {
 };
 document.getElementById("ed-big").onclick = () => edWrap("《", "》");
 document.getElementById("ed-sml").onclick = () => edWrap("〈", "〉");
-document.getElementById("ed-br").onclick = () => edWrap("|", "");
+document.getElementById("ed-br").onclick = () =>
+  edWrap(edFocus && edFocus.tagName === "TEXTAREA" ? "\n" : "|", "");
 document.getElementById("ed-anchor").onclick = () => {
   if(!edFocus){ alert("先にアンカーを付けたいセリフ行をクリックしてください"); return; }
   if(!ytPlayer || !ytPlayer.getCurrentTime){ alert("プレイヤーで動画を再生してから使ってください"); return; }
@@ -1315,10 +1347,13 @@ document.getElementById("ed-copy").onclick = () => {
   if(edStyle.serif_size !== ED_DEF.serif_size) diff.serif_size = edStyle.serif_size;
   if(edStyle.title_y !== ED_DEF.title_y) diff.title_y = +(edStyle.title_y / 100).toFixed(3);
   if(edStyle.serif_y !== ED_DEF.serif_y) diff.serif_y = +(edStyle.serif_y / 100).toFixed(3);
-  // 色差分(telop.pyのSTYLEキーに直接合流する)
+  // 色・影・背景差分(telop.pyのSTYLEキーに直接合流する)
   if(edStyle.title_c1 !== ED_DEF.title_c1 || edStyle.title_c2 !== ED_DEF.title_c2)
     diff.title_colors = [edStyle.title_c1, edStyle.title_c2];
   if(edStyle.serif_green !== ED_DEF.serif_green) diff.serif_green = edStyle.serif_green;
+  if(edStyle.serif_shadow !== ED_DEF.serif_shadow) diff.serif_shadow = edStyle.serif_shadow;
+  if(edStyle.serif_spread !== ED_DEF.serif_spread) diff.serif_spread = edStyle.serif_spread;
+  if(!edStyle.title_bg) diff.title_bg = "";  // 黒背景オフ(telop.py側は""で無効)
   const lines = [];
   if(Object.keys(diff).length) lines.push("@style " + JSON.stringify(diff));
   for(const l of edLines){
