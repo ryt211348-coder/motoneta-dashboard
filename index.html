@@ -117,6 +117,17 @@ footer{color:var(--mut);font-size:11px;text-align:center;margin-top:20px;line-he
 #edcv-serif{position:absolute;left:0;right:0;text-align:center;transform:translateY(-50%);
   font-family:'Hiragino Maru Gothic ProN','Zen Maru Gothic',sans-serif;font-weight:800;line-height:1.3;
   text-shadow:0 3px 7px rgba(0,0,0,.95),0 0 3px rgba(0,0,0,.6)}
+/* プレビュー直接操作: テロップは上下ドラッグで位置調整 */
+#edcv-title,#edcv-serif{cursor:grab;user-select:none;-webkit-user-select:none;touch-action:none}
+#edcv-title:active,#edcv-serif:active{cursor:grabbing}
+/* Dead zone(ショートのUIかぶり)ガイド */
+#edcv-dz{position:absolute;inset:0;pointer-events:none;display:none;z-index:5}
+#edcv-dz .dzr{position:absolute;background:rgba(255,64,96,.16);border:1px dashed rgba(255,90,120,.6);
+  color:rgba(255,150,165,.95);font-size:9.5px;display:flex;align-items:center;justify-content:center;
+  border-radius:4px;letter-spacing:.05em}
+.edcl{display:flex;align-items:center;gap:5px;font-size:11.5px;color:var(--mut)}
+.edcl input[type=color]{width:28px;height:24px;border:1px solid var(--line);border-radius:6px;
+  background:var(--bg);padding:1px;cursor:pointer}
 .edrow{display:flex;gap:5px;margin:4px 0;align-items:center}
 .edrow input.edtx{flex:1;min-width:0;border:1px solid var(--line);background:var(--bg);color:var(--tx);
   border-radius:6px;padding:6px 8px;font-size:13px}
@@ -210,7 +221,7 @@ footer{color:var(--mut);font-size:11px;text-align:center;margin-top:20px;line-he
     <div style="border-top:1px dashed var(--line);margin:8px 0 6px"></div>
     <b style="font-size:13px">🅑 動画に仕上げる(カット→テロップ→デモ試聴→Premiere)</b><br>
     <b>6. 使う区間を決める</b> — 右のプレイヤーで再生しながら「<b>✂IN</b>」→「<b>→OUT</b>」で使う区間を登録(複数OK・登録順につながります)。▶で頭出し、✕で削除。決まったら「<b>📋カット表コピー</b>」<br>
-    <b>7. テロップ台本を入れる</b> — 「<b>📝テロップ編集</b>」を開き、Claudeが出した台本を1行=1テロップで入力。行の種類は各行のチップで切替: <b>タイトル</b>(全編表示)・<b>ナレ</b>(白・めたんが読む)・<b>緑</b>(めたんが読む)・<b>素材</b>(素材セリフ=ナレ無し・素材音声100%でテロップだけ出す)・<b>間</b>(ナレ無しで聞かせる秒数)。ナレ行の<b>🔉スライダー</b>=そのナレ中の素材音量(ダッキング量)。<b>SE</b>行=効果音(名前を候補から選ぶ・⏱で鳴らす時刻・A3に配置)。コマ送りがある動画は「🎬シーン切替」の時刻チップからSE行をワンタップ追加。スプシに台本がある場合はA〜C列(種別・セリフ・素材時刻)をコピーして「<b>📥スプシ取り込み</b>」で一括変換(C列の時刻は@アンカーとして自動付与)。テキスト選択→「《大きく》」で部分強調、「|」で改行<br>
+    <b>7. テロップ台本を入れる</b> — 「<b>📝テロップ編集</b>」を開き、Claudeが出した台本を1行=1テロップで入力。行の種類は各行のチップで切替: <b>タイトル</b>(全編表示)・<b>ナレ</b>(白・めたんが読む)・<b>緑</b>(めたんが読む)・<b>素材</b>(素材セリフ=ナレ無し・素材音声100%でテロップだけ出す)・<b>間</b>(ナレ無しで聞かせる秒数)。ナレ行の<b>🔉スライダー</b>=そのナレ中の素材音量(ダッキング量)。<b>SE</b>行=効果音(名前を候補から選ぶ・⏱で鳴らす時刻・A3に配置)。コマ送りがある動画は「🎬シーン切替」の時刻チップからSE行をワンタップ追加。スプシに台本がある場合はA〜C列(種別・セリフ・素材時刻)をコピーして「<b>📥スプシ取り込み</b>」で一括変換(C列の時刻は@アンカーとして自動付与)。テキスト選択→「《大きく》」で部分強調、「|」で改行。プレビューは<b>テロップを上下ドラッグで位置調整・ダブルクリックで該当行へ</b>。タイトル/緑セリフの色はカラーピッカーで変更可(標準はチームテンプレの黄/橙・緑のままでOK)、「📱UIかぶり」でショートUIとの重なりを確認<br>
     <b>8. ナレのタイミング合わせ</b> — 素材のセリフ(叫び声・会話など)の頭で動画を一時停止 → その直前に言い終わってほしいセリフ行をクリック → 「<b>⏱ここまでに言い終わる</b>」。行頭に@時刻が付き、ナレが自動で逆算配置されます<br>
     <b>9. デモ再生で確認</b> — 「<b>▶デモ再生</b>」で、めたんナレ+カット+テロップ+SEを本番とほぼ同じ状態で試聴(ナレ中は素材音声が🔉の値まで自動で小さくなります)。SEの音はSEライブラリのあるMacでのみ鳴ります(<code>python3 scripts/se_server.py</code>・make_edit.py実行時は自動起動)。※要VOICEVOX: Macのターミナルで <code>tools/macos-arm64/run --cors_policy_mode all</code> を起動しておく(「address already in use」と出たら既に起動済みなのでそのままでOK。無いPCはこのステップを飛ばしてOK)<br>
     <b>10. Premiere用に書き出す(Macの管理者)</b> — 「📋カット表コピー」した状態で、テロップ編集の「<b>📋台本をコピー</b>」→ 台本.txtに保存 → ターミナルで <code>python3 scripts/make_edit.py -s 台本.txt</code> → デスクトップの「元ネタ編集」フォルダにXML一式が生成 → Premiereで「ファイル→読み込み」でほぼ完成形(V1素材/V2セリフ/V3タイトル/A1素材音声/A2めたんナレ)。A1にはナレ中のダッキング(音量バーの値)とカット点の30msフェードが音量キーフレームで焼き込み済み。素材セリフの時刻一覧「素材セリフ.txt」も自動生成されるので@アンカーの下調べにも使えます<br>
@@ -458,7 +469,9 @@ footer{color:var(--mut);font-size:11px;text-align:center;margin-top:20px;line-he
       <div style="font-size:11px;color:var(--mut);margin-bottom:6px">
         1行=1テロップ。行をクリックすると右のプレビューに映ります。行頭チップで種類を切替(<b>素材</b>=ナレ無しで素材のセリフをテロップ表示)。
         ナレ行の🔉=そのナレ中の素材音量。テキストを選択して「大きく/小さく」で部分強調。
-        動画を素材セリフの頭で止めて<b>⏱</b>を押すと行頭に@時刻が付き、ナレ行は「その直前に言い終わる」逆算配置・素材行は「その時刻から表示」になります</div>
+        動画を素材セリフの頭で止めて<b>⏱</b>を押すと行頭に@時刻が付き、ナレ行は「その直前に言い終わる」逆算配置・素材行は「その時刻から表示」になります。
+        右のプレビューは<b>テロップを上下ドラッグ</b>で位置調整・<b>ダブルクリック</b>で該当行へジャンプ。
+        「📱UIかぶり」でショートのボタン列・タイトル帯にかぶらないか確認できます</div>
       <div id="ed-rows"></div>
       <datalist id="se-list"></datalist>
       <div id="ed-scenes" style="display:none;font-size:10.5px;color:var(--mut);margin:6px 0;line-height:2">
@@ -476,6 +489,13 @@ footer{color:var(--mut);font-size:11px;text-align:center;margin-top:20px;line-he
         <div class="edsl">タイトル高さ <input type="range" id="ed-ty" min="5" max="35" step="0.5"><b id="ed-tyv"></b></div>
         <div class="edsl">セリフ大きさ <input type="range" id="ed-ss" min="46" max="120" step="2"><b id="ed-ssv"></b></div>
         <div class="edsl">セリフ高さ <input type="range" id="ed-sy" min="35" max="92" step="0.5"><b id="ed-syv"></b></div>
+        <div style="display:flex;gap:14px;flex-wrap:wrap;align-items:center;margin-top:6px">
+          <span class="edcl" title="タイトル1行目/2行目の色(標準=黄/橙。チームテンプレの色なので普段はそのまま)">タイトル色
+            <input type="color" id="ed-c1"><input type="color" id="ed-c2"></span>
+          <span class="edcl" title="緑セリフの色">緑セリフ色 <input type="color" id="ed-cg"></span>
+          <button class="chip" id="ed-reset" title="大きさ・高さ・色をチーム標準に戻す"
+            style="margin-left:auto;font-size:11px">↺ 標準に戻す</button>
+        </div>
       </div>
       <div style="display:flex;gap:8px;align-items:center;margin-top:8px;flex-wrap:wrap">
         <button class="chip" id="ed-copy" style="background:var(--acc);border-color:var(--acc);
@@ -486,8 +506,17 @@ footer{color:var(--mut);font-size:11px;text-align:center;margin-top:20px;line-he
       <div style="font-size:10.5px;color:var(--mut);margin-top:6px;line-height:1.7">
         コピーした台本を<b>台本.txt</b>に保存 → Macで<code>python3 scripts/make_edit.py -s 台本.txt</code>(カット表は📋カット表コピーでクリップボードへ)→ PremiereでXML読み込みで完成。※プレビューのセリフ書体は近似(実物は平成丸ゴシックStd)</div>
     </div>
-    <div class="edright"><div id="edcv">
+    <div class="edright">
+      <div style="text-align:right;margin-bottom:6px">
+        <button class="chip" id="ed-dz" style="font-size:11px"
+          title="YouTubeショートで右のボタン列・下のタイトル/チャンネル帯がかぶる範囲を表示。テロップがここに入らないように">📱 UIかぶり</button>
+      </div>
+      <div id="edcv">
       <div id="edcv-bg"></div><div id="edcv-title"></div><div id="edcv-serif"></div>
+      <div id="edcv-dz">
+        <div class="dzr" style="right:1.5%;width:13%;top:44%;height:41%">ボ<br>タ<br>ン<br>列</div>
+        <div class="dzr" style="left:0;right:0;bottom:0;height:13.5%">タイトル・チャンネル帯</div>
+      </div>
     </div></div>
   </div>
 </div>
@@ -840,7 +869,8 @@ document.getElementById("sbmodal").onclick = e => {
   if(e.target.id === "sbmodal") document.getElementById("sbmodal").style.display = "none";
 };
 // --- テロップ編集UI ---
-const ED_DEF = {title_size: 92, serif_size: 78, title_y: 11.5, serif_y: 66};
+const ED_DEF = {title_size: 92, serif_size: 78, title_y: 11.5, serif_y: 66,
+                title_c1: "#ffe11a", title_c2: "#ff8a00", serif_green: "#4dff3a"};  // 色はチームテンプレ標準
 let edVid = null, edLines = [], edStyle = {...ED_DEF}, edSel = 0, edFocus = null;
 const edEsc = t => t.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
 const edMk = t => edEsc(t)
@@ -856,9 +886,9 @@ function edOpen(vid, title){
   edSel = edLines.findIndex(l => l.k === "w" || l.k === "g" || l.k === "m");
   document.getElementById("edcv-bg").style.backgroundImage =
     `url(https://i.ytimg.com/vi/${vid}/hqdefault.jpg)`;
+  document.getElementById("edmodal").style.display = "block";  // 先に表示(非表示だと幅0でプレビューのフォントが0pxになる)
   edRows(); edSliders(); edPrev();
   edSeInit(vid);
-  document.getElementById("edmodal").style.display = "block";
 }
 // --- SE: 候補リスト(ローカルSEサーバー優先→data.json) と シーン切替チップ ---
 const SEURL = "http://127.0.0.1:50022";
@@ -914,7 +944,7 @@ function edRows(){
     row.innerHTML = `<span class="edtys">${chips}</span>
       <input class="edtx" value="" ${l.k==='s' ? 'list="se-list"' : ''} placeholder="${l.k==='z' ? '秒数(空=3秒)' : l.k==='t' ? '|で改行・《》〈〉で大小'
         : l.k==='m' ? '素材のセリフ(テロップのみ・⏱で開始時刻)'
-        : l.k==='s' ? 'SE名(クリックで候補一覧・⏱で鳴らす時刻)' : 'セリフ(めたんが読む)'}"
+        : l.k==='s' ? 'SE名(クリックで候補一覧・⏱で鳴らす時刻)' : 'セリフ(めたんが読む)'}">
       ${isNarr ? `<input type="range" class="edvol" min="0" max="100" step="5" value="${edVol(l)}"
         title="このナレ中の素材音量(ダッキング量)"><b class="edvolv">${edVol(l)}</b>` : ""}
       <button data-a="up" title="上へ">↑</button><button data-a="dn" title="下へ">↓</button>
@@ -951,7 +981,60 @@ function edSliders(){
     r.value = edStyle[key]; v.textContent = edStyle[key];
     r.oninput = () => { edStyle[key] = +r.value; v.textContent = r.value; edSave(); edPrev(); };
   }
+  for(const [id, key] of [["c1","title_c1"],["c2","title_c2"],["cg","serif_green"]]){
+    const c = document.getElementById("ed-" + id);
+    c.value = edStyle[key];
+    c.oninput = () => { edStyle[key] = c.value; edSave(); edPrev(); };
+  }
 }
+document.getElementById("ed-reset").onclick = () => {
+  edStyle = {...ED_DEF}; edSave(); edSliders(); edPrev();
+};
+// --- 📱Dead zone(ショートUIかぶり)トグル ---
+document.getElementById("ed-dz").onclick = () => {
+  const on = document.getElementById("edcv-dz").style.display !== "block";
+  document.getElementById("edcv-dz").style.display = on ? "block" : "none";
+  document.getElementById("ed-dz").textContent = on ? "📱 UIかぶり ✓" : "📱 UIかぶり";
+  try{ localStorage.setItem("eddz", on ? "1" : ""); }catch(e){}
+};
+if(localStorage.getItem("eddz") === "1") document.getElementById("ed-dz").click();
+// --- プレビュー直接操作: 上下ドラッグで位置調整・ダブルクリックで該当行へ ---
+function edDrag(el, key, min, max){
+  el.addEventListener("pointerdown", e => {
+    if(!edVid) return;
+    e.preventDefault();
+    el.setPointerCapture(e.pointerId);
+    const h = document.getElementById("edcv").clientHeight;
+    const y0 = e.clientY, v0 = edStyle[key];
+    const mv = ev => {
+      edStyle[key] = Math.min(max, Math.max(min,
+        Math.round((v0 + (ev.clientY - y0) / h * 100) * 2) / 2));  // スライダーと同じ0.5刻み
+      edSliders(); edPrev();
+    };
+    const up = () => {
+      el.removeEventListener("pointermove", mv);
+      el.removeEventListener("pointerup", up);
+      el.removeEventListener("pointercancel", up);
+      edSave();
+    };
+    el.addEventListener("pointermove", mv);
+    el.addEventListener("pointerup", up);
+    el.addEventListener("pointercancel", up);
+  });
+}
+edDrag(document.getElementById("edcv-title"), "title_y", 5, 35);
+edDrag(document.getElementById("edcv-serif"), "serif_y", 35, 92);
+function edJump(i){
+  if(i < 0) return;
+  const inp = document.querySelectorAll("#ed-rows .edrow input.edtx")[i];
+  if(inp){ inp.focus(); inp.scrollIntoView({block: "center", behavior: "smooth"}); }
+}
+document.getElementById("edcv-title").ondblclick = () =>
+  edJump(edLines.findIndex(l => l.k === "t"));
+document.getElementById("edcv-serif").ondblclick = () => {
+  const isSer = l => l && (l.k === "w" || l.k === "g" || l.k === "m");
+  edJump(isSer(edLines[edSel]) ? edSel : edLines.findIndex(isSer));
+};
 function edPrev(){
   const cv = document.getElementById("edcv");
   const scale = cv.clientWidth / 1080;
@@ -960,14 +1043,14 @@ function edPrev(){
   tEl.style.top = edStyle.title_y + "%";
   tEl.style.fontSize = Math.round(edStyle.title_size * scale) + "px";
   tEl.innerHTML = !title ? "" : title.t.split("|").filter(s => s.trim()).map((s, i) =>
-    `<div style="color:${i % 2 ? "#ff8a00" : "#ffe11a"};
+    `<div style="color:${i % 2 ? edStyle.title_c2 : edStyle.title_c1};
       text-shadow:0 ${Math.max(2, 4*scale)}px ${Math.max(3, 8*scale)}px rgba(0,0,0,.85)">${edMk(s)}</div>`).join("");
   const sEl = document.getElementById("edcv-serif");
   const isSer = l => l && (l.k === "w" || l.k === "g" || l.k === "m");
   const cur = isSer(edLines[edSel]) ? edLines[edSel] : edLines.find(isSer);
   sEl.style.top = edStyle.serif_y + "%";
   sEl.style.fontSize = Math.round(edStyle.serif_size * scale) + "px";
-  sEl.style.color = cur && cur.k === "g" ? "#4dff3a" : "#ffffff";
+  sEl.style.color = cur && cur.k === "g" ? edStyle.serif_green : "#ffffff";
   sEl.innerHTML = cur ? cur.t.replace(/^@>?\d+:\d+(\.\d+)?\s*/, "")
     .split("|").filter(s => s.trim()).map(s => `<div>${edMk(s)}</div>`).join("") : "";
 }
@@ -1232,6 +1315,10 @@ document.getElementById("ed-copy").onclick = () => {
   if(edStyle.serif_size !== ED_DEF.serif_size) diff.serif_size = edStyle.serif_size;
   if(edStyle.title_y !== ED_DEF.title_y) diff.title_y = +(edStyle.title_y / 100).toFixed(3);
   if(edStyle.serif_y !== ED_DEF.serif_y) diff.serif_y = +(edStyle.serif_y / 100).toFixed(3);
+  // 色差分(telop.pyのSTYLEキーに直接合流する)
+  if(edStyle.title_c1 !== ED_DEF.title_c1 || edStyle.title_c2 !== ED_DEF.title_c2)
+    diff.title_colors = [edStyle.title_c1, edStyle.title_c2];
+  if(edStyle.serif_green !== ED_DEF.serif_green) diff.serif_green = edStyle.serif_green;
   const lines = [];
   if(Object.keys(diff).length) lines.push("@style " + JSON.stringify(diff));
   for(const l of edLines){
