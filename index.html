@@ -1092,9 +1092,10 @@ document.getElementById("ed-dz").onclick = () => {
   const on = document.getElementById("edcv-dz").style.display !== "block";
   document.getElementById("edcv-dz").style.display = on ? "block" : "none";
   document.getElementById("ed-dz").textContent = on ? "📱 UIかぶり ✓" : "📱 UIかぶり";
-  try{ localStorage.setItem("eddz", on ? "1" : ""); }catch(e){}
+  try{ localStorage.setItem("eddz", on ? "1" : "0"); }catch(e){}
 };
-if(localStorage.getItem("eddz") === "1") document.getElementById("ed-dz").click();
+// 既定ON(本人希望2026-07-18)。明示的にOFFにした場合("0")だけ記憶して消灯
+if(localStorage.getItem("eddz") !== "0") document.getElementById("ed-dz").click();
 // --- プレビュー直接操作: 上下ドラッグで位置調整・ダブルクリックで該当行へ ---
 function edDrag(el, key, min, max){
   el.addEventListener("pointerdown", e => {
@@ -1188,7 +1189,8 @@ document.getElementById("edmodal").onclick = e => {
 };
 // --- 🅰 サブタイ比較(候補を並べて実物の見た目で視認性チェック・編集者納品後の微調整用) ---
 // 候補はlocalStorage "subtai:<vid>"(動画未指定は"_global")、スタイルはテロップ編集と同じtelopstyleを共有。
-let stVid = null, stCands = [], stBg = null, stDzOn = false;
+let stVid = null, stCands = [], stBg = null,
+    stDzOn = localStorage.getItem("stdz") !== "0";  // UIかぶりガイド既定ON(OFFだけ記憶)
 const stKey = () => "subtai:" + (stVid || "_global");
 function stLoadCands(){
   try{ stCands = JSON.parse(localStorage.getItem(stKey())) || []; }catch(e){ stCands = []; }
@@ -1367,7 +1369,13 @@ document.getElementById("st-reset").onclick = () => {
    "title_band", "title_scale2", "line_gap", "title_emph"].forEach(k => edStyle[k] = ED_DEF[k]);
   stSaveCands(); stSliders(); stUpdateAll();
 };
-document.getElementById("st-dz").onclick = () => { stDzOn = !stDzOn; stUpdateAll(); };
+document.getElementById("st-dz").onclick = () => {
+  stDzOn = !stDzOn;
+  document.getElementById("st-dz").textContent = stDzOn ? "📱 UIかぶり ✓" : "📱 UIかぶり";
+  try{ localStorage.setItem("stdz", stDzOn ? "1" : "0"); }catch(e){}
+  stUpdateAll();
+};
+document.getElementById("st-dz").textContent = stDzOn ? "📱 UIかぶり ✓" : "📱 UIかぶり";
 function stSetBgFile(f){
   if(!f || !f.type.startsWith("image/")) return;
   const r = new FileReader();
