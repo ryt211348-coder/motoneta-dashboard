@@ -523,6 +523,7 @@ footer{color:var(--mut);font-size:11px;text-align:center;margin-top:20px;line-he
         <div class="edsl" title="タイトル・セリフ共通の行間(フォントサイズ比%)">行間 <input type="range" id="ed-lg" min="0" max="60" step="2"><b id="ed-lgv"></b></div>
         <div class="edsl" title="《大きく》で囲んだ文字の倍率(タイトル)。《1.2:文字》のように数字を書くとその文字だけ任意倍率にできます">《》倍率タイトル <input type="range" id="ed-eb" min="1" max="2" step="0.05"><b id="ed-ebv"></b></div>
         <div class="edsl" title="《大きく》で囲んだ文字の倍率(セリフ)。〈0.5:文字〉のように数字を書くとその文字だけ任意倍率にできます">《》倍率セリフ <input type="range" id="ed-es" min="1" max="2" step="0.05"><b id="ed-esv"></b></div>
+        <div class="edsl" title="行の文字を選択してから動かすと、その文字だけ《倍率:文字》で自由なサイズになります(訴求ポイントの強調用)。1.0に戻すと解除">✨選択文字の大きさ <input type="range" id="ed-em" min="0.5" max="2.5" step="0.05"><b id="ed-emv">-</b></div>
         <div style="display:flex;gap:14px;flex-wrap:wrap;align-items:center;margin-top:6px">
           <label class="edcl" style="cursor:pointer" title="タイトルの黒背景">
             <input type="checkbox" id="ed-bg" style="accent-color:var(--acc)">タイトル黒背景</label>
@@ -581,6 +582,7 @@ footer{color:var(--mut);font-size:11px;text-align:center;margin-top:20px;line-he
     </div>
     <div style="display:flex;gap:14px;flex-wrap:wrap;align-items:center;margin-top:8px;
         border-top:1px dashed var(--line);padding-top:8px">
+      <div class="edsl" style="flex:1 1 100%;margin:0" title="候補の文字を選択してから動かすと、その文字だけ《倍率:文字》で自由なサイズになります(訴求ポイントの強調用)。1.0に戻すと解除">✨選択文字の大きさ <input type="range" id="st-emc" min="0.5" max="2.5" step="0.05"><b id="st-emcv">-</b></div>
       <div class="edsl" style="flex:1;min-width:180px;margin:0">大きさ <input type="range" id="st-ts" min="60" max="150" step="2"><b id="st-tsv"></b></div>
       <div class="edsl" style="flex:1;min-width:180px;margin:0">高さ <input type="range" id="st-ty" min="5" max="35" step="0.5"><b id="st-tyv"></b></div>
       <label class="edcl" style="cursor:pointer"><input type="checkbox" id="st-bg" style="accent-color:var(--acc)">黒背景</label>
@@ -1322,6 +1324,44 @@ function stSliders(){
   band.checked = !!edStyle.title_band;
   band.onchange = () => { edStyle.title_band = band.checked ? 1 : 0; stSaveCands(); stUpdateAll(); };
 }
+// --- ✨選択文字の大きさ: 選択範囲を《倍率:文字》トークンで包む(ドラッグ中は同じトークンを更新し続ける) ---
+// textareaの選択範囲はblur後もselectionStart/Endに残るので、スライダー操作時にそのまま読める
+function emphApply(ta, v){
+  if(!ta) return false;
+  let s = ta.selectionStart, e = ta.selectionEnd;
+  if(s == null || s === e) return false;
+  const sel = ta.value.slice(s, e);
+  const m = sel.match(/^[《〈](?:\d+(?:\.\d+)?:)?([\s\S]*?)[》〉]$/);  // 既トークンなら数字だけ差し替え
+  const inner = m ? m[1] : sel;
+  if(inner.includes("《") || inner.includes("》")) return false;  // 入れ子は不可
+  const tok = (+v === 1) ? inner : "《" + v + ":" + inner + "》";  // 1.0=解除
+  ta.value = ta.value.slice(0, s) + tok + ta.value.slice(e);
+  ta.selectionStart = s; ta.selectionEnd = s + tok.length;  // 続けてドラッグ→同じトークンを更新
+  return true;
+}
+let stFocus = null;
+document.getElementById("st-grid").addEventListener("focusin", e => {
+  if(e.target.classList && e.target.classList.contains("sttx")) stFocus = e.target;
+});
+document.getElementById("st-emc").oninput = function(){
+  document.getElementById("st-emcv").textContent = this.value;
+  if(emphApply(stFocus, this.value)){
+    const i = +stFocus.dataset.i;
+    stCands[i] = stFocus.value.replace(/\n/g, "|");
+    stSaveCands(); stUpdateCard(i);
+  }
+};
+document.getElementById("st-emc").onpointerdown = function(){  // 触った瞬間に現在値を表示
+  document.getElementById("st-emcv").textContent = this.value;
+};
+document.getElementById("ed-em").oninput = function(){
+  document.getElementById("ed-emv").textContent = this.value;
+  if(emphApply(edFocus, this.value)){
+    const s = edFocus.selectionStart, e = edFocus.selectionEnd;
+    edFocus.dispatchEvent(new Event("input"));  // 既存のoninputでl.t更新・保存・プレビュー反映
+    edFocus.selectionStart = s; edFocus.selectionEnd = e;  // dispatchで選択が飛ぶ環境への保険
+  }
+};
 document.getElementById("st-reset").onclick = () => {
   ["title_size", "title_y", "title_c1", "title_c2", "title_bg",
    "title_band", "title_scale2", "line_gap", "title_emph"].forEach(k => edStyle[k] = ED_DEF[k]);
