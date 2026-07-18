@@ -128,6 +128,8 @@ footer{color:var(--mut);font-size:11px;text-align:center;margin-top:20px;line-he
 .edcl{display:flex;align-items:center;gap:5px;font-size:11.5px;color:var(--mut)}
 .edcl input[type=color]{width:28px;height:24px;border:1px solid var(--line);border-radius:6px;
   background:var(--bg);padding:1px;cursor:pointer}
+/* 行リストは独立スクロール(行が多くてもスライダー類が画面外に流れない) */
+#ed-rows{max-height:40vh;overflow-y:auto;overscroll-behavior:contain;padding-right:2px}
 .edrow{display:flex;gap:5px;margin:4px 0;align-items:center}
 .edrow .edtx{flex:1;min-width:0;border:1px solid var(--line);background:var(--bg);color:var(--tx);
   border-radius:6px;padding:6px 8px;font-size:13px}
@@ -246,7 +248,7 @@ footer{color:var(--mut);font-size:11px;text-align:center;margin-top:20px;line-he
     <div style="border-top:1px dashed var(--line);margin:8px 0 6px"></div>
     <b style="font-size:13px">🅑 動画に仕上げる(カット→テロップ→デモ試聴→Premiere)</b><br>
     <b>6. 使う区間を決める</b> — 右のプレイヤーで再生しながら「<b>✂IN</b>」→「<b>→OUT</b>」で使う区間を登録(複数OK・登録順につながります)。▶で頭出し、✕で削除。決まったら「<b>📋カット表コピー</b>」<br>
-    <b>7. テロップ台本を入れる</b> — 「<b>📝テロップ編集</b>」を開き、Claudeが出した台本を1行=1テロップで入力。行の種類は各行のチップで切替: <b>タイトル</b>(全編表示)・<b>ナレ</b>(白・めたんが読む)・<b>緑</b>(めたんが読む)・<b>素材</b>(素材セリフ=ナレ無し・素材音声100%でテロップだけ出す)・<b>間</b>(ナレ無しで聞かせる秒数)。ナレ行の<b>🔉スライダー</b>=そのナレ中の素材音量(ダッキング量)。<b>SE</b>行=効果音(名前を候補から選ぶ・⏱で鳴らす時刻・A3に配置)。コマ送りがある動画は「🎬シーン切替」の時刻チップからSE行をワンタップ追加。スプシに台本がある場合はA〜C列(種別・セリフ・素材時刻)をコピーして「<b>📥スプシ取り込み</b>」で一括変換(C列の時刻は@アンカーとして自動付与)。テキスト選択→「《大きく》」で部分強調、<b>Enterキーでそのまま改行</b>。プレビューは<b>テロップを上下ドラッグで位置調整・ダブルクリックで該当行へ</b>。タイトル/緑セリフの色はカラーピッカー、タイトル黒背景・セリフ影(ぼかし/ふくらみ)もスライダーで変更可(標準はチームテンプレ準拠)、「📱UIかぶり」でショートUIとの重なりを確認<br>
+    <b>7. テロップ台本を入れる</b> — 「<b>📝テロップ編集</b>」を開き、Claudeが出した台本を1行=1テロップで入力。行の種類は各行のチップで切替: <b>タイトル</b>(全編表示)・<b>ナレ</b>(白・めたんが読む)・<b>緑</b>(めたんが読む)・<b>素材</b>(素材セリフ=ナレ無し・素材音声100%でテロップだけ出す)・<b>間</b>(ナレ無しで聞かせる秒数)。ナレ行の<b>🔉スライダー</b>=そのナレ中の素材音量(ダッキング量)。<b>SE</b>行=効果音(名前を候補から選ぶ・⏱で鳴らす時刻・A3に配置)。コマ送りがある動画は「🎬シーン切替」の時刻チップからSE行をワンタップ追加。スプシに台本がある場合はA〜C列(種別・セリフ・素材時刻)をコピーして「<b>📥スプシ取り込み</b>」で一括変換(C列の時刻は@アンカーとして自動付与)。テキスト選択→「《大きく》」で部分強調、<b>Enterキーでそのまま改行</b>。プレビューは<b>テロップを上下ドラッグで位置調整・ダブルクリックで該当行へ</b>。タイトル/緑セリフの色はカラーピッカー、タイトル黒背景(<b>全幅帯</b>=映像に隠れない黒帯/OFFで角丸ピル)・<b>タイトル2行目サイズ</b>・<b>行間</b>・<b>《》倍率</b>・セリフ影(ぼかし/ふくらみ)もスライダーで変更可(標準はチームテンプレ準拠)。<b>《1.2:文字》のように数字を書くとその文字だけ任意倍率</b>。「📱UIかぶり」でショートUIとの重なりを確認<br>
     <b>8. ナレのタイミング合わせ</b> — 素材のセリフ(叫び声・会話など)の頭で動画を一時停止 → その直前に言い終わってほしいセリフ行をクリック → 「<b>⏱ここまでに言い終わる</b>」。行頭に@時刻が付き、ナレが自動で逆算配置されます<br>
     <b>9. デモ再生で確認</b> — 「<b>▶デモ再生</b>」で、めたんナレ+カット+テロップ+SEを本番とほぼ同じ状態で試聴(ナレ中は素材音声が🔉の値まで自動で小さくなります)。SEの音はSEライブラリのあるMacでのみ鳴ります(<code>python3 scripts/se_server.py</code>・make_edit.py実行時は自動起動)。※要VOICEVOX: Macのターミナルで <code>tools/macos-arm64/run --cors_policy_mode all</code> を起動しておく(「address already in use」と出たら既に起動済みなのでそのままでOK。無いPCはこのステップを飛ばしてOK)<br>
     <b>10. Premiere用に書き出す(Macの管理者)</b> — 「📋カット表コピー」した状態で、テロップ編集の「<b>📋台本をコピー</b>」→ 台本.txtに保存 → ターミナルで <code>python3 scripts/make_edit.py -s 台本.txt</code> → デスクトップの「元ネタ編集」フォルダにXML一式が生成 → Premiereで「ファイル→読み込み」でほぼ完成形(V1素材/V2セリフ/V3タイトル/A1素材音声/A2めたんナレ)。A1にはナレ中のダッキング(音量バーの値)とカット点の30msフェードが音量キーフレームで焼き込み済み。素材セリフの時刻一覧「素材セリフ.txt」も自動生成されるので@アンカーの下調べにも使えます<br>
@@ -517,9 +519,15 @@ footer{color:var(--mut);font-size:11px;text-align:center;margin-top:20px;line-he
         <div class="edsl">セリフ高さ <input type="range" id="ed-sy" min="35" max="92" step="0.5"><b id="ed-syv"></b></div>
         <div class="edsl" title="セリフの影のぼかし具合(Premiereのソフトシャドウ)">セリフ影ぼかし <input type="range" id="ed-sb" min="0" max="30" step="1"><b id="ed-sbv"></b></div>
         <div class="edsl" title="影を文字の周りに丸く太らせる量(アピアランスのラウンド結合風)">セリフ影ふくらみ <input type="range" id="ed-sp" min="0" max="16" step="1"><b id="ed-spv"></b></div>
+        <div class="edsl" title="タイトル2行目以降のサイズ(1行目比%)。「衝撃の展開」大・「まさかの結末」小のような行別調整">タイトル2行目 <input type="range" id="ed-t2" min="50" max="150" step="5"><b id="ed-t2v"></b></div>
+        <div class="edsl" title="タイトル・セリフ共通の行間(フォントサイズ比%)">行間 <input type="range" id="ed-lg" min="0" max="60" step="2"><b id="ed-lgv"></b></div>
+        <div class="edsl" title="《大きく》で囲んだ文字の倍率(タイトル)。《1.2:文字》のように数字を書くとその文字だけ任意倍率にできます">《》倍率タイトル <input type="range" id="ed-eb" min="1" max="2" step="0.05"><b id="ed-ebv"></b></div>
+        <div class="edsl" title="《大きく》で囲んだ文字の倍率(セリフ)。〈0.5:文字〉のように数字を書くとその文字だけ任意倍率にできます">《》倍率セリフ <input type="range" id="ed-es" min="1" max="2" step="0.05"><b id="ed-esv"></b></div>
         <div style="display:flex;gap:14px;flex-wrap:wrap;align-items:center;margin-top:6px">
-          <label class="edcl" style="cursor:pointer" title="タイトルの文字幅に合わせた角丸の黒背景">
+          <label class="edcl" style="cursor:pointer" title="タイトルの黒背景">
             <input type="checkbox" id="ed-bg" style="accent-color:var(--acc)">タイトル黒背景</label>
+          <label class="edcl" style="cursor:pointer" title="ON=タイトル全体を覆う全幅の黒帯(上のレターボックスと一体に見え、映像に隠れない)。OFF=行の文字幅にフィットした角丸ピル">
+            <input type="checkbox" id="ed-band" style="accent-color:var(--acc)">全幅帯</label>
           <span class="edcl" title="タイトル1行目/2行目の色(標準=黄/橙。チームテンプレの色なので普段はそのまま)">タイトル色
             <input type="color" id="ed-c1"><input type="color" id="ed-c2"></span>
           <span class="edcl" title="緑セリフの色">緑セリフ色 <input type="color" id="ed-cg"></span>
@@ -576,6 +584,7 @@ footer{color:var(--mut);font-size:11px;text-align:center;margin-top:20px;line-he
       <div class="edsl" style="flex:1;min-width:180px;margin:0">大きさ <input type="range" id="st-ts" min="60" max="150" step="2"><b id="st-tsv"></b></div>
       <div class="edsl" style="flex:1;min-width:180px;margin:0">高さ <input type="range" id="st-ty" min="5" max="35" step="0.5"><b id="st-tyv"></b></div>
       <label class="edcl" style="cursor:pointer"><input type="checkbox" id="st-bg" style="accent-color:var(--acc)">黒背景</label>
+      <label class="edcl" style="cursor:pointer" title="ON=全幅の黒帯 / OFF=行フィットの角丸ピル"><input type="checkbox" id="st-band" style="accent-color:var(--acc)">全幅帯</label>
       <span class="edcl">色 <input type="color" id="st-c1"><input type="color" id="st-c2"></span>
       <button class="chip" id="st-reset" style="font-size:11px" title="大きさ・高さ・色をチーム標準に戻す">↺ 標準</button>
     </div>
@@ -934,12 +943,19 @@ document.getElementById("sbmodal").onclick = e => {
 const ED_DEF = {title_size: 92, serif_size: 78, title_y: 15, serif_y: 66,
                 title_c1: "#ffe11a", title_c2: "#ff8a00", serif_green: "#4dff3a",  // 色はチームテンプレ標準
                 serif_shadow: 16, serif_spread: 8,  // セリフ影: ぼかし半径/ふくらみ(ラウンド結合風)
-                title_bg: 1};                       // タイトルの黒背景(1=あり)
+                title_bg: 1,                        // タイトルの黒背景(1=あり)
+                title_band: 1,                      // 黒背景の形: 1=全幅の黒帯 / 0=行フィットの角丸ピル
+                title_scale2: 100,                  // タイトル2行目以降のサイズ(1行目比%)
+                line_gap: 18,                       // 行間(フォントサイズ比%)
+                title_emph: 1.35, serif_emph: 1.3}; // 《大きく》の倍率(タイトル/セリフ)
 let edVid = null, edLines = [], edStyle = {...ED_DEF}, edSel = 0, edFocus = null;
 const edEsc = t => t.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
-const edMk = t => edEsc(t)
-  .replace(/《([^》]*)》/g, '<span style="font-size:1.35em">$1</span>')
-  .replace(/〈([^〉]*)〉/g, '<span style="font-size:0.7em">$1</span>');
+// 《大きく》〈小さく〉+《1.2:文字》〈0.5:文字〉の任意倍率トークン(telop.py _parse_emphと同仕様)
+const edMk = (t, big, small) => edEsc(t)
+  .replace(/《(?:(\d+(?:\.\d+)?):)?([^》]*)》/g,
+    (m, n, s) => `<span style="font-size:${n || big || 1.35}em">${s}</span>`)
+  .replace(/〈(?:(\d+(?:\.\d+)?):)?([^〉]*)〉/g,
+    (m, n, s) => `<span style="font-size:${n || small || 0.7}em">${s}</span>`);
 function edOpen(vid, title){
   edVid = vid;
   document.getElementById("ed-name").textContent = title || vid;
@@ -1047,7 +1063,8 @@ function edRows(){
 }
 function edSliders(){
   const map = [["ts","title_size"],["ty","title_y"],["ss","serif_size"],["sy","serif_y"],
-               ["sb","serif_shadow"],["sp","serif_spread"]];
+               ["sb","serif_shadow"],["sp","serif_spread"],
+               ["t2","title_scale2"],["lg","line_gap"],["eb","title_emph"],["es","serif_emph"]];
   for(const [id, key] of map){
     const r = document.getElementById("ed-" + id), v = document.getElementById("ed-" + id + "v");
     r.value = edStyle[key]; v.textContent = edStyle[key];
@@ -1061,6 +1078,9 @@ function edSliders(){
   const bg = document.getElementById("ed-bg");
   bg.checked = !!edStyle.title_bg;
   bg.onchange = () => { edStyle.title_bg = bg.checked ? 1 : 0; edSave(); edPrev(); };
+  const band = document.getElementById("ed-band");
+  band.checked = !!edStyle.title_band;
+  band.onchange = () => { edStyle.title_band = band.checked ? 1 : 0; edSave(); edPrev(); };
 }
 document.getElementById("ed-reset").onclick = () => {
   edStyle = {...ED_DEF}; edSave(); edSliders(); edPrev();
@@ -1117,11 +1137,17 @@ function edPrev(){
   const title = edLines.find(l => l.k === "t");
   tEl.style.top = edStyle.title_y + "%";
   tEl.style.fontSize = Math.round(edStyle.title_size * scale) + "px";
+  const band = edStyle.title_bg && edStyle.title_band;  // 全幅の黒帯モード
+  tEl.style.background = band && title ? "rgba(0,0,0,.85)" : "";
+  tEl.style.padding = band ? ".3em 0" : "0";
+  const gapEm = (edStyle.line_gap / 100 / 2).toFixed(3) + "em";  // telopのline_gap(サイズ比)をmarginで近似
   tEl.innerHTML = !title ? "" : title.t.split("|").filter(s => s.trim()).map((s, i) => {
-    const bg = edStyle.title_bg
-      ? "background:rgba(0,0,0,.85);padding:.05em .38em .1em;border-radius:.16em;display:inline-block"
-      : `text-shadow:0 ${Math.max(2, 4*scale)}px ${Math.max(3, 8*scale)}px rgba(0,0,0,.85)`;
-    return `<div style="margin:.08em 0"><span style="color:${i % 2 ? edStyle.title_c2 : edStyle.title_c1};${bg}">${edMk(s)}</span></div>`;
+    const bg = !edStyle.title_bg
+      ? `text-shadow:0 ${Math.max(2, 4*scale)}px ${Math.max(3, 8*scale)}px rgba(0,0,0,.85)`
+      : band ? ""
+      : "background:rgba(0,0,0,.85);padding:.05em .38em .1em;border-radius:.16em;display:inline-block";
+    const ls = i ? `font-size:${Math.round(edStyle.title_scale2)}%;` : "";
+    return `<div style="margin:${gapEm} 0;${ls}"><span style="color:${i % 2 ? edStyle.title_c2 : edStyle.title_c1};${bg}">${edMk(s, edStyle.title_emph)}</span></div>`;
   }).join("");
   const sEl = document.getElementById("edcv-serif");
   const isSer = l => l && (l.k === "w" || l.k === "g" || l.k === "m");
@@ -1139,7 +1165,7 @@ function edPrev(){
       + `,0 ${off}px ${blur}px rgba(0,0,0,.95),0 0 ${blur*1.4}px rgba(0,0,0,.85)`;
   }
   sEl.innerHTML = cur ? cur.t.replace(/^@>?\d+:\d+(\.\d+)?\s*/, "")
-    .split("|").filter(s => s.trim()).map(s => `<div>${edMk(s)}</div>`).join("") : "";
+    .split("|").filter(s => s.trim()).map(s => `<div>${edMk(s, edStyle.serif_emph)}</div>`).join("") : "";
 }
 function edWrap(a, b){
   if(!edFocus) return;
@@ -1190,11 +1216,15 @@ function stOpen(vid, title){
 const stBgCss = () => stBg ? `url(${stBg})`
   : (stVid ? `url(https://i.ytimg.com/vi/${stVid}/hqdefault.jpg)` : "none");
 function stTitleHtml(t, scale){
+  const band = edStyle.title_bg && edStyle.title_band;
+  const gapEm = (edStyle.line_gap / 100 / 2).toFixed(3) + "em";
   return (t || "").split("|").filter(s => s.trim()).map((s, i) => {
-    const bg = edStyle.title_bg
-      ? "background:rgba(0,0,0,.85);padding:.05em .38em .1em;border-radius:.16em;display:inline-block"
-      : `text-shadow:0 ${Math.max(2, 4*scale)}px ${Math.max(3, 8*scale)}px rgba(0,0,0,.85)`;
-    return `<div style="margin:.08em 0"><span style="color:${i % 2 ? edStyle.title_c2 : edStyle.title_c1};${bg}">${edMk(s)}</span></div>`;
+    const bg = !edStyle.title_bg
+      ? `text-shadow:0 ${Math.max(2, 4*scale)}px ${Math.max(3, 8*scale)}px rgba(0,0,0,.85)`
+      : band ? ""
+      : "background:rgba(0,0,0,.85);padding:.05em .38em .1em;border-radius:.16em;display:inline-block";
+    const ls = i ? `font-size:${Math.round(edStyle.title_scale2)}%;` : "";
+    return `<div style="margin:${gapEm} 0;${ls}"><span style="color:${i % 2 ? edStyle.title_c2 : edStyle.title_c1};${bg}">${edMk(s, edStyle.title_emph)}</span></div>`;
   }).join("");
 }
 const ST_DZ = '<div class="dzr" style="left:0;right:0;top:0;height:8%"></div>'
@@ -1210,8 +1240,11 @@ function stCntHtml(t){
 function stUpdateCard(i){
   document.querySelectorAll(`#st-grid .stpv[data-i="${i}"]`).forEach(pv => {
     const t = pv.querySelector(".stpv-t"), scale = pv.clientWidth / 1080;
+    const band = edStyle.title_bg && edStyle.title_band && (stCands[i] || "").trim();
     t.style.top = edStyle.title_y + "%";
     t.style.fontSize = Math.round(edStyle.title_size * scale) + "px";
+    t.style.background = band ? "rgba(0,0,0,.85)" : "";
+    t.style.padding = band ? ".3em 0" : "0";
     t.innerHTML = stTitleHtml(stCands[i], scale);
   });
   const cn = document.querySelector(`#st-grid .stcnt[data-i="${i}"]`);
@@ -1285,9 +1318,13 @@ function stSliders(){
   const bg = document.getElementById("st-bg");
   bg.checked = !!edStyle.title_bg;
   bg.onchange = () => { edStyle.title_bg = bg.checked ? 1 : 0; stSaveCands(); stUpdateAll(); };
+  const band = document.getElementById("st-band");
+  band.checked = !!edStyle.title_band;
+  band.onchange = () => { edStyle.title_band = band.checked ? 1 : 0; stSaveCands(); stUpdateAll(); };
 }
 document.getElementById("st-reset").onclick = () => {
-  ["title_size", "title_y", "title_c1", "title_c2", "title_bg"].forEach(k => edStyle[k] = ED_DEF[k]);
+  ["title_size", "title_y", "title_c1", "title_c2", "title_bg",
+   "title_band", "title_scale2", "line_gap", "title_emph"].forEach(k => edStyle[k] = ED_DEF[k]);
   stSaveCands(); stSliders(); stUpdateAll();
 };
 document.getElementById("st-dz").onclick = () => { stDzOn = !stDzOn; stUpdateAll(); };
@@ -1578,6 +1615,11 @@ document.getElementById("ed-copy").onclick = () => {
   if(edStyle.serif_shadow !== ED_DEF.serif_shadow) diff.serif_shadow = edStyle.serif_shadow;
   if(edStyle.serif_spread !== ED_DEF.serif_spread) diff.serif_spread = edStyle.serif_spread;
   if(!edStyle.title_bg) diff.title_bg = "";  // 黒背景オフ(telop.py側は""で無効)
+  if(!edStyle.title_band) diff.title_bg_mode = "fit";  // 既定=band(全幅帯)。OFF時のみ差分
+  if(edStyle.title_scale2 !== ED_DEF.title_scale2) diff.title_scale2 = +(edStyle.title_scale2 / 100).toFixed(2);
+  if(edStyle.line_gap !== ED_DEF.line_gap) diff.line_gap = +(edStyle.line_gap / 100).toFixed(2);
+  if(edStyle.title_emph !== ED_DEF.title_emph) diff.title_emph = edStyle.title_emph;
+  if(edStyle.serif_emph !== ED_DEF.serif_emph) diff.serif_emph = edStyle.serif_emph;
   const lines = [];
   if(Object.keys(diff).length) lines.push("@style " + JSON.stringify(diff));
   for(const l of edLines){
