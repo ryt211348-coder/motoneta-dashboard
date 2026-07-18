@@ -145,6 +145,25 @@ footer{color:var(--mut);font-size:11px;text-align:center;margin-top:20px;line-he
 .edsl{display:flex;align-items:center;gap:8px;font-size:11.5px;color:var(--mut);margin:4px 0}
 .edsl input[type=range]{flex:1}
 .edsl b{color:var(--tx);font-variant-numeric:tabular-nums;min-width:34px;text-align:right}
+/* 🅰 サブタイ比較(候補を並べて実物の見た目で視認性チェック) */
+#stmodal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.72);z-index:62;overflow:auto;padding:16px}
+.stwrap{max-width:1100px;margin:0 auto;background:var(--sur);border:1px solid var(--line);border-radius:12px;padding:14px}
+#st-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:12px;margin-top:10px}
+.stcard{border:1px solid var(--line);border-radius:10px;padding:8px;display:flex;flex-direction:column;gap:6px;background:var(--bg)}
+.sttx{border:1px solid var(--line);background:var(--sur);color:var(--tx);border-radius:6px;
+  padding:6px 8px;font-size:13px;resize:none;line-height:1.5;font-family:inherit}
+.sttx:focus{outline:2px solid var(--acc)}
+.stpv-wrap{display:flex;gap:8px;align-items:flex-start}
+.stpv{position:relative;aspect-ratio:9/16;background:#111;border-radius:8px;overflow:hidden}
+.stpv-l{flex:1}
+.stpv-side{flex:0 0 76px;display:flex;flex-direction:column;gap:3px}
+.stpv-s{width:76px}
+.stpv-bg{position:absolute;inset:0;background-size:cover;background-position:center}
+.stpv-t{position:absolute;left:0;right:0;text-align:center;transform:translateY(-50%);
+  font-family:'Keifont',sans-serif;line-height:1.25;font-weight:400}
+.stpv-dz{position:absolute;inset:0;pointer-events:none;display:none}
+.stpv-dz .dzr{position:absolute;background:rgba(255,64,96,.16);border:1px dashed rgba(255,90,120,.6);border-radius:3px}
+.stfoot{display:flex;gap:4px;align-items:center;flex-wrap:wrap}
 #player #pph{width:100%;height:100%;display:grid;place-items:center;
   color:#8a93a1;font-size:12.5px;padding:16px;text-align:center}
 #player .pt{font-size:13px;font-weight:700;margin:8px 2px 2px;line-height:1.5}
@@ -199,6 +218,10 @@ footer{color:var(--mut);font-size:11px;text-align:center;margin-top:20px;line-he
   .edrow .edtx{flex:1 1 100%;min-height:40px}
   .edrow button{min-width:32px;min-height:32px;font-size:15px}
   .edty{padding:7px 7px !important;font-size:11px !important}
+  /* サブタイ比較: 1カラム */
+  #stmodal{padding:8px}
+  .stwrap{padding:10px}
+  #st-grid{grid-template-columns:1fr}
 }
 </style>
 <div class="layout">
@@ -208,6 +231,7 @@ footer{color:var(--mut);font-size:11px;text-align:center;margin-top:20px;line-he
     <span style="float:right;display:flex;gap:6px">
       <button class="chip" id="help-toggle">❓使い方</button>
       <button class="chip" id="kobo-toggle">🎬 台本プロンプト</button>
+      <button class="chip" id="hd-st" title="サブタイ候補を並べて実物の見た目で比較。編集者から上がった動画のスクショを背景にして微調整できます">🅰 サブタイ比較</button>
     </span></h1>
   <div id="help" style="display:none;border:1px solid var(--line);border-radius:10px;
       background:var(--sur);padding:12px 14px;margin:8px 0;font-size:12.5px;line-height:1.9">
@@ -420,6 +444,7 @@ footer{color:var(--mut);font-size:11px;text-align:center;margin-top:20px;line-he
   <div class="pbtns" id="pbtns" style="display:none">
     <button class="chip" id="p-kobo" style="border-color:var(--acc);color:var(--acc);font-weight:700">🎬 この動画で台本を作る</button>
     <button class="chip" id="p-ed">📝 テロップ編集</button>
+    <button class="chip" id="p-st" title="サブタイ候補を並べて実物の見た目で比較・視認性チェック">🅰 サブタイ比較</button>
     <button class="chip" id="p-sb" style="display:none">🎞 コマ送り</button>
     <button class="chip" id="p-sbd" style="display:none" title="1秒(等間隔)の高密度コマシート。全枚数をClaudeへ貼ると映像を人間の目レベルで読んで叩き台が作れます">🎞 1秒コマ(密)</button>
     <button class="chip" id="p-com" title="この動画の人気コメントを和訳付きで表示">💬 コメント</button>
@@ -506,6 +531,7 @@ footer{color:var(--mut);font-size:11px;text-align:center;margin-top:20px;line-he
         <button class="chip" id="ed-copy" style="background:var(--acc);border-color:var(--acc);
           color:#fff;font-weight:800;padding:8px 14px">📋 台本をコピー</button>
         <button class="chip" id="ed-demo" title="めたんナレを本番と同じ配置(アンカー逆算込み)で動画に重ねて試聴。MacでVOICEVOXをCORS許可モードで起動しておく必要あり">▶ デモ再生</button>
+        <button class="chip" id="ed-st" title="サブタイ候補を並べて比較(タイトル行に反映できます)">🅰 サブタイ比較</button>
         <span id="ed-copied" style="font-size:11px;color:var(--ok)"></span>
       </div>
       <div style="font-size:10.5px;color:var(--mut);margin-top:6px;line-height:1.7">
@@ -524,6 +550,36 @@ footer{color:var(--mut);font-size:11px;text-align:center;margin-top:20px;line-he
         <div class="dzr" style="left:0;right:0;bottom:0;height:13.5%">タイトル・チャンネル帯</div>
       </div>
     </div></div>
+  </div>
+</div>
+<div id="stmodal">
+  <div class="stwrap">
+    <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+      <b style="font-size:14px">🅰 サブタイ比較</b>
+      <span id="st-name" style="font-size:11px;color:var(--mut);flex:1;overflow:hidden;
+        text-overflow:ellipsis;white-space:nowrap"></span>
+      <button class="chip" id="st-close">✕ 閉じる</button>
+    </div>
+    <div style="font-size:11px;color:var(--mut);margin:6px 0;line-height:1.8">
+      サブタイ候補を並べて<b>実物の見た目</b>で比較。台本を書くときはここで決めて「✔台本へ」、
+      編集者から動画が上がってきたら<b>そのスクショを Ctrl+V / ドラッグ&amp;ドロップ / 🖼ボタン</b>で背景にして微調整→📋で候補を編集者に返す、を繰り返せます。
+      右の小プレビュー=スマホのフィードで流れてきたときのサイズ感(ここで読めれば視認性OK)。大きさ・色はテロップ編集と共通設定(@styleにも反映されます)。
+    </div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
+      <button class="chip" id="st-bgbtn" style="font-size:11px" title="編集者から上がった動画のスクショ等を背景にします(Ctrl+Vやドラッグ&ドロップでもOK)">🖼 スクショを背景に</button>
+      <button class="chip" id="st-bgreset" style="font-size:11px">↩ サムネ/黒に戻す</button>
+      <button class="chip" id="st-dz" style="font-size:11px" title="YouTubeショートのUI(ボタン列・タイトル帯)がかぶる範囲を表示">📱 UIかぶり</button>
+      <input type="file" id="st-bgfile" accept="image/*" style="display:none">
+    </div>
+    <div style="display:flex;gap:14px;flex-wrap:wrap;align-items:center;margin-top:8px;
+        border-top:1px dashed var(--line);padding-top:8px">
+      <div class="edsl" style="flex:1;min-width:180px;margin:0">大きさ <input type="range" id="st-ts" min="60" max="150" step="2"><b id="st-tsv"></b></div>
+      <div class="edsl" style="flex:1;min-width:180px;margin:0">高さ <input type="range" id="st-ty" min="5" max="35" step="0.5"><b id="st-tyv"></b></div>
+      <label class="edcl" style="cursor:pointer"><input type="checkbox" id="st-bg" style="accent-color:var(--acc)">黒背景</label>
+      <span class="edcl">色 <input type="color" id="st-c1"><input type="color" id="st-c2"></span>
+      <button class="chip" id="st-reset" style="font-size:11px" title="大きさ・高さ・色をチーム標準に戻す">↺ 標準</button>
+    </div>
+    <div id="st-grid"></div>
   </div>
 </div>
 <script>
@@ -1102,6 +1158,174 @@ document.getElementById("ed-close").onclick = () => document.getElementById("edm
 document.getElementById("edmodal").onclick = e => {
   if(e.target.id === "edmodal") document.getElementById("edmodal").style.display = "none";
 };
+// --- 🅰 サブタイ比較(候補を並べて実物の見た目で視認性チェック・編集者納品後の微調整用) ---
+// 候補はlocalStorage "subtai:<vid>"(動画未指定は"_global")、スタイルはテロップ編集と同じtelopstyleを共有。
+let stVid = null, stCands = [], stBg = null, stDzOn = false;
+const stKey = () => "subtai:" + (stVid || "_global");
+function stLoadCands(){
+  try{ stCands = JSON.parse(localStorage.getItem(stKey())) || []; }catch(e){ stCands = []; }
+  if(!stCands.length){
+    let seed = "";  // 台本にタイトル行があれば1案目として引き継ぐ
+    if(stVid){
+      try{ const t = (JSON.parse(localStorage.getItem("daihon:" + stVid)) || []).find(l => l.k === "t");
+        if(t) seed = t.t; }catch(e){}
+    }
+    stCands = [seed];
+  }
+}
+function stSaveCands(){
+  try{ localStorage.setItem(stKey(), JSON.stringify(stCands));
+       localStorage.setItem("telopstyle", JSON.stringify(edStyle)); }catch(e){}
+}
+function stOpen(vid, title){
+  stVid = vid || null; stBg = null;
+  try{ edStyle = {...ED_DEF, ...(JSON.parse(localStorage.getItem("telopstyle")) || {})}; }
+  catch(e){ edStyle = {...ED_DEF}; }
+  document.getElementById("st-name").textContent =
+    title || vid || "(動画未指定。編集者の動画のスクショを貼って確認できます)";
+  stLoadCands();
+  document.getElementById("stmodal").style.display = "block";  // 先に表示(非表示だと幅0でフォント0px)
+  stSliders(); stRender();
+}
+const stBgCss = () => stBg ? `url(${stBg})`
+  : (stVid ? `url(https://i.ytimg.com/vi/${stVid}/hqdefault.jpg)` : "none");
+function stTitleHtml(t, scale){
+  return (t || "").split("|").filter(s => s.trim()).map((s, i) => {
+    const bg = edStyle.title_bg
+      ? "background:rgba(0,0,0,.85);padding:.05em .38em .1em;border-radius:.16em;display:inline-block"
+      : `text-shadow:0 ${Math.max(2, 4*scale)}px ${Math.max(3, 8*scale)}px rgba(0,0,0,.85)`;
+    return `<div style="margin:.08em 0"><span style="color:${i % 2 ? edStyle.title_c2 : edStyle.title_c1};${bg}">${edMk(s)}</span></div>`;
+  }).join("");
+}
+const ST_DZ = '<div class="dzr" style="left:0;right:0;top:0;height:8%"></div>'
+  + '<div class="dzr" style="right:1.5%;width:13%;top:44%;height:41%"></div>'
+  + '<div class="dzr" style="left:0;right:0;bottom:0;height:13.5%"></div>';
+const stChars = t => (t || "").split("|").filter(s => s.trim())
+  .map(s => s.replace(/[《》〈〉\s]/g, "").length);
+function stCntHtml(t){
+  const n = stChars(t);
+  return (n.map(x => `<b style="${x > 6 ? 'color:#ff7a6b' : ''}">${x}字</b>`).join("＋") || "0字")
+    + (n.some(x => x > 6) ? ' <span style="color:#ff7a6b">6字超</span>' : "");
+}
+function stUpdateCard(i){
+  document.querySelectorAll(`#st-grid .stpv[data-i="${i}"]`).forEach(pv => {
+    const t = pv.querySelector(".stpv-t"), scale = pv.clientWidth / 1080;
+    t.style.top = edStyle.title_y + "%";
+    t.style.fontSize = Math.round(edStyle.title_size * scale) + "px";
+    t.innerHTML = stTitleHtml(stCands[i], scale);
+  });
+  const cn = document.querySelector(`#st-grid .stcnt[data-i="${i}"]`);
+  if(cn) cn.innerHTML = stCntHtml(stCands[i]);
+}
+function stUpdateAll(){
+  document.querySelectorAll("#st-grid .stpv-bg").forEach(b => b.style.backgroundImage = stBgCss());
+  document.querySelectorAll("#st-grid .stpv-dz").forEach(d => d.style.display = stDzOn ? "block" : "none");
+  stCands.forEach((_, i) => stUpdateCard(i));
+}
+function stRender(){
+  const grid = document.getElementById("st-grid");
+  grid.innerHTML = stCands.map((c, i) => `<div class="stcard">
+      <textarea class="sttx" data-i="${i}" rows="2" placeholder="サブタイ候補(Enterで2行目)">${edEsc((c || "").replace(/\|/g, "\n"))}</textarea>
+      <div class="stpv-wrap">
+        <div class="stpv stpv-l" data-i="${i}"><div class="stpv-bg"></div><div class="stpv-t"></div><div class="stpv-dz">${ST_DZ}</div></div>
+        <div class="stpv-side">
+          <div class="stpv stpv-s" data-i="${i}"><div class="stpv-bg"></div><div class="stpv-t"></div></div>
+          <div style="font-size:9.5px;color:var(--mut);text-align:center;line-height:1.4">フィード<br>サイズ</div>
+        </div>
+      </div>
+      <div class="stfoot">
+        <span class="stcnt" data-i="${i}" style="font-size:11px;color:var(--mut)"></span>
+        <span style="flex:1"></span>
+        <button class="chip stcp" data-i="${i}" style="font-size:11px" title="この案をコピー(編集者への返しに)">📋</button>
+        ${stVid ? `<button class="chip stok" data-i="${i}" style="font-size:11px" title="台本のタイトル行をこの案に差し替え">✔ 台本へ</button>` : ""}
+        <button class="chip strm" data-i="${i}" style="font-size:11px">🗑</button>
+      </div>
+    </div>`).join("")
+    + `<button class="chip" id="st-add" style="align-self:flex-start">＋ 案を追加</button>`;
+  grid.querySelectorAll(".sttx").forEach(ta => {
+    ta.oninput = () => { stCands[+ta.dataset.i] = ta.value.replace(/\n/g, "|"); stSaveCands(); stUpdateCard(+ta.dataset.i); };
+  });
+  grid.querySelectorAll(".stcp").forEach(b => b.onclick = () => {
+    navigator.clipboard.writeText((stCands[+b.dataset.i] || "").replace(/\|/g, "\n"));
+    b.textContent = "✔"; setTimeout(() => b.textContent = "📋", 1200);
+  });
+  grid.querySelectorAll(".stok").forEach(b => b.onclick = () => {
+    const c = stCands[+b.dataset.i] || "";
+    try{
+      const key = "daihon:" + stVid;
+      const ls = JSON.parse(localStorage.getItem(key)) || [];
+      const t = ls.find(l => l.k === "t");
+      if(t) t.t = c; else ls.unshift({k: "t", t: c});
+      localStorage.setItem(key, JSON.stringify(ls));
+      if(edVid === stVid){  // テロップ編集が同じ動画を開いていたら即反映
+        edLines = ls;
+        if(document.getElementById("edmodal").style.display === "block"){ edRows(); edPrev(); }
+      }
+    }catch(e){}
+    b.textContent = "✔ 反映済"; setTimeout(() => b.textContent = "✔ 台本へ", 1500);
+  });
+  grid.querySelectorAll(".strm").forEach(b => b.onclick = () => {
+    stCands.splice(+b.dataset.i, 1);
+    if(!stCands.length) stCands = [""];
+    stSaveCands(); stRender();
+  });
+  document.getElementById("st-add").onclick = () => { stCands.push(""); stSaveCands(); stRender(); };
+  stUpdateAll();
+}
+function stSliders(){
+  [["st-ts", "title_size", "st-tsv"], ["st-ty", "title_y", "st-tyv"]].forEach(([id, key, vid]) => {
+    const r = document.getElementById(id), v = document.getElementById(vid);
+    r.value = edStyle[key]; v.textContent = edStyle[key];
+    r.oninput = () => { edStyle[key] = +r.value; v.textContent = r.value; stSaveCands(); stUpdateAll(); };
+  });
+  [["st-c1", "title_c1"], ["st-c2", "title_c2"]].forEach(([id, key]) => {
+    const c = document.getElementById(id); c.value = edStyle[key];
+    c.oninput = () => { edStyle[key] = c.value; stSaveCands(); stUpdateAll(); };
+  });
+  const bg = document.getElementById("st-bg");
+  bg.checked = !!edStyle.title_bg;
+  bg.onchange = () => { edStyle.title_bg = bg.checked ? 1 : 0; stSaveCands(); stUpdateAll(); };
+}
+document.getElementById("st-reset").onclick = () => {
+  ["title_size", "title_y", "title_c1", "title_c2", "title_bg"].forEach(k => edStyle[k] = ED_DEF[k]);
+  stSaveCands(); stSliders(); stUpdateAll();
+};
+document.getElementById("st-dz").onclick = () => { stDzOn = !stDzOn; stUpdateAll(); };
+function stSetBgFile(f){
+  if(!f || !f.type.startsWith("image/")) return;
+  const r = new FileReader();
+  r.onload = () => { stBg = r.result; stUpdateAll(); };
+  r.readAsDataURL(f);
+}
+document.getElementById("st-bgbtn").onclick = () => document.getElementById("st-bgfile").click();
+document.getElementById("st-bgfile").onchange = e => stSetBgFile(e.target.files[0]);
+document.getElementById("st-bgreset").onclick = () => { stBg = null; stUpdateAll(); };
+document.addEventListener("paste", e => {
+  if(document.getElementById("stmodal").style.display !== "block") return;
+  const it = [...(e.clipboardData ? e.clipboardData.items : [])].find(x => x.type.startsWith("image/"));
+  if(!it) return;  // 画像以外(テキスト貼り付け等)は素通し
+  e.preventDefault();
+  stSetBgFile(it.getAsFile());
+});
+document.getElementById("stmodal").addEventListener("dragover", e => e.preventDefault());
+document.getElementById("stmodal").addEventListener("drop", e => {
+  e.preventDefault();
+  stSetBgFile([...(e.dataTransfer ? e.dataTransfer.files : [])][0]);
+});
+window.addEventListener("resize", () => {
+  if(document.getElementById("stmodal").style.display === "block") stUpdateAll();
+});
+document.getElementById("st-close").onclick = () => document.getElementById("stmodal").style.display = "none";
+document.getElementById("stmodal").onclick = e => {
+  if(e.target.id === "stmodal") document.getElementById("stmodal").style.display = "none";
+};
+document.getElementById("hd-st").onclick = () =>
+  stOpen(playVid || null, playVid ? document.getElementById("ptitle").textContent : "");
+document.getElementById("p-st").onclick = () => {
+  if(playVid) stOpen(playVid, document.getElementById("ptitle").textContent);
+};
+document.getElementById("ed-st").onclick = () =>
+  stOpen(edVid, document.getElementById("ed-name").textContent);
 document.getElementById("ed-add").onclick = () => {
   edLines.push({k: "w", t: ""}); edSave(); edRows(); edPrev();
 };
