@@ -2090,13 +2090,15 @@ function buildPrompt(p){
   const coms = p.comments.length
     ? p.comments.map(c => `- ${c.t}${c.like ? ` (👍${c.like})` : ""}`).join("\n")
     : "(取得なし)";
+  // 解析APIが長さを取れない動画がある(0が返る)→ピッカー収録分から補完し、無ければ表示しない
+  const dur = p.length > 0 ? p.length : (((SM || []).find(v => v.id === p.vid) || {}).d || 0);
   return `あなたはプロの放送作家。海外バズ動画を日本向け60秒ショート動画に凝縮する専門家です。
 以下の素材を使って、手順どおりに台本を作ってください。
 
 # 元動画
 - タイトル: ${p.title}
 - チャンネル: ${p.author}
-- 再生数: ${p.views.toLocaleString()} / 長さ: ${Math.floor(p.length/60)}分${p.length%60}秒${koboSubs > 0 ? `
+- 再生数: ${p.views.toLocaleString()}${dur > 0 ? ` / 長さ: ${Math.floor(dur/60)}分${dur%60}秒` : ""}${koboSubs > 0 ? `
 - 登録者数: ${koboSubs.toLocaleString()}人 (×倍率=再生÷登録者: ${(p.views/koboSubs).toFixed(1)})` : ""}
 - サムネURL: https://i.ytimg.com/vi/${p.vid}/maxresdefault.jpg
 - URL: https://www.youtube.com/watch?v=${p.vid}
