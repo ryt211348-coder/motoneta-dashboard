@@ -241,7 +241,7 @@ footer{color:var(--mut);font-size:11px;text-align:center;margin-top:20px;line-he
     <b>1. ネタを選ぶ</b> — 「🎯動画ピッカー」を開く。並んでいるのは海外の元動画(日本で需要が証明済みの供給元だけ)。ジャンルで絞って、良さそうな動画の <b>✓</b> を押して着手宣言(全員に共有され、被りを防げます)<br>
     <b>2. 解析する</b> — その行の <b>🎬</b> を押す、またはリストに無い動画はURLを工房の欄に<b>貼るだけ</b>。解析・サムネ取得・<b>文字起こしの自動取得</b>が全部同時に始まります<br>
     <b>3. 文字起こしは自動で入る</b> — 30秒〜2分で下の欄に自動で入ります(何もしなくてOK)。<b>「自動取得できませんでした」と出た時だけ</b>「📺文字起こしを開く」→ 拡張機能「YouTube Summary」のCopy transcript → このタブに戻る(自動取り込み)。※自動取得はチームの「ワーカーPC」が担当します。Windowsで担当してくれる人は<a href="tr_worker_win.zip" download style="color:var(--acc);font-weight:700">ワーカーをダウンロード</a>(中のREADMEどおりstart.batを起動しておくだけ・誰か1人でOK)<br>
-    <b>4. 台本を作る</b> — 「📋 Claude用プロンプトをコピー」1回で<b>プロンプト・文字起こし・サムネ画像が全部コピー</b>されます。自分のClaudeの入力欄で<b>①Ctrl+V(Macは⌘V)=サムネが付く → ②Ctrl+Shift+V(⌘⇧V)=本文が入る</b>の2回貼り付け。<b>対話モードON(推奨)</b>なら、まずサムネ言語化・全文和訳(話者ラベル付き)・展開マップ(起承転結)と<b>AIのセンターピン仮説</b>が出て「あなたのセンターピンは? 他に伸びた要素は?」と聞かれるので、自分の読みを返して(OKだけでも可)すり合わせてから→<b>冒頭→60秒台本(700字叩き台・削り候補マーク付き)→サブタイトルA/B案(後付け)</b>・使用区間リストへ進みます。<b>700字→500字前後へ削るのがライターの腕の見せ所</b>(シーンを削る。1シーンを膨らませない)。<b>訴求はA案(センターピン直球)から選ぶのが基本</b>。セリフがほぼ無い素材は「🎞ストーリーボード画像」も一緒にClaudeへ貼る。「<b>🎞1秒コマ(密)</b>」ボタンが出る動画は、密シートを全部貼ると映像をコマ単位で読んで叩き台(展開ベタ書き)の精度が上がる。60秒台本は<b>映像照合前の叩き台</b>なので、そのまま使わず映像と照らしてセリフ・時刻を確定させる<br>
+    <b>4. 台本を作る</b> — <b>①「📋 Claude用プロンプトをコピー」→Claudeに貼る</b>(プロンプト＋文字起こし)。<b>②「🖼 サムネをコピー」→もう1回貼る</b>(サムネ画像が付く)。この2セットで送信準備完了。<b>対話モードON(推奨)</b>なら、まずサムネ言語化・全文和訳(話者ラベル付き)・展開マップ(起承転結)と<b>AIのセンターピン仮説</b>が出て「あなたのセンターピンは? 他に伸びた要素は?」と聞かれるので、自分の読みを返して(OKだけでも可)すり合わせてから→<b>冒頭→60秒台本(700字叩き台・削り候補マーク付き)→サブタイトルA/B案(後付け)</b>・使用区間リストへ進みます。<b>700字→500字前後へ削るのがライターの腕の見せ所</b>(シーンを削る。1シーンを膨らませない)。<b>訴求はA案(センターピン直球)から選ぶのが基本</b>。セリフがほぼ無い素材は「🎞ストーリーボード画像」も一緒にClaudeへ貼る。「<b>🎞1秒コマ(密)</b>」ボタンが出る動画は、密シートを全部貼ると映像をコマ単位で読んで叩き台(展開ベタ書き)の精度が上がる。60秒台本は<b>映像照合前の叩き台</b>なので、そのまま使わず映像と照らしてセリフ・時刻を確定させる<br>
     <b>5. 編集者に渡す場合</b> — ②の欄に最終台本を貼って「📋 編集指示書プロンプトをコピー」→ Claudeに貼ると「何秒を切るか」の指示書が出るので、そのまま編集者へ。<b>自分で動画まで仕上げる場合は下の🅑へ</b><br>
     <b>5.5 台本が完成したら③に登録</b> — 工房の「<b>③初稿と完成形を登録</b>」に、最初の台本(初稿)とフィードバック反映後の完成形を貼って送信するだけ。<b>あなたの直しがAIのノウハウになり、次からの叩き台の精度が上がります</b>。余裕があれば「差分分析プロンプト」も自分のClaudeで回すと、なぜ直されたかの言語化が自分のスキルにもなります<br>
     <b>5+. 素材動画のダウンロード</b> — プレイヤーの「<b>⬇素材DL</b>」でURLがコピーされ、<a href="https://www.litexmedia.com/mhdownload.html" target="_blank">MediaHuman YouTube Downloader</a>が起動していれば自動で追加されます。<b>⚠️全部mp3(音声だけ)になる場合はMediaHumanの環境設定で「形式」がMP3になっているのが原因</b>。「オリジナル」または「MP4」・品質=最高に設定してください<br>
@@ -312,9 +312,9 @@ footer{color:var(--mut);font-size:11px;text-align:center;margin-top:20px;line-he
         <span style="font-size:10.5px;color:var(--mut)">→ <b>予備</b>(文字起こしは通常自動で下の欄に入ります)。自動取得に失敗した時だけ、YouTubeで拡張機能のCopy transcriptを押してこのタブに戻る(自動取り込み・貼り付け不要)</span>
       </div>
       <div style="display:flex;gap:8px;align-items:center;margin-top:6px;flex-wrap:wrap">
-        <button class="chip" id="kobo-copy-thumb" style="font-weight:700">🖼 サムネだけコピー</button>
+        <button class="chip" id="kobo-copy-thumb" style="font-weight:700">🖼 サムネをコピー</button>
         <button class="chip" id="kobo-open-thumb" style="font-weight:700">🖼 サムネを開く</button>
-        <span style="font-size:10.5px;color:var(--mut)">→ サムネは<b>📋コピーに画像ごと同梱</b>されます(<b>長尺素材では必須</b>=クリック理由の言語化→ショートの冒頭訴求に変換)。Claude側では<b>Ctrl+V(⌘V)でサムネ・Ctrl+Shift+V(⌘⇧V)で本文</b>が入ります。うまくいかない時だけこのボタンで個別コピー</span>
+        <span style="font-size:10.5px;color:var(--mut)">→ <b>📋本文を貼った後、このボタン→Claudeにもう1回貼り付け</b>でサムネ画像が付きます(<b>長尺素材では必須</b>=クリック理由の言語化→ショートの冒頭訴求に変換)</span>
       </div>
       <textarea id="kobo-tr" rows="3" placeholder="文字起こしはここに自動で入ります(30秒〜2分)。入らない時だけ「📺文字起こしを開く」→拡張機能のCopy transcript→このタブに戻る、または手動でここに貼り付け"
         style="width:100%;margin-top:8px;padding:8px 10px;border:1px solid var(--line);
@@ -325,7 +325,7 @@ footer{color:var(--mut);font-size:11px;text-align:center;margin-top:20px;line-he
         📋 Claude用プロンプトをコピー</button>
       <span id="kobo-copied" style="font-size:11px;color:var(--ok);margin-left:8px"></span>
       <div style="font-size:10.5px;color:var(--mut);margin-top:6px">
-        1回のコピーにプロンプト本文とサムネ画像の両方が入っています。Claudeの入力欄で<b>①Ctrl+V(Macは⌘V)=サムネが付く → ②Ctrl+Shift+V(⌘⇧V)=本文が入る</b>の2回貼り付けで送信準備完了。<b>対話モードON</b>: まずサムネ言語化・全文和訳・展開マップ・<b>AIのセンターピン仮説</b>が出て、「あなたのセンターピンは?他に伸びた要素は?」と聞かれます。あなたの読みを返す(OKだけでも可)→冒頭→60秒台本(700字叩き台)→最後にサブタイA/B案の順で対話しながら進みます。OFF: 従来どおり一気に出力。700字→500字へ削って仕上げるのは変わらずライターの腕の見せ所</div>
+        <b>①📋を押してClaudeに貼る(本文) → ②🖼サムネをコピーを押してもう1回貼る(画像)</b>で送信準備完了。<b>対話モードON</b>: まずサムネ言語化・全文和訳・展開マップ・<b>AIのセンターピン仮説</b>が出て、「あなたのセンターピンは?他に伸びた要素は?」と聞かれます。あなたの読みを返す(OKだけでも可)→冒頭→60秒台本(700字叩き台)→最後にサブタイA/B案の順で対話しながら進みます。OFF: 従来どおり一気に出力。700字→500字へ削って仕上げるのは変わらずライターの腕の見せ所</div>
 
       <div style="border-top:1px dashed var(--line);margin-top:10px;padding-top:8px">
         <div style="font-size:12px;font-weight:800;margin-bottom:4px">② 台本が完成したら → 編集者向け指示書</div>
@@ -2189,30 +2189,19 @@ document.getElementById("kobo-copy").onclick = async () => {
   const grabbed = await koboGrabClipboard();  // コピー直前にも拾う(初回はここで権限許可)
   const noTr = !prep.transcript.length && !document.getElementById("kobo-tr").value.trim();
   const text = buildPrompt(prep);
-  const done = withThumb => {
+  const done = () => {
     const el = document.getElementById("kobo-copied");
     el.style.color = noTr ? "var(--hot)" : "var(--ok)";
     el.textContent = noTr
       ? "コピーしましたが文字起こしが未貼付です(📺文字起こしを開く→拡張機能でコピー→戻って再コピー)"
       : (grabbed ? "文字起こしを自動取り込みして合体。" : "") +
-        (withThumb ? "プロンプト＋サムネを一括コピー! Claudeで ①Ctrl+V(⌘V)=サムネ → ②Ctrl+Shift+V(⌘⇧V)=プロンプト本文 の順に2回貼り付け"
-                   : "コピーしました。Claudeに貼ってください(サムネは🖼から)");
+        "本文をコピーしました。Claudeに貼ったら、次に「🖼サムネをコピー」→もう1回貼り付け";
     setTimeout(() => el.textContent = "", 9000);
   };
-  // サムネ取得済みならプロンプト(text/plain)＋画像(image/png)を1回のコピーに同梱
-  if(koboThumb && navigator.clipboard && window.ClipboardItem){
-    try{
-      await navigator.clipboard.write([new ClipboardItem({
-        "text/plain": new Blob([text], {type: "text/plain"}),
-        "image/png": koboThumb.png,
-      })]);
-      done(true);
-      return;
-    }catch(e){}  // 同梱に失敗したらテキストのみへフォールバック
-  }
+  // 画像とテキストの同梱コピーはClaude.ai側が1回の貼り付けで両方受けないため、本文とサムネは別ボタンでコピーする
   if(navigator.clipboard && navigator.clipboard.writeText){
-    navigator.clipboard.writeText(text).then(() => done(false)).catch(() => fallbackCopy(text, () => done(false)));
-  } else fallbackCopy(text, () => done(false));
+    navigator.clipboard.writeText(text).then(done).catch(() => fallbackCopy(text, done));
+  } else fallbackCopy(text, done);
 };
 document.getElementById("kobo-copy-thumb").onclick = async () => {
   if(!koboThumb || !navigator.clipboard || !window.ClipboardItem){
