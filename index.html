@@ -238,10 +238,10 @@ footer{color:var(--mut);font-size:11px;text-align:center;margin-top:20px;line-he
   <div id="help" style="display:none;border:1px solid var(--line);border-radius:10px;
       background:var(--sur);padding:12px 14px;margin:8px 0;font-size:12.5px;line-height:1.9">
     <b style="font-size:13px">🅐 台本づくり(誰でも・ブラウザとClaudeだけ)</b><br>
-    <b>1. ネタを選ぶ</b> — 「🎯動画ピッカー」を開く。並んでいるのは海外の元動画(日本で需要が証明済みの供給元だけ)。ジャンルで絞って、良さそうな動画の <b>✓</b> を押して着手宣言(全員に共有され、被りを防げます)<br>
-    <b>2. 解析する</b> — その行の <b>🎬</b> を押すと自動で解析が始まる(タイトル・盛り上がり・人気コメントを取得)。リストに無い動画はプレイヤー上の欄にYouTube URLを直貼りでもOK<br>
-    <b>3. 文字起こし</b> — 「📺文字起こしを開く」→ YouTubeで拡張機能「<b>YouTube Summary</b>」のCopy transcriptを押す → このタブに戻るだけ(自動取り込み・貼り付け不要。初回だけChromeが権限を聞くので「許可」)。YouTube公式の「文字起こしを表示」からのコピーでもOK<br>
-    <b>4. 台本を作る</b> — 「📋 Claude用プロンプトをコピー」→ 自分のClaudeに貼るだけ。サムネ言語化・全文和訳(話者ラベル付き)・展開マップ(起承転結)→<b>冒頭→60秒台本(700字叩き台・削り候補マーク付き)→サブタイトルA/B案(後付け)</b>・使用区間リストの順で出ます。<b>700字→500字前後へ削るのがライターの腕の見せ所</b>(シーンを削る。1シーンを膨らませない)。<b>訴求はA案(センターピン直球)から選ぶのが基本</b>。<b>長尺素材は「🖼サムネを開く」で画像もClaudeへ貼る</b>(サムネがクリックの生命線→その理由をショートの冒頭訴求に変換します)。セリフがほぼ無い素材は「🎞ストーリーボード画像」も一緒にClaudeへ貼る。「<b>🎞1秒コマ(密)</b>」ボタンが出る動画は、密シートを全部貼ると映像をコマ単位で読んで叩き台(展開ベタ書き)の精度が上がる。60秒台本は<b>映像照合前の叩き台</b>なので、そのまま使わず映像と照らしてセリフ・時刻を確定させる<br>
+    <b>1. ネタを選ぶ</b> — 「🎯動画ピッカー」を開く。並んでいるのは海外の元動画(日本で需要が証明済みの供給元だけ)。ジャンルで絞って選ぶ。<b>✋名前</b>が付いている動画は他の人が企画中(かぶり注意)<br>
+    <b>2. 解析する</b> — その行の <b>🎬</b> を押す、またはリストに無い動画はURLを工房の欄に<b>貼るだけ</b>(貼った瞬間に解析が自動で始まり、文字起こし用のYouTubeタブも自動で開きます)。サムネも自動取得。解析後に出る「<b>✋この企画やる</b>」で名前を選んで宣言すると全員に共有され、企画かぶりを防げます。誰かが企画済みの動画は⚠️警告が出ます<br>
+    <b>3. 文字起こし</b> — 自動で開いたYouTubeタブで拡張機能「<b>YouTube Summary</b>」のCopy transcriptを押す → このタブに戻るだけ(自動取り込み・貼り付け不要。初回だけChromeが権限を聞くので「許可」)。YouTube公式の「文字起こしを表示」からのコピーでもOK<br>
+    <b>4. 台本を作る</b> — 「📋 Claude用プロンプトをコピー」→ 自分のClaudeに貼るだけ(<b>文字起こし・サムネ画像も1回のコピーに同梱</b>)。<b>対話モードON(推奨)</b>なら、まずサムネ言語化・全文和訳(話者ラベル付き)・展開マップ(起承転結)と<b>AIのセンターピン仮説</b>が出て「あなたのセンターピンは? 他に伸びた要素は?」と聞かれるので、自分の読みを返して(OKだけでも可)すり合わせてから→<b>冒頭→60秒台本(700字叩き台・削り候補マーク付き)→サブタイトルA/B案(後付け)</b>・使用区間リストへ進みます。<b>700字→500字前後へ削るのがライターの腕の見せ所</b>(シーンを削る。1シーンを膨らませない)。<b>訴求はA案(センターピン直球)から選ぶのが基本</b>。セリフがほぼ無い素材は「🎞ストーリーボード画像」も一緒にClaudeへ貼る。「<b>🎞1秒コマ(密)</b>」ボタンが出る動画は、密シートを全部貼ると映像をコマ単位で読んで叩き台(展開ベタ書き)の精度が上がる。60秒台本は<b>映像照合前の叩き台</b>なので、そのまま使わず映像と照らしてセリフ・時刻を確定させる<br>
     <b>5. 編集者に渡す場合</b> — ②の欄に最終台本を貼って「📋 編集指示書プロンプトをコピー」→ Claudeに貼ると「何秒を切るか」の指示書が出るので、そのまま編集者へ。<b>自分で動画まで仕上げる場合は下の🅑へ</b><br>
     <b>5.5 台本が完成したら③に登録</b> — 工房の「<b>③初稿と完成形を登録</b>」に、最初の台本(初稿)とフィードバック反映後の完成形を貼って送信するだけ。<b>あなたの直しがAIのノウハウになり、次からの叩き台の精度が上がります</b>。余裕があれば「差分分析プロンプト」も自分のClaudeで回すと、なぜ直されたかの言語化が自分のスキルにもなります<br>
     <b>5+. 素材動画のダウンロード</b> — プレイヤーの「<b>⬇素材DL</b>」でURLがコピーされ、<a href="https://www.litexmedia.com/mhdownload.html" target="_blank">MediaHuman YouTube Downloader</a>が起動していれば自動で追加されます。<b>⚠️全部mp3(音声だけ)になる場合はMediaHumanの環境設定で「形式」がMP3になっているのが原因</b>。「オリジナル」または「MP4」・品質=最高に設定してください<br>
@@ -263,6 +263,14 @@ footer{color:var(--mut);font-size:11px;text-align:center;margin-top:20px;line-he
         style="flex:1;padding:8px 12px;border:1px solid var(--line);border-radius:8px;
         background:var(--bg);color:var(--tx);font-size:13px">
       <button class="chip" id="kobo-run" style="border-color:var(--acc);color:var(--acc);font-weight:700">解析</button>
+    </div>
+    <div style="display:flex;gap:14px;flex-wrap:wrap;margin-top:6px;font-size:11px;color:var(--mut)">
+      <label style="display:flex;align-items:center;gap:4px;cursor:pointer">
+        <input type="checkbox" id="kobo-autoyt" style="width:13px;height:13px">
+        📺 URL貼り付けで文字起こしタブも自動で開く</label>
+      <label style="display:flex;align-items:center;gap:4px;cursor:pointer">
+        <input type="checkbox" id="kobo-dialog" style="width:13px;height:13px">
+        💬 対話モード（サムネ言語化→センターピン合意→台本）</label>
     </div>
     <div id="kobo-status" style="font-size:11.5px;color:var(--mut);margin-top:6px"></div>
 
@@ -295,6 +303,11 @@ footer{color:var(--mut);font-size:11px;text-align:center;margin-top:20px;line-he
       <div id="kobo-meta" style="font-size:12.5px;font-weight:700"></div>
       <div id="kobo-heat" style="font-size:11.5px;color:var(--mut);margin:4px 0"></div>
       <div id="kobo-com" style="font-size:11px;color:var(--mut)"></div>
+      <div id="kobo-thumbbox" style="display:none;align-items:center;gap:10px;margin-top:8px">
+        <img id="kobo-thumb-img" alt="サムネ" style="height:72px;border-radius:6px;border:1px solid var(--line)">
+        <span id="kobo-thumb-stat" style="font-size:10.5px;color:var(--mut)"></span>
+      </div>
+      <div id="kobo-claim" style="display:none;margin-top:8px;padding:8px 10px;border-radius:8px;font-size:12px;line-height:1.6"></div>
       <div id="kobo-sb" style="display:none;font-size:11.5px;margin-top:4px">
         🎞 <a id="kobo-sb-dl" href="" download style="color:var(--acc);font-weight:700">ストーリーボード画像を保存</a>
         <span style="color:var(--mut)">— セリフが無い(ノンバーバル)素材は、この画像もプロンプトと一緒にClaudeへ貼ると映像を読み取って台本を作れます</span></div>
@@ -303,8 +316,9 @@ footer{color:var(--mut);font-size:11px;text-align:center;margin-top:20px;line-he
         <span style="font-size:10.5px;color:var(--mut)">→ YouTubeで拡張機能のCopy transcriptを押して、このタブに戻ってくるだけ(自動取り込み)。貼り付けは不要</span>
       </div>
       <div style="display:flex;gap:8px;align-items:center;margin-top:6px;flex-wrap:wrap">
+        <button class="chip" id="kobo-copy-thumb" style="font-weight:700">🖼 サムネだけコピー</button>
         <button class="chip" id="kobo-open-thumb" style="font-weight:700">🖼 サムネを開く</button>
-        <span style="font-size:10.5px;color:var(--mut)">→ 開いた画像をコピーしてプロンプトと一緒にClaudeへ貼る。<b>長尺素材では必須</b>(クリック理由の言語化→ショートの冒頭訴求に変換されます)</span>
+        <span style="font-size:10.5px;color:var(--mut)">→ サムネは<b>📋コピーに画像ごと同梱</b>されます(<b>長尺素材では必須</b>=クリック理由の言語化→ショートの冒頭訴求に変換)。Claudeに貼って画像が入らなかった時だけ「サムネだけコピー」→もう一度貼り付け</span>
       </div>
       <textarea id="kobo-tr" rows="3" placeholder="(手動で貼る場合はここへ) 通常は「📺文字起こしを開く」→拡張機能YouTube SummaryのCopy transcript→このタブに戻れば自動で取り込まれます。YouTube公式の「文字起こしを表示」からのコピーでもOK"
         style="width:100%;margin-top:8px;padding:8px 10px;border:1px solid var(--line);
@@ -315,7 +329,7 @@ footer{color:var(--mut);font-size:11px;text-align:center;margin-top:20px;line-he
         📋 Claude用プロンプトをコピー</button>
       <span id="kobo-copied" style="font-size:11px;color:var(--ok);margin-left:8px"></span>
       <div style="font-size:10.5px;color:var(--mut);margin-top:6px">
-        コピーしたら自分のClaudeに貼るだけ → サムネ言語化・全文和訳(話者付き)・展開マップ→冒頭→60秒台本(700字叩き台)→サブタイA/B案(後付け)・使用区間リストが出ます。700字→500字へ削って仕上げてください</div>
+        コピーしたら自分のClaudeに貼るだけ(サムネ画像も同梱)。<b>対話モードON</b>: まずサムネ言語化・全文和訳・展開マップ・<b>AIのセンターピン仮説</b>が出て、「あなたのセンターピンは?他に伸びた要素は?」と聞かれます。あなたの読みを返す(OKだけでも可)→冒頭→60秒台本(700字叩き台)→最後にサブタイA/B案の順で対話しながら進みます。OFF: 従来どおり一気に出力。700字→500字へ削って仕上げるのは変わらずライターの腕の見せ所</div>
 
       <div style="border-top:1px dashed var(--line);margin-top:10px;padding-top:8px">
         <div style="font-size:12px;font-weight:800;margin-bottom:4px">② 台本が完成したら → 編集者向け指示書</div>
@@ -623,6 +637,7 @@ let KNOWHOW = "";
 let D = {};
 let SRC = [], KPI = {}, SV = {}, CHS = [];
 let picked = new Set();
+let CLAIMS = {};  // 企画かぶり防止: {vid: {w:作成者, ts:登録時刻, t:タイトル}} 全員共有(GAS)
 const CH_RGB = [[63,142,217],[209,73,91],[57,168,143],[217,160,63],[122,88,201]];
 const rgb = i => CH_RGB[((i % CH_RGB.length) + CH_RGB.length) % CH_RGB.length].join(",");
 const fmt = v => v >= 1e8 ? (v/1e8).toFixed(1).replace(/\.0$/,"") + "億"
@@ -1740,6 +1755,9 @@ function sendToKobo(vid){
   document.getElementById("kobo").style.display = "";
   document.getElementById("kobo-url").value = "https://www.youtube.com/watch?v=" + vid;
   window.scrollTo({top: 0, behavior: "smooth"});
+  // 🎬クリック(ユーザー操作)のうちに文字起こしタブを開く(戻れば自動取り込み)
+  if(document.getElementById("kobo-autoyt").checked)
+    window.open("https://www.youtube.com/watch?v=" + vid, "_blank");
   document.getElementById("kobo-run").click();
   // ピッカー由来なら登録者数をプロンプトに載せる(×倍率=属人性判定用)
   const x = (SM || []).find(v => v.id === vid);
@@ -1834,7 +1852,8 @@ function renderPick(){
             title="右クリックでサムネ＋情報をコピー"></a>
         <div style="min-width:0">
           <a class="play" href="https://www.youtube.com/watch?v=${x.id}"
-            style="color:var(--tx);text-decoration:none;font-weight:700">${(x.im||0) >= 0.95 ? "⚡" : ""}${x.t}</a>
+            style="color:var(--tx);text-decoration:none;font-weight:700">${(x.im||0) >= 0.95 ? "⚡" : ""}${x.t}</a>${
+            CLAIMS[x.id] ? ` <span style="font-size:10.5px;color:var(--hot);font-weight:800;white-space:nowrap" title="${CLAIMS[x.id].w}さんが${claimDate(CLAIMS[x.id].ts)}に企画宣言済み(かぶり注意)">✋${CLAIMS[x.id].w}</span>` : ""}
           <div style="font-size:10.5px;color:var(--mut)">${x.c}${dur ? " ・ " + dur : ""}${x.s ? " ・ " + fmt(x.s) + "人" : ""}</div>
         </div></div></td>
       <td class="num"><b>${fmt(x.v)}</b></td>
@@ -1898,7 +1917,9 @@ document.getElementById("upd").textContent = "データ読み込み中…";
 Promise.all([
   fetch("data.json", {cache: "no-cache"}).then(r => r.json()),
   fetch(API + "?api=checks").then(r => r.json()).catch(() => ({checks: []})),
-]).then(([data, ck]) => {
+  fetch(API + "?api=claims").then(r => r.json()).catch(() => ({claims: {}})),
+]).then(([data, ck, cl]) => {
+  CLAIMS = (cl && cl.claims) || {};
   D = data;
   KNOWHOW = data.kh || "";
   picked = new Set(ck.checks || []);
@@ -1926,14 +1947,19 @@ document.getElementById("help-toggle").onclick = () => {
   const h = document.getElementById("help");
   h.style.display = h.style.display === "none" ? "" : "none";
 };
-document.getElementById("kobo-run").onclick = () => {
+function koboRun(){
   const url = document.getElementById("kobo-url").value.trim();
   if(!url) return;
   koboSubs = 0;  // URL直貼りは登録者不明(ピッカー経由ならsendToKoboが直後に上書き)
+  koboThumb = null;
+  document.getElementById("kobo-thumbbox").style.display = "none";
+  document.getElementById("kobo-claim").style.display = "none";
   document.getElementById("kobo-status").textContent = "解析中…(20〜40秒かかります)";
   document.getElementById("kobo-result").style.display = "none";
   fetch(API + "?prep=" + encodeURIComponent(url)).then(r => r.json()).then(p => {
     prep = p;
+    loadKoboThumb(p.vid);   // サムネ自動取得(📋コピーに同梱)
+    renderKoboClaim(p);     // 企画かぶりチェック＋やる宣言
     document.getElementById("kobo-status").textContent = p.errors.length ? "注意: " + p.errors.join(" / ") : "";
     document.getElementById("kobo-meta").textContent =
       `${p.title} ・ ${p.author} ・ ${fmt(p.views)}再生` +
@@ -1961,7 +1987,107 @@ document.getElementById("kobo-run").onclick = () => {
   }).catch(e => {
     document.getElementById("kobo-status").textContent = "エラー: " + e;
   });
-};
+}
+document.getElementById("kobo-run").onclick = koboRun;
+// 工房オプション(localStorage保持)。対話モード・自動タブは既定ON
+function koboOpt(id, key, def){
+  const el = document.getElementById(id);
+  const v = localStorage.getItem(key);
+  el.checked = v === null ? def : v === "1";
+  el.onchange = () => localStorage.setItem(key, el.checked ? "1" : "0");
+  return el;
+}
+koboOpt("kobo-autoyt", "koboAutoYT", true);
+koboOpt("kobo-dialog", "koboDialog", true);
+// URL貼り付け → 自動で解析開始＋(ONなら)文字起こしタブを開く
+// (タブはユーザー操作=paste中に開かないとポップアップブロックされる。解析はvalue反映後)
+document.getElementById("kobo-url").addEventListener("paste", e => {
+  const txt = (e.clipboardData && e.clipboardData.getData("text")) || "";
+  const p = parseYtUrl(txt);
+  if(!p) return;
+  if(document.getElementById("kobo-autoyt").checked)
+    window.open("https://www.youtube.com/watch?v=" + p.vid, "_blank");
+  setTimeout(koboRun, 0);
+});
+// --- サムネ自動取得(i.ytimg.comはCORS許可あり) → プレビュー表示＋📋コピーに画像同梱 ---
+let koboThumb = null;  // {png: Blob} クリップボード用(Clipboard APIはimage/pngのみ受け付ける)
+async function loadKoboThumb(vid){
+  const box = document.getElementById("kobo-thumbbox");
+  const img = document.getElementById("kobo-thumb-img");
+  const stat = document.getElementById("kobo-thumb-stat");
+  for(const name of ["maxresdefault", "hqdefault"]){
+    try{
+      const r = await fetch(`https://i.ytimg.com/vi/${vid}/${name}.jpg`, {mode: "cors"});
+      if(!r.ok) continue;
+      const blob = await r.blob();
+      const bmp = await createImageBitmap(blob);
+      // maxres未生成の動画は120px幅の代替画像が返るのでhqへ
+      if(name === "maxresdefault" && bmp.width <= 200){ bmp.close(); continue; }
+      const cv = document.createElement("canvas");
+      cv.width = bmp.width; cv.height = bmp.height;
+      cv.getContext("2d").drawImage(bmp, 0, 0);
+      bmp.close();
+      const png = await new Promise(res => cv.toBlob(res, "image/png"));
+      if(!png) continue;
+      koboThumb = {png};
+      img.src = URL.createObjectURL(blob);
+      stat.textContent = "サムネ取得済み → 「📋 Claude用プロンプトをコピー」に画像も同梱されます";
+      box.style.display = "flex";
+      return;
+    }catch(e){}
+  }
+}
+// --- 企画かぶり防止: 解析した動画に名前つきで「この企画やる」を宣言(全員共有) ---
+const CLAIM_WRITERS = [...WRITERS, "りゅうと"];
+function claimDate(ts){ const d = new Date(+ts); return (d.getMonth() + 1) + "/" + d.getDate(); }
+function renderKoboClaim(p){
+  const box = document.getElementById("kobo-claim");
+  const c = CLAIMS[p.vid];
+  const me = localStorage.getItem("koboWho") || "";
+  box.style.display = "";
+  if(c){
+    const mine = c.w === me;
+    box.style.border = "1px solid " + (mine ? "var(--ok)" : "var(--hot)");
+    box.innerHTML = mine
+      ? `✋ あなた(${c.w})が ${claimDate(c.ts)} に企画宣言済みの動画です
+         <button class="chip" id="kobo-unclaim" style="margin-left:8px">取り下げる</button>`
+      : `<b style="color:var(--hot)">⚠️ 企画かぶり注意: ${c.w}さんが ${claimDate(c.ts)} にこの動画で企画中です。</b>別のネタを選ぶか、本人に確認してください`;
+    const un = document.getElementById("kobo-unclaim");
+    if(un) un.onclick = () => {
+      delete CLAIMS[p.vid];
+      renderKoboClaim(p);
+      fetch(`${API}?api=claim&vid=${p.vid}&who=${encodeURIComponent(me)}&on=0`).catch(() => {});
+    };
+  } else {
+    box.style.border = "1px dashed var(--line)";
+    box.innerHTML = `✋ まだ誰も企画にしていません。この動画で作るなら宣言(かぶり防止・全員に共有):
+      <select id="kobo-who" style="padding:4px 6px;border:1px solid var(--line);border-radius:6px;background:var(--bg);color:var(--tx);font-size:12px">
+        <option value="">名前</option>${CLAIM_WRITERS.map(w => `<option${w === me ? " selected" : ""}>${w}</option>`).join("")}
+      </select>
+      <button class="chip" id="kobo-claim-btn" style="font-weight:700">✋ この企画やる</button>`;
+    document.getElementById("kobo-claim-btn").onclick = () => {
+      const who = document.getElementById("kobo-who").value;
+      if(!who){ copyToast("名前を選んでください"); return; }
+      localStorage.setItem("koboWho", who);
+      CLAIMS[p.vid] = {w: who, ts: Date.now(), t: (p.title || "").slice(0, 40)};
+      renderKoboClaim(p);
+      // ピッカーの✓(着手)にも同期して一覧側でも被りが見えるようにする
+      const key = "v:" + p.vid;
+      if(!picked.has(key)){
+        picked.add(key);
+        fetch(`${API}?api=check&key=${encodeURIComponent(key)}&on=1`).catch(() => {});
+      }
+      fetch(`${API}?api=claim&vid=${p.vid}&who=${encodeURIComponent(who)}&title=${encodeURIComponent((p.title || "").slice(0, 40))}&on=1`)
+        .then(r => r.json()).then(j => {
+          if(j.error){
+            delete CLAIMS[p.vid];
+            renderKoboClaim(p);
+            copyToast("登録できませんでした: " + j.error);
+          }
+        }).catch(() => {});
+    };
+  }
+}
 function normalizeManualTr(raw){
   // YouTube公式パネル(タイムスタンプ行+本文行)にも、YouTube Summary等の拡張((00:00) 本文)にも対応
   const lines = raw.split(/\n+/).map(l => l.trim()).filter(Boolean);
@@ -2023,7 +2149,20 @@ ${transcriptText()}
 - 上の文字起こしが【未貼付】のままで、かつストーリーボード画像の添付も無い場合、台本は一切作らず「文字起こしまたはストーリーボード画像を貼ってください」とだけ返すこと
 - タイトル・コメント・盛り上がりからの推測でストーリーや台詞を創作することを禁止する。台本の内容は必ず文字起こし(またはストーリーボード画像に写っていること)だけから作る
 
-${KNOWHOW}
+${dialogSection()}${KNOWHOW}
+`;
+}
+// 対話モード: 一気に完成させず、センターピン合意→台本→サブタイの3ターンでディレクターと壁打ちする
+function dialogSection(){
+  if(!document.getElementById("kobo-dialog").checked) return "";
+  return `# 進め方(対話モード・厳守)
+この依頼は一気に完成させず、ディレクター(依頼者)と対話しながら進める。下のノウハウに「この順で全部出力」とあるが、対話モードでは同じ順番のまま以下のターンに分割し、各ターンの最後で必ず質問して止まる:
+- 【第1ターン(この返信で出す)】手順0(サムネ・タイトルの言語化)→手順1(全文和訳)→手順2(展開マップ)→手順4(センターピン)まで。センターピンは「私のセンターピンは◯◯だと思います。理由: …」と仮説として提示する
+- 第1ターンの最後に必ずこう聞いて止まる: 「①このセンターピンで合っていますか? あなたの読むセンターピンがあれば教えてください ②サムネ・タイトル以外に伸びた要素(映像の引き・時事性・コメント欄の空気・投稿タイミング等)があると考えるなら教えてください ③問題なければ"OK"だけで先に進みます」
+- 【第2ターン】ディレクターの回答を反映してセンターピンを確定(ディレクターの読みはAIの仮説より優先。ただし弱い・矛盾すると感じたら理由付きで率直に指摘してよい)→手順3(叩き台・展開ベタ書き)→手順5(冒頭フック)→手順6(60秒台本・700字叩き台)→手順7(使用区間リスト)を出し、「冒頭・台本への修正指示があればどうぞ。無ければ"OK"でサブタイトルへ進みます」と聞いて止まる
+- 【第3ターン】修正を反映→手順8(サブタイA案)→手順9(サブタイB案)→手順10(セルフレビュー)で完成
+- ディレクターが途中で方針を変えたら(別のセンターピン・別の切り口など)、それを正として以降を作り直す
+
 `;
 }
 document.getElementById("kobo-tr").oninput = () => {
@@ -2076,18 +2215,42 @@ document.getElementById("kobo-copy").onclick = async () => {
   const grabbed = await koboGrabClipboard();  // コピー直前にも拾う(初回はここで権限許可)
   const noTr = !prep.transcript.length && !document.getElementById("kobo-tr").value.trim();
   const text = buildPrompt(prep);
-  const done = () => {
+  const done = withThumb => {
     const el = document.getElementById("kobo-copied");
     el.style.color = noTr ? "var(--hot)" : "var(--ok)";
     el.textContent = noTr
       ? "コピーしましたが文字起こしが未貼付です(📺文字起こしを開く→拡張機能でコピー→戻って再コピー)"
-      : grabbed ? "文字起こしを自動取り込みして合体コピーしました。Claudeに貼ってください"
-                : "コピーしました。Claudeに貼ってください";
-    setTimeout(() => el.textContent = "", 6000);
+      : (grabbed ? "文字起こしを自動取り込みして合体。" : "") +
+        (withThumb ? "プロンプト＋サムネ画像をコピーしました。Claudeに1回貼るだけ(画像が入らなければ🖼サムネだけコピー→もう一度貼り付け)"
+                   : "コピーしました。Claudeに貼ってください(サムネは🖼から)");
+    setTimeout(() => el.textContent = "", 9000);
   };
+  // サムネ取得済みならプロンプト(text/plain)＋画像(image/png)を1回のコピーに同梱
+  if(koboThumb && navigator.clipboard && window.ClipboardItem){
+    try{
+      await navigator.clipboard.write([new ClipboardItem({
+        "text/plain": new Blob([text], {type: "text/plain"}),
+        "image/png": koboThumb.png,
+      })]);
+      done(true);
+      return;
+    }catch(e){}  // 同梱に失敗したらテキストのみへフォールバック
+  }
   if(navigator.clipboard && navigator.clipboard.writeText){
-    navigator.clipboard.writeText(text).then(done).catch(() => fallbackCopy(text, done));
-  } else fallbackCopy(text, done);
+    navigator.clipboard.writeText(text).then(() => done(false)).catch(() => fallbackCopy(text, () => done(false)));
+  } else fallbackCopy(text, () => done(false));
+};
+document.getElementById("kobo-copy-thumb").onclick = async () => {
+  if(!koboThumb || !navigator.clipboard || !window.ClipboardItem){
+    document.getElementById("kobo-open-thumb").click();  // 取得できていない時は従来どおり開いて手動コピー
+    return;
+  }
+  try{
+    await navigator.clipboard.write([new ClipboardItem({"image/png": koboThumb.png})]);
+    copyToast("サムネ画像をコピーしました。Claudeに貼ってください");
+  }catch(e){
+    document.getElementById("kobo-open-thumb").click();
+  }
 };
 
 // ===== ♻️型移植モード =====
