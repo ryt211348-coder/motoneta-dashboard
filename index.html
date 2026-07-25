@@ -29,6 +29,16 @@ h1 em{color:var(--acc);font-style:normal}
 .sub{color:var(--mut);font-size:11px;margin:2px 0 8px}
 input[type=search]{width:100%;padding:8px 12px;border:1px solid var(--line);border-radius:8px;
   background:var(--sur);color:var(--tx);font-size:13px;margin:0 0 8px}
+/* 言語セレクタ(検索窓の右) */
+.qrow{display:flex;gap:6px;align-items:center;margin-bottom:8px}
+.qrow input[type=search]{margin:0}
+#lang{flex:0 0 auto;padding:8px 10px;border:1px solid var(--line);border-radius:8px;
+  background:var(--sur);color:var(--tx);font-size:12.5px;max-width:46%}
+/* 企画力(再生数÷登録者数の倍率)バッジ */
+.pow{font-variant-numeric:tabular-nums;font-weight:800;white-space:nowrap}
+.pow .sub{display:block;font-size:9.5px;font-weight:600;color:var(--mut)}
+.lgtag{font-size:9.5px;color:var(--mut);border:1px solid var(--line);border-radius:4px;
+  padding:0 4px;margin-left:4px;white-space:nowrap}
 .chips{display:flex;gap:6px;overflow-x:auto;padding-bottom:4px}
 .chips::-webkit-scrollbar{display:none}
 .chip{flex:0 0 auto;border:1px solid var(--line);background:var(--sur);color:var(--mut);
@@ -239,6 +249,7 @@ footer{color:var(--mut);font-size:11px;text-align:center;margin-top:20px;line-he
       background:var(--sur);padding:12px 14px;margin:8px 0;font-size:12.5px;line-height:1.9">
     <b style="font-size:13px">🅐 台本づくり(誰でも・ブラウザとClaudeだけ)</b><br>
     <b>1. ネタを選ぶ</b> — 「🎯動画ピッカー」を開く。並んでいるのは海外の元動画(日本で需要が証明済みの供給元だけ)。ジャンルで絞って、良さそうな動画の <b>✓</b> を押して着手宣言(全員に共有され、被りを防げます)<br>
+    <b>1.5 企画力(×倍率)と言語</b> — 再生数の下の <b>×N</b> は<b>再生数 ÷ そのチャンネルの登録者数</b>。登録者の何倍回ったか＝<b>企画そのものの強さ</b>で、<b>×3以上(赤)が狙い目・×1未満はファン視聴の疑い</b>(その人が出ているから見られただけ＝日本語化しても効きにくい)。既定の<b>「企画力順」</b>は倍率が高い順、引用元ランキングの<b>企画力</b>列は「そのchの素材の中央値×倍率／×3以上が何本あるか」で、<b>強い企画を量産しているch</b>ほど上に来ます。検索窓の右の<b>言語セレクタ</b>で英語だけ/言語別に絞れます(既定=英語。<b>EN?</b>は素材タイトル未収集で名前から推定したもの)<br>
     <b>2. 解析する</b> — その行の <b>🎬</b> を押す、またはリストに無い動画はURLを工房の欄に<b>貼るだけ</b>。解析・サムネ取得・<b>文字起こしの自動取得</b>が全部同時に始まります<br>
     <b>3. 文字起こしは自動で入る</b> — 30秒〜2分で下の欄に自動で入ります(何もしなくてOK)。<b>「自動取得できませんでした」と出た時だけ</b>「📺文字起こしを開く」→ 拡張機能「YouTube Summary」のCopy transcript → このタブに戻る(自動取り込み)。※自動取得はチームの「ワーカーPC」が担当します。Windowsで担当してくれる人は<a href="tr_worker_win.zip" download style="color:var(--acc);font-weight:700">ワーカーをダウンロード</a>(中のREADMEどおりstart.batを起動しておくだけ・誰か1人でOK)<br>
     <b>4. 台本を作る</b> — <b>①「📋 Claude用プロンプトをコピー」→Claudeに貼る</b>(プロンプト＋文字起こし)。<b>②「🖼 サムネをコピー」→もう1回貼る</b>(サムネ画像が付く)。この2セットで送信準備完了。<b>対話モードON(推奨)</b>なら、まずサムネ言語化・全文和訳(話者ラベル付き)・展開マップ(起承転結)と<b>AIのセンターピン仮説</b>が出て「あなたのセンターピンは? 他に伸びた要素は?」と聞かれるので、自分の読みを返して(OKだけでも可)すり合わせてから→<b>冒頭→60秒台本(700字叩き台・削り候補マーク付き)→サブタイトルA/B案(後付け)</b>・使用区間リストへ進みます。<b>700字→500字前後へ削るのがライターの腕の見せ所</b>(シーンを削る。1シーンを膨らませない)。<b>訴求はA案(センターピン直球)から選ぶのが基本</b>。セリフがほぼ無い素材は「🎞ストーリーボード画像」も一緒にClaudeへ貼る。「<b>🎞1秒コマ(密)</b>」ボタンが出る動画は、密シートを全部貼ると映像をコマ単位で読んで叩き台(展開ベタ書き)の精度が上がる。60秒台本は<b>映像照合前の叩き台</b>なので、そのまま使わず映像と照らしてセリフ・時刻を確定させる<br>
@@ -376,7 +387,10 @@ footer{color:var(--mut);font-size:11px;text-align:center;margin-top:20px;line-he
     <button class="chip" id="tab-perf">📈 実績</button>
     <button class="chip" id="tab-rep">📊 週次レポート</button>
   </div>
-  <input type="search" id="q" placeholder="検索">
+  <div class="qrow">
+    <input type="search" id="q" placeholder="検索">
+    <select id="lang" title="引用元チャンネルの言語で絞る"></select>
+  </div>
   <div class="chips" id="chips"></div>
 </header>
 <div id="view-rank">
@@ -389,7 +403,8 @@ footer{color:var(--mut);font-size:11px;text-align:center;margin-top:20px;line-he
 <div id="view-pick" style="display:none">
   <div class="sub" style="margin:0 0 8px">ここに並ぶのは<b>海外の一次素材そのもの</b>(日本の競合で需要が証明された引用元チャンネルの人気動画・<b>300万再生以上のみ</b>)。🎬を押すとそのまま台本プロンプト工房に入ります。</div>
   <div class="tbl"><table style="min-width:700px">
-    <thead><tr><th></th><th>✓</th><th>海外素材(元動画)</th><th style="text-align:right">素材の再生数</th>
+    <thead><tr><th></th><th>✓</th><th>海外素材(元動画)</th>
+      <th style="text-align:right" title="下段は企画力=再生数÷登録者数">素材の再生数<br><span style="font-weight:400;font-size:10px">／企画力</span></th>
       <th>ジャンル</th></tr></thead>
     <tbody id="pick-body"></tbody>
   </table></div>
@@ -638,10 +653,52 @@ const rgb = i => CH_RGB[((i % CH_RGB.length) + CH_RGB.length) % CH_RGB.length].j
 const fmt = v => v >= 1e8 ? (v/1e8).toFixed(1).replace(/\.0$/,"") + "億"
   : v >= 1e4 ? Math.round(v/1e4) + "万" : (v||0).toLocaleString();
 const isHot = s => s.avg >= 1e6 && Object.keys(s.bd).length === 1;
-let sort = "平均", minN = 2, minAvg = 3e6, ytOnly = false, hotOnly = false,
-    pickedOnly = false, allCols = false, limit = 300;
+// ===== 言語(引用元chの言語判定) =====
+// lg=言語コード / lc="hi"=素材タイトル実測で確定, "lo"=名前からの推定(EN? と表示)
+const LANG_NAMES = {en:"英語", es:"スペイン語", pt:"ポルトガル語", fr:"フランス語", de:"ドイツ語",
+  it:"イタリア語", nl:"オランダ語", pl:"ポーランド語", ru:"ロシア語", ja:"日本語", ko:"韓国語",
+  zh:"中国語", ar:"アラビア語", th:"タイ語", hi:"ヒンディー語", id:"インドネシア語",
+  tr:"トルコ語", vi:"ベトナム語", he:"ヘブライ語", el:"ギリシャ語"};
+let langFilter = "en";   // 既定は英語だけ(本人指示 2026-07-25)。セレクタで言語別に切替
+const langPass = o => !langFilter ? true
+  : langFilter === "!en" ? (o.lg && o.lg !== "en") : (o.lg || "") === langFilter;
+const langTag = o => o.lg && o.lg !== "en"
+  ? ` <span class="lgtag">${LANG_NAMES[o.lg] || o.lg}</span>`
+  : (o.lc === "lo" ? ` <span class="lgtag" title="タイトル実測がないため名前から推定">EN?</span>` : "");
+// 言語セレクタ: 言語フィルタ以外を適用済みのリストから件数を出して組み立てる
+function buildLangSelect(pre, onChange){
+  const sel = document.getElementById("lang");
+  if(!sel) return;
+  const cnt = {};
+  let nonEn = 0;
+  for(const o of pre){
+    const g = o.lg || "?";
+    cnt[g] = (cnt[g] || 0) + 1;
+    if(o.lg && o.lg !== "en") nonEn++;
+  }
+  const opts = [["", `🌐 全部 (${pre.length})`], ["en", `英語 (${cnt.en || 0})`],
+                ["!en", `英語以外 (${nonEn})`]];
+  for(const g of Object.keys(cnt).sort((a, b) => cnt[b] - cnt[a])){
+    if(g === "en") continue;
+    opts.push([g, `${LANG_NAMES[g] || (g === "?" ? "判定不能" : g)} (${cnt[g]})`]);
+  }
+  sel.innerHTML = opts.map(([v, l]) => `<option value="${v}">${l}</option>`).join("");
+  sel.value = opts.some(o => o[0] === langFilter) ? langFilter : "";
+  sel.onchange = () => {langFilter = sel.value; onChange();};
+}
+// ===== 企画力(×倍率 = 素材の再生数 ÷ そのchの登録者数) =====
+// 登録者(ファン)の数を超えて回った動画ほど「企画そのもの」が強い = 日本語化しても効く
+const powCol = x => x >= 10 ? "#b71c1c" : x >= 3 ? "#d32f2f" : x >= 1.5 ? "#ef6c00"
+  : x >= 0.7 ? "#1976d2" : "#90a4ae";
+const powStr = x => "×" + (x >= 10 ? Math.round(x) : x.toFixed(1));
+const powChip = (x, tip) => x == null ? "" :
+  `<span class="pow" style="color:${powCol(x)}" title="${tip || "再生数÷登録者数。×1未満はファン視聴の疑い(企画の力ではない)"}">${powStr(x)}</span>`;
+let sort = "企画力", minN = 2, minAvg = 3e6, ytOnly = false, hotOnly = false,
+    pickedOnly = false, allCols = false, powOnly = false, limit = 300;
 const CHIP_DEFS = [
+  ["企画力順", () => sort = "企画力"],
   ["平均順", () => sort = "平均"], ["本数順", () => sort = "本数"], ["最大順", () => sort = "最大"],
+  ["企画力データあり", () => powOnly = !powOnly],
   ["300万+", () => minAvg = minAvg ? 0 : 3e6],
   ["2本+", () => minN = minN === 2 ? 1 : 2],
   ["リンクあり", () => ytOnly = !ytOnly],
@@ -650,9 +707,12 @@ const CHIP_DEFS = [
   ["全列表示", () => allCols = !allCols],
 ];
 const chipOn = l => (l.endsWith("順") && l.startsWith(sort)) ||
+  (l === "企画力データあり" && powOnly) ||
   (l === "300万+" && minAvg > 0) || (l === "2本+" && minN === 2) ||
   (l === "リンクあり" && ytOnly) || (l === "🔥" && hotOnly) ||
   (l === "✓のみ" && pickedOnly) || (l === "全列表示" && allCols);
+// 企画力スコア(xs = Σmin(倍率,30))。素材未収集のchはデータなし=最下部へ
+const pscore = s => s.xn ? (s.xs || 0) : -1;
 let chTotals = {};
 let CH_RANKED = [];
 function initRankDerived(){
@@ -665,6 +725,7 @@ function render(){
   const rest = CH_RANKED.slice(shows.length);
   document.getElementById("thead").innerHTML = `<tr>
     <th class="sticky1"></th><th class="sticky2">引用元アカウント</th>
+    <th style="text-align:right" title="素材の再生数÷登録者数。強い企画が多いchほど上">企画力</th>
     <th style="text-align:right">平均再生</th><th style="text-align:right">合計</th>
     ${shows.map(c => `<th class="ch" style="border-bottom-color:rgb(${rgb(CHS.indexOf(c))})">
       <span class="dot" style="background:rgb(${rgb(CHS.indexOf(c))})"></span>@${c}</th>`).join("")}
@@ -676,11 +737,13 @@ function render(){
     b.onclick = () => {fn(); limit = 300; render();}; el.appendChild(b);
   }
   const q = document.getElementById("q").value.trim().toLowerCase();
-  const list = SRC
-    .filter(s => s.n >= minN && s.avg >= minAvg && (!ytOnly || s.u) &&
-      (!hotOnly || isHot(s)) && (!pickedOnly || picked.has(s.k)) &&
-      (!q || (s.c + s.y).toLowerCase().includes(q)))
-    .sort((a,b) => sort === "本数" ? b.n - a.n : sort === "最大" ? b.mx - a.mx : b.avg - a.avg);
+  const pre = SRC.filter(s => s.n >= minN && s.avg >= minAvg && (!ytOnly || s.u) &&
+      (!hotOnly || isHot(s)) && (!pickedOnly || picked.has(s.k)) && (!powOnly || s.xn) &&
+      (!q || (s.c + s.y).toLowerCase().includes(q)));
+  buildLangSelect(pre, () => {limit = 300; render();});
+  const list = pre.filter(langPass)
+    .sort((a,b) => sort === "企画力" ? (pscore(b) - pscore(a) || b.avg - a.avg)
+      : sort === "本数" ? b.n - a.n : sort === "最大" ? b.mx - a.mx : b.avg - a.avg);
   const tb = document.getElementById("tbody"); tb.innerHTML = "";
   list.slice(0, limit).forEach((s, i) => {
     const PLAT = {YT: "YouTube", TT: "TikTok", IG: "Instagram"};
@@ -716,16 +779,21 @@ function render(){
           <b>${n}本</b> <span class="avg">${fmt(avg)}</span></td>`;
       } else cells += `<td class="cell empty">—</td>`;
     }
+    const powCell = s.xn
+      ? `<td class="num">${powChip(s.xm, `素材${s.xn}本の中央値 ×${s.xm}(最大×${s.xx})。うち×3以上が${s.xh}本`)}
+           <span class="sub" style="display:block;font-size:9.5px;color:var(--mut)">強${s.xh}/${s.xn}本</span></td>`
+      : `<td class="num" style="color:var(--mut)" title="このchの素材(300万+)がまだ未収集">—</td>`;
     const tr = document.createElement("tr");
     tr.className = "src-row" + (picked.has(s.k) ? " picked" : "");
     tr.innerHTML = `<td class="rank sticky1">${i + 1}</td>
-      <td class="who sticky2"><div class="nm">${name}${isHot(s) ? ` <span class="pill hot">🔥</span>` : ""}</div>
+      <td class="who sticky2"><div class="nm">${name}${langTag(s)}${isHot(s) ? ` <span class="pill hot">🔥</span>` : ""}</div>
         ${yt ? `<div class="yt">${yt}</div>` : ""}</td>
+      ${powCell}
       <td class="num"><b>${fmt(s.avg)}</b></td><td class="num">${s.n}本</td>${cells}
       <td><button class="pick${picked.has(s.k) ? " on" : ""}" aria-label="着手マーク">✓</button></td>`;
     const ex = document.createElement("tr");
     ex.className = "exp-row"; ex.style.display = "none";
-    ex.innerHTML = `<td colspan="${5 + shows.length + (rest.length ? 1 : 0)}">${(SV[s.k] || []).map(v => `
+    ex.innerHTML = `<td colspan="${6 + shows.length + (rest.length ? 1 : 0)}">${(SV[s.k] || []).map(v => `
       <div class="vrow"><span class="c" style="background:rgb(${rgb(CHS.indexOf(v.ch))})">${v.ch}</span>
       <a class="play" href="https://www.youtube.com/watch?v=${v.id}" target="_blank" rel="noopener">${v.t}</a>
       <span class="n">${fmt(v.v)}</span></div>`).join("")}</td>`;
@@ -754,7 +822,8 @@ function render(){
 }
 // ===== 動画ピッカー(海外の一次素材) =====
 let SM = [];
-let view = "rank", pickGenre = "全部", pickSort = "インパクト順", pickLimit = 100;
+let view = "rank", pickGenre = "全部", pickSort = "企画力順", pickLimit = 100;
+const PICK_SORTS = ["企画力順", "インパクト順", "素材再生順"];
 let genreDemand = {}, GENRES_SORTED = [];
 function initPickDerived(){
   genreDemand = {};
@@ -1770,12 +1839,12 @@ function copyThumbCard(x, img){
                x.v < 1e8 ? "#e53935" : "#b71c1c";
   const dur = x.d ? (x.d >= 60 ? `${Math.floor(x.d/60)}分${x.d%60}秒` : `${x.d}秒`) : "";
   const meta = fmt(x.v) + "回再生" + (dur ? "　" + dur : "") + (x.g ? "　" + x.g : "") + (x.c ? "　" + x.c : "");
-  // 倍率バッジ（×N.N＋登録者数）: ≥3赤/≥1.5橙/≥0.7青/未満灰
+  // 倍率バッジ（×N.N＋登録者数）: ≥10濃赤/≥3赤/≥1.5橙/≥0.7青/未満灰(powCol と共通)
   let powHtml = "", powText = "";
   if(x.s > 0){
     const pw = x.v / x.s;
-    const pcol = pw >= 3 ? "#d32f2f" : pw >= 1.5 ? "#ef6c00" : pw >= 0.7 ? "#1976d2" : "#90a4ae";
-    const ps = "×" + (pw >= 10 ? Math.round(pw) : pw.toFixed(1)) + "　登録" + fmt(x.s) + "人";
+    const pcol = powCol(pw);
+    const ps = powStr(pw) + "　登録" + fmt(x.s) + "人";
     powHtml = '<br><b style="color:' + pcol + '">' + esc(ps) + "</b>";
     powText = "\n" + ps;
   }
@@ -1816,7 +1885,11 @@ function renderPick(){
   const sortBtn = document.createElement("button");
   sortBtn.className = "chip on";
   sortBtn.textContent = pickSort;
-  sortBtn.onclick = () => {pickSort = pickSort === "インパクト順" ? "素材再生順" : "インパクト順"; renderPick();};
+  sortBtn.title = "タップで並べ替えを切替: " + PICK_SORTS.join(" → ");
+  sortBtn.onclick = () => {
+    pickSort = PICK_SORTS[(PICK_SORTS.indexOf(pickSort) + 1) % PICK_SORTS.length];
+    pickLimit = 100; renderPick();
+  };
   el.appendChild(sortBtn);
   for(const g of ["全部", ...GENRES_SORTED]){
     const b = document.createElement("button");
@@ -1826,9 +1899,12 @@ function renderPick(){
     el.appendChild(b);
   }
   const q = document.getElementById("q").value.trim().toLowerCase();
-  const list = SM.filter(x => (pickGenre === "全部" || x.g === pickGenre) &&
-      (!q || (x.t + x.c).toLowerCase().includes(q)))
-    .sort((a,b) => pickSort === "インパクト順" ? ((b.im||0) - (a.im||0) || b.v - a.v) : (b.v - a.v));
+  const pre = SM.filter(x => (pickGenre === "全部" || x.g === pickGenre) &&
+      (!q || (x.t + x.c).toLowerCase().includes(q)));
+  buildLangSelect(pre, () => {pickLimit = 100; renderPick();});
+  const list = pre.filter(langPass)
+    .sort((a,b) => pickSort === "企画力順" ? ((b.x||0) - (a.x||0) || b.v - a.v)
+      : pickSort === "インパクト順" ? ((b.im||0) - (a.im||0) || b.v - a.v) : (b.v - a.v));
   const tb = document.getElementById("pick-body"); tb.innerHTML = "";
   for(const x of list.slice(0, pickLimit)){
     const key = "v:" + x.id;
@@ -1845,9 +1921,10 @@ function renderPick(){
         <div style="min-width:0">
           <a class="play" href="https://www.youtube.com/watch?v=${x.id}"
             style="color:var(--tx);text-decoration:none;font-weight:700">${(x.im||0) >= 0.95 ? "⚡" : ""}${x.t}</a>
-          <div style="font-size:10.5px;color:var(--mut)">${x.c}${dur ? " ・ " + dur : ""}${x.s ? " ・ " + fmt(x.s) + "人" : ""}</div>
+          <div style="font-size:10.5px;color:var(--mut)">${x.c}${langTag(x)}${dur ? " ・ " + dur : ""}${x.s ? " ・ " + fmt(x.s) + "人" : ""}</div>
         </div></div></td>
-      <td class="num"><b>${fmt(x.v)}</b></td>
+      <td class="num"><b>${fmt(x.v)}</b>${x.x != null
+        ? `<span class="sub" style="display:block">${powChip(x.x, `登録者${fmt(x.s)}人に対して${powStr(x.x)}回った = 企画の力(×1未満はファン視聴の疑い)`)}</span>` : ""}</td>
       <td style="font-size:11.5px;white-space:nowrap">${x.g}</td>`;
     tr.children[0].firstElementChild.onclick = ev => { ev.stopPropagation(); sendToKobo(x.id); };
     const timg = tr.querySelector("img.thumb");
@@ -1888,7 +1965,7 @@ function switchView(v){
     if(btn) btn.classList.toggle("on", x.id === v);
   }
   // 検索窓はrank/pickだけ。右のインライン再生パネルもrank/pick以外は畳む(他タブへの食い込み防止)
-  document.getElementById("q").style.display = t.search ? "" : "none";
+  document.querySelector(".qrow").style.display = t.search ? "" : "none";
   document.getElementById("player").style.display = (v === "rank" || v === "pick") ? "" : "none";
   t.render();
 }
