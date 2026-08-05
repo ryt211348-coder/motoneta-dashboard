@@ -252,7 +252,7 @@ footer{color:var(--mut);font-size:11px;text-align:center;margin-top:20px;line-he
     <b>1.5 企画力(×倍率)と言語</b> — 再生数の下の <b>×N</b> は<b>再生数 ÷ そのチャンネルの登録者数</b>。登録者の何倍回ったか＝<b>企画そのものの強さ</b>で、<b>×3以上(赤)が狙い目・×1未満はファン視聴の疑い</b>(その人が出ているから見られただけ＝日本語化しても効きにくい)。既定の<b>「企画力順」</b>は倍率が高い順、引用元ランキングの<b>企画力</b>列は「そのchの素材の中央値×倍率／×3以上が何本あるか」で、<b>強い企画を量産しているch</b>ほど上に来ます。検索窓の右の<b>言語セレクタ</b>で英語だけ/言語別に絞れます(既定=英語。<b>EN?</b>は素材タイトル未収集で名前から推定したもの)<br>
     <b>2. 解析する</b> — その行の <b>🎬</b> を押す、またはリストに無い動画はURLを工房の欄に<b>貼るだけ</b>。解析・サムネ取得・<b>文字起こしの自動取得</b>が全部同時に始まります<br>
     <b>3. 文字起こしは自動で入る</b> — 30秒〜2分で下の欄に自動で入ります(何もしなくてOK)。<b>「自動取得できませんでした」と出た時だけ</b>「📺文字起こしを開く」→ 拡張機能「YouTube Summary」のCopy transcript → このタブに戻る(自動取り込み)。※自動取得はチームの「ワーカーPC」が担当します。Windowsで担当してくれる人は<a href="tr_worker_win.zip" download style="color:var(--acc);font-weight:700">ワーカーをダウンロード</a>(中のREADMEどおりstart.batを起動しておくだけ・誰か1人でOK)<br>
-    <b>4. 台本を作る</b> — <b>①「📋 Claude用プロンプトをコピー」→Claudeに貼る</b>(プロンプト＋文字起こし)。<b>②「🖼 サムネをコピー」→もう1回貼る</b>(サムネ画像が付く)。この2セットで送信準備完了。<b>対話モードON(推奨)</b>なら、まずサムネ言語化・全文和訳(話者ラベル付き)・展開マップ(起承転結)と<b>AIのセンターピン仮説</b>が出て「あなたのセンターピンは? 他に伸びた要素は?」と聞かれるので、自分の読みを返して(OKだけでも可)すり合わせてから→<b>冒頭→台本の叩き台(削り候補マーク付き)→サブタイトルA/B案(後付け)</b>・使用区間リストへ進みます。<b>叩き台は字数で縛りません</b>(2026-08-06変更)。元素材の尺に応じて長くなるのが正常で、<b>文字起こしの流れに沿って展開をほぼ削らない「長いあらすじ」を先に書き切り、そこから縮めるのがライターの腕の見せ所</b>(シーンを削る。1シーンを膨らませない)。縮め方は工房プロンプト内の「叩き台の書き方」章に全部書いてあります。<b>訴求はA案(センターピン直球)から選ぶのが基本</b>。セリフがほぼ無い素材は「🎞ストーリーボード画像」も一緒にClaudeへ貼る。「<b>🎞1秒コマ(密)</b>」ボタンが出る動画は、密シートを全部貼ると映像をコマ単位で読んで叩き台(展開ベタ書き)の精度が上がる。60秒台本は<b>映像照合前の叩き台</b>なので、そのまま使わず映像と照らしてセリフ・時刻を確定させる<br>
+    <b>4. 台本を作る</b> — <b>①「📋 Claude用プロンプトをコピー」→Claudeに貼る</b>(プロンプト＋文字起こし)。<b>②「🖼 サムネをコピー」→もう1回貼る</b>(サムネ画像が付く)。この2セットで送信準備完了。<b>対話モードON(推奨)</b>なら、まずサムネ言語化・全文和訳(話者ラベル付き)・展開マップ(起承転結)と<b>AIのセンターピン仮説</b>が出て「あなたのセンターピンは? 他に伸びた要素は?」と聞かれるので、自分の読みを返して(OKだけでも可)すり合わせてから→<b>冒頭→台本の叩き台(削り候補マーク付き)→サブタイトルA/B案(後付け)</b>・使用区間リストへ進みます。<b>叩き台は字数で縛りません</b>(2026-08-06変更)。元素材の尺に応じて長くなるのが正常で、<b>文字起こしの流れに沿って展開をほぼ削らない「長いあらすじ」を先に書き切り、そこから縮めるのがライターの腕の見せ所</b>(シーンを削る。1シーンを膨らませない)。縮め方は工房プロンプト内の「叩き台の書き方」章に全部書いてあります。<b>訴求はA案(センターピン直球)から選ぶのが基本</b>。<b>「📖 映像タイムライン」ボタンが出る素材は、画像を貼る必要はありません</b>(2026-08-06)。各コマに何が写っているかを秒ごとに読み取り、その秒のセリフと突き合わせた一覧が<b>プロンプトに自動で入ります</b>。台本が文字起こしだけから作られて映像とズレる問題への対処です。ボタンが出ない素材は従来どおり、セリフがほぼ無いなら「🎞ストーリーボード画像」を、「<b>🎞1秒コマ(密)</b>」が出るなら密シートを全部Claudeへ貼る。60秒台本は<b>映像照合前の叩き台</b>なので、そのまま使わず映像と照らしてセリフ・時刻を確定させる<br>
     <b>5. 編集者に渡す場合</b> — ②の欄に最終台本を貼って「📋 編集指示書プロンプトをコピー」→ Claudeに貼ると、<b>詳細タイムスタンプ付き文字起こし＋台本1行ごとの「元動画のどこ(何秒-何秒)を切るか」対応表</b>が出るので、そのまま編集者へ。URL解析済みなら台本を貼るだけでOK。<b>自分で動画まで仕上げる場合は下の🅑へ</b><br>
     <b>5.5 台本が完成したら③に登録</b> — 工房の「<b>③初稿と完成形を登録</b>」に、最初の台本(初稿)とフィードバック反映後の完成形を貼って送信するだけ。<b>あなたの直しがAIのノウハウになり、次からの叩き台の精度が上がります</b>。余裕があれば「差分分析プロンプト」も自分のClaudeで回すと、なぜ直されたかの言語化が自分のスキルにもなります<br>
     <b>5+. 素材動画のダウンロード</b> — プレイヤーの「<b>⬇素材DL</b>」でURLがコピーされ、<a href="https://www.litexmedia.com/mhdownload.html" target="_blank">MediaHuman YouTube Downloader</a>が起動していれば自動で追加されます。<b>⚠️全部mp3(音声だけ)になる場合はMediaHumanの環境設定で「形式」がMP3になっているのが原因</b>。「オリジナル」または「MP4」・品質=最高に設定してください<br>
@@ -331,6 +331,7 @@ footer{color:var(--mut);font-size:11px;text-align:center;margin-top:20px;line-he
         style="width:100%;margin-top:8px;padding:8px 10px;border:1px solid var(--line);
         border-radius:8px;background:var(--bg);color:var(--tx);font-size:12px;resize:vertical"></textarea>
       <div id="kobo-trstat" style="font-size:10.5px;color:var(--mut);margin-top:2px"></div>
+      <div id="kobo-tlstat" style="font-size:10.5px;margin-top:2px;font-weight:700"></div>
       <button class="chip" id="kobo-copy" style="margin-top:8px;background:var(--acc);
         border-color:var(--acc);color:#fff;font-weight:800;padding:8px 16px">
         📋 Claude用プロンプトをコピー</button>
@@ -477,6 +478,7 @@ footer{color:var(--mut);font-size:11px;text-align:center;margin-top:20px;line-he
     <button class="chip" id="p-st" title="サブタイ候補を並べて実物の見た目で比較・視認性チェック">🅰 サブタイ比較</button>
     <button class="chip" id="p-sb" style="display:none">🎞 コマ送り</button>
     <button class="chip" id="p-sbd" style="display:none" title="1秒(等間隔)の高密度コマシート。全枚数をClaudeへ貼ると映像を人間の目レベルで読んで叩き台が作れます">🎞 1秒コマ(密)</button>
+    <button class="chip" id="p-tl" style="display:none" title="各コマの映像描写と文字起こしを秒で突き合わせた一覧。台本プロンプトには自動で入るので、画像を貼る必要はありません">📖 映像タイムライン</button>
     <button class="chip" id="p-com" title="この動画の人気コメントを和訳付きで表示">💬 コメント</button>
     <button class="chip" id="p-yt">YouTubeで開く ↗</button>
     <button class="chip" id="p-dl" title="動画URLをコピーします。MediaHuman YouTubeダウンローダーが起動していれば自動で追加されます">⬇ 素材DL</button>
@@ -511,6 +513,19 @@ footer{color:var(--mut);font-size:11px;text-align:center;margin-top:20px;line-he
       映像の流れを読み取った上で実況・ナレーション型の台本を作ってくれます</div>
     <img id="sbimg" style="width:100%;border-radius:8px" alt="storyboard">
     <div id="sbimgs" style="display:none"></div>
+  </div>
+</div>
+<div id="sbmodal2" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.85);
+  z-index:58;overflow:auto;padding:16px">
+  <div style="max-width:900px;margin:0 auto">
+    <div style="display:flex;gap:8px;margin-bottom:8px;align-items:center;flex-wrap:wrap">
+      <span style="color:#fff;font-weight:800;font-size:13px" id="tl-title">📖 映像タイムライン</span>
+      <button class="chip" id="tl-copy" style="font-weight:700">📋 コピー</button>
+      <button class="chip" id="tl-close">✕ 閉じる</button>
+    </div>
+    <div style="color:#ccc;font-size:11.5px;margin-bottom:10px;line-height:1.7" id="tl-desc"></div>
+    <div id="tl-body" style="background:var(--sur);border-radius:8px;padding:10px 12px;
+      font-size:12px;line-height:1.85"></div>
   </div>
 </div>
 <div id="edmodal">
@@ -903,6 +918,10 @@ function playInline(vid, title, sub, isShort){
   const sbdBtn = document.getElementById("p-sbd");
   sbdBtn.style.display = "none";
   probeSbd(vid).then(m => { if(m && playVid === vid) sbdBtn.style.display = ""; });
+  // 映像タイムライン(秒×映像×セリフ)があればボタンを出す
+  const tlBtn = document.getElementById("p-tl");
+  tlBtn.style.display = "none";
+  probeTl(vid).then(t => { if(t && playVid === vid) tlBtn.style.display = ""; });
 }
 // 1秒コマ(密)のマニフェスト(sbd/<id>.json)取得。無ければnull
 const sbdCache = {};
@@ -914,6 +933,77 @@ async function probeSbd(vid){
   }catch(e){ sbdCache[vid] = null; }
   return sbdCache[vid];
 }
+// 映像タイムライン(tl/<id>.json)取得。無ければnull
+const tlCache = {};
+async function probeTl(vid){
+  if(tlCache[vid] !== undefined) return tlCache[vid];
+  try{
+    const r = await fetch("tl/" + vid + ".json");
+    tlCache[vid] = r.ok ? await r.json() : null;
+  }catch(e){ tlCache[vid] = null; }
+  return tlCache[vid];
+}
+// タイムライン → プロンプト/コピー用のプレーンテキスト(scripts/timeline.py の as_text と同じ形)
+function tlText(doc){
+  const out = [], marks = (doc.scenes || []).slice();
+  let mi = 0;
+  for(const r of doc.rows){
+    while(mi < marks.length && marks[mi] <= r.t){ out.push(`── ${tsStr(marks[mi])} 場面転換 ──`); mi++; }
+    out.push(`${tsStr(r.t)}  ${r.v || ""}${r.s ? "　「" + r.s + "」" : ""}`);
+  }
+  return out.join("\n");
+}
+function tsStr(t){
+  const m = Math.floor(t / 60), s = t % 60;
+  const frac = Math.abs(s - Math.floor(s)) > 0.04 ? "." + Math.round((s % 1) * 10) : "";
+  return `${m}:${String(Math.floor(s)).padStart(2, "0")}${frac}`;
+}
+// 📖 映像タイムライン
+document.getElementById("p-tl").onclick = async () => {
+  const doc = await probeTl(playVid);
+  if(!doc) return;
+  const nV = doc.rows.filter(r => r.v).length, nS = doc.rows.filter(r => r.s).length;
+  document.getElementById("tl-title").textContent =
+    `📖 映像タイムライン — ${doc.rows.length}行(映像${nV}・セリフ${nS})`;
+  document.getElementById("tl-desc").innerHTML =
+    `各コマに<b>何が写っているか</b>と、その秒に喋っている<b>セリフ</b>を突き合わせたものです。` +
+    `ベース${doc.interval}秒間隔${(doc.dense || []).length ? `＋動きのある${doc.dense.length}区間は1秒刻み` : ""}。` +
+    `<b>台本プロンプトには自動で入る</b>ので、Claudeへ画像を貼る必要はありません` +
+    (doc.has_tr ? "" : "　<b style='color:var(--hot)'>※この素材は字幕が取れていないため映像のみ</b>");
+  const esc = s => (s || "").replace(/[<>&]/g, c => ({"<":"&lt;",">":"&gt;","&":"&amp;"}[c]));
+  const marks = (doc.scenes || []).slice();
+  let mi = 0, html = "";
+  for(const r of doc.rows){
+    while(mi < marks.length && marks[mi] <= r.t){
+      html += `<div style="color:var(--acc);font-weight:700;margin:6px 0 2px">── ${tsStr(marks[mi])} 場面転換 ──</div>`;
+      mi++;
+    }
+    html += `<div style="display:flex;gap:8px;padding:1px 0">
+      <a href="#" class="tlj" data-t="${r.t}" style="flex:0 0 46px;color:var(--acc);text-decoration:none;font-variant-numeric:tabular-nums">${tsStr(r.t)}</a>
+      <span style="flex:1">${esc(r.v)}${r.s ? `<span style="color:var(--mut)">　「${esc(r.s)}」</span>` : ""}</span></div>`;
+  }
+  document.getElementById("tl-body").innerHTML = html;
+  // 時刻クリックでその秒から再生
+  document.querySelectorAll("#tl-body .tlj").forEach(a => a.onclick = ev => {
+    ev.preventDefault();
+    if(ytPlayer && ytPlayer.seekTo) ytPlayer.seekTo(parseFloat(a.dataset.t), true);
+  });
+  document.getElementById("sbmodal2").style.display = "block";
+};
+document.getElementById("tl-copy").onclick = async () => {
+  const doc = await probeTl(playVid);
+  if(!doc) return;
+  const text = tlText(doc);
+  const done = () => copyToast("📋 映像タイムラインをコピーしました");
+  if(navigator.clipboard && navigator.clipboard.writeText){
+    navigator.clipboard.writeText(text).then(done).catch(() => fallbackCopy(text, done));
+  } else fallbackCopy(text, done);
+};
+document.getElementById("tl-close").onclick = () =>
+  document.getElementById("sbmodal2").style.display = "none";
+document.getElementById("sbmodal2").onclick = ev => {
+  if(ev.target.id === "sbmodal2") document.getElementById("sbmodal2").style.display = "none";
+};
 document.getElementById("p-close").onclick = () => {
   playVid = null;
   document.getElementById("p-dl-hint").style.display = "none";
@@ -2058,6 +2148,7 @@ Promise.all([
 // ===== 台本プロンプト工房 =====
 let prep = null;
 let koboSubs = 0;  // ピッカー経由のときだけ入る登録者数(×倍率の属人性判定用)
+let koboTl = null; // 映像タイムライン(tl/<id>.json)。あればプロンプトに丸ごと同梱する
 document.getElementById("kobo-toggle").onclick = () => {
   const k = document.getElementById("kobo");
   k.style.display = k.style.display === "none" ? "" : "none";
@@ -2085,6 +2176,13 @@ function koboRun(){
   fetch(API + "?prep=" + encodeURIComponent(url)).then(r => r.json()).then(p => {
     prep = p;
     loadKoboThumb(p.vid);   // サムネ自動取得(📋コピーに同梱)
+    koboTl = null;          // 映像タイムラインがあればプロンプトに同梱(画像貼り付けが不要になる)
+    probeTl(p.vid).then(t => {
+      if(prep && prep.vid === p.vid) koboTl = t;
+      const el = document.getElementById("kobo-tlstat");
+      el.textContent = t ? `📖 映像タイムライン ${t.rows.length}行をプロンプトに同梱します(画像を貼る必要はありません)` : "";
+      el.style.color = "var(--ok)";
+    });
     if(!pv) startTrAuto(p.vid);  // 生IDなど貼り付け形式がURLでなかった場合はここで開始
     document.getElementById("kobo-status").textContent = p.errors.length ? "注意: " + p.errors.join(" / ") : "";
     document.getElementById("kobo-meta").textContent =
@@ -2254,12 +2352,22 @@ ${coms}
 # 文字起こし(原語)
 ${transcriptText()}
 
-# 映像ストーリーボード(画像が添付されている場合)
+${koboTl ? `# 映像タイムライン(この素材の映像を秒ごとに読み取ったもの。**最優先で使う**)
+各行は「時刻  映像に写っているもの　「その秒のセリフ」」。映像を実際に見て作った記録なので、
+文字起こしと食い違う場合は**必ずこちらを正とする**。これがあるので画像の添付は不要。
+- 手順1の全文和訳・手順2の展開マップ・手順3のシーン分解は、この記録に沿って作ること
+- 「叩き台の書き方」章の「セリフから読み取れない映像の情報はナレで補う」「映像を見ないと書けない描写を拾う」は、この記録から直接拾える
+- 「同左」は直前のコマとほぼ同じ画という意味。「判別不能」は読み取れなかったコマ
+- 映像の描写が空欄で「セリフ」だけの行は、映像の読み取りが届いていない時間帯
+
+${tlText(koboTl)}
+
+` : ""}# 映像ストーリーボード(画像が添付されている場合)
 - この依頼にタイムスタンプ付きの「コマ送り画像」が添付されていたら、それが元動画のシーン展開である
 - セリフがほぼ無い(ノンバーバル)動画の場合は、文字起こしの代わりにこの画像から各場面を読み取り、「0:12 男性が◯◯する」形式の場面リストを先に作ってから、実況・ナレーション型(「〜する男性」「まさかの〜」等)の台本を作ること
 
 # 厳格ルール(必ず守る)
-- 上の文字起こしが【未貼付】のままで、かつストーリーボード画像の添付も無い場合、台本は一切作らず「文字起こしまたはストーリーボード画像を貼ってください」とだけ返すこと
+- 上の文字起こしが【未貼付】のままで、かつ映像タイムラインもストーリーボード画像の添付も無い場合、台本は一切作らず「文字起こしまたはストーリーボード画像を貼ってください」とだけ返すこと
 - タイトル・コメント・盛り上がりからの推測でストーリーや台詞を創作することを禁止する。台本の内容は必ず文字起こし(またはストーリーボード画像に写っていること)だけから作る
 - 自動文字起こしの数字・固有のセリフは、映像テロップ・スクショと照合して確定する。食い違った場合は映像を正とする。照合できないセリフ・事実(SNS投稿等の画面外の事実を含む)は台本に載せない
 
