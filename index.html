@@ -391,6 +391,7 @@ footer{color:var(--mut);font-size:11px;text-align:center;margin-top:20px;line-he
     <input type="search" id="q" placeholder="検索">
     <select id="lang" title="引用元チャンネルの言語で絞る"></select>
   </div>
+  <div class="chips" id="pick-chips" style="display:none;margin-bottom:4px"></div>
   <div class="chips" id="chips"></div>
 </header>
 <div id="view-rank">
@@ -401,7 +402,9 @@ footer{color:var(--mut);font-size:11px;text-align:center;margin-top:20px;line-he
 <div class="more" id="more"></div>
 </div>
 <div id="view-pick" style="display:none">
-  <div class="sub" style="margin:0 0 8px">ここに並ぶのは<b>海外の一次素材そのもの</b>(日本の競合で需要が証明された引用元チャンネルの人気動画・<b>300万再生以上のみ</b>)。🎬を押すとそのまま台本プロンプト工房に入ります。</div>
+  <div class="sub" style="margin:0 0 8px">ここに並ぶのは<b>海外の一次素材そのもの</b>(日本の競合で需要が証明された引用元チャンネルの人気動画・<b>300万再生以上のみ</b>)。🎬を押すとそのまま台本プロンプト工房に入ります。<br>
+    <b>尺は5分以下が扱いやすい</b>(10分超は全展開を残して1分に凝縮するのが難しく、ぶつ切りになりがち)。ジャンルの🟢は台本化が速い・⚠️は負荷が高い目安です。
+    ストックを早く貯めたい時は、<b>既に伸びている構成をそのまま踏襲する ♻️型移植モード</b>(工房の解析欄の下)が速いです。</div>
   <div class="tbl"><table style="min-width:700px">
     <thead><tr><th></th><th>✓</th><th>海外素材(元動画)</th>
       <th style="text-align:right" title="下段は企画力=再生数÷登録者数">素材の再生数<br><span style="font-weight:400;font-size:10px">／企画力</span></th>
@@ -824,6 +827,29 @@ function render(){
 let SM = [];
 let view = "rank", pickGenre = "全部", pickSort = "企画力順", pickLimit = 100;
 const PICK_SORTS = ["企画力順", "インパクト順", "素材再生順"];
+// 尺フィルタ(2026-08-05 あいきさんMTG)。10〜20分の素材は文字起こし・圧縮の工数が跳ね上がり
+// 展開が抜けた「ぶつ切り」台本になりやすい。上限は累積(〜5分は〜3分を含む)
+const DUR_BUCKETS = [
+  ["全部",   () => true,                     "尺で絞らない"],
+  ["〜3分",  d => d > 0 && d <= 180,          "一番扱いやすい。1分に凝縮しても展開が落ちにくい"],
+  ["〜5分",  d => d > 0 && d <= 300,          "推奨ライン。ここまでなら台本化の工数が読める"],
+  ["〜10分", d => d > 0 && d <= 600,          "全展開を残して凝縮するのが難しくなってくる"],
+  ["10分+",  d => d > 600,                    "文字起こしだけで時間がかかる。型移植モード向き"],
+  ["尺不明", d => !d,                          "まだ尺を取得できていない素材(毎晩自動で補完中)"],
+];
+let pickDur = "全部";
+try{ pickDur = localStorage.getItem("pickDur") || "全部"; }catch(e){}
+if(!DUR_BUCKETS.some(b => b[0] === pickDur)) pickDur = "全部";
+const durPass = x => (DUR_BUCKETS.find(b => b[0] === pickDur) || DUR_BUCKETS[0])[1](x.d || 0);
+// ジャンルの「台本化しやすさ」。除外はせず印だけ出す(主力の引用元が犯罪・法廷系のため)
+const GENRE_EASE = {
+  "スポーツ":    ["🟢", "文字だけで筋が追えるので台本化が速い。映像も一発でわかる"],
+  "動物":        ["🟢", "ノンバーバルで伝わる。言語の壁が無い"],
+  "ハプニング":  ["🟢", "一瞬で何が起きたか伝わる。冒頭訴求を作りやすい"],
+  "ASMR・職人":  ["🟢", "ナレーションで実況しやすい。セリフに依存しない"],
+  "検証・実験":  ["🟢", "結果が明快で凝縮しやすい"],
+  "犯罪・法廷":  ["⚠️", "裁判・法律用語が多く文字起こしの負荷が高い。展開も複雑で1分に収めにくい"],
+};
 let genreDemand = {}, GENRES_SORTED = [];
 function initPickDerived(){
   genreDemand = {};
@@ -1881,6 +1907,8 @@ function copyThumbCard(x, img){
   }
 }
 function renderPick(){
+  // 1段目: 並べ替え + 尺フィルタ / 2段目: ジャンル
+  const top = document.getElementById("pick-chips"); top.innerHTML = ""; top.style.display = "";
   const el = document.getElementById("chips"); el.innerHTML = "";
   const sortBtn = document.createElement("button");
   sortBtn.className = "chip on";
@@ -1890,17 +1918,36 @@ function renderPick(){
     pickSort = PICK_SORTS[(PICK_SORTS.indexOf(pickSort) + 1) % PICK_SORTS.length];
     pickLimit = 100; renderPick();
   };
-  el.appendChild(sortBtn);
+  top.appendChild(sortBtn);
+  const q = document.getElementById("q").value.trim().toLowerCase();
+  // 尺チップの件数は「ジャンル・検索を適用した後・尺を適用する前」で数える(押す前に結果数が読める)
+  const forDur = SM.filter(x => (pickGenre === "全部" || x.g === pickGenre) &&
+      (!q || (x.t + x.c).toLowerCase().includes(q))).filter(langPass);
+  top.appendChild(Object.assign(document.createElement("span"),
+    {className: "sub", style: "margin:0 2px 0 6px;align-self:center", textContent: "尺"}));
+  for(const [label, test, tip] of DUR_BUCKETS){
+    const b = document.createElement("button");
+    b.className = "chip" + (label === pickDur ? " on" : "");
+    b.textContent = `${label} (${forDur.filter(x => test(x.d || 0)).length})`;
+    b.title = tip;
+    b.onclick = () => {
+      pickDur = label; pickLimit = 100;
+      try{ localStorage.setItem("pickDur", label); }catch(e){}
+      renderPick();
+    };
+    top.appendChild(b);
+  }
   for(const g of ["全部", ...GENRES_SORTED]){
     const b = document.createElement("button");
     b.className = "chip" + (g === pickGenre ? " on" : "");
-    b.textContent = g;
+    const ease = GENRE_EASE[g];
+    b.textContent = (ease ? ease[0] : "") + g;
+    if(ease) b.title = ease[1];
     b.onclick = () => {pickGenre = g; pickLimit = 100; renderPick();};
     el.appendChild(b);
   }
-  const q = document.getElementById("q").value.trim().toLowerCase();
   const pre = SM.filter(x => (pickGenre === "全部" || x.g === pickGenre) &&
-      (!q || (x.t + x.c).toLowerCase().includes(q)));
+      durPass(x) && (!q || (x.t + x.c).toLowerCase().includes(q)));
   buildLangSelect(pre, () => {pickLimit = 100; renderPick();});
   const list = pre.filter(langPass)
     .sort((a,b) => pickSort === "企画力順" ? ((b.x||0) - (a.x||0) || b.v - a.v)
@@ -1909,6 +1956,11 @@ function renderPick(){
   for(const x of list.slice(0, pickLimit)){
     const key = "v:" + x.id;
     const dur = x.d ? (x.d >= 60 ? `${Math.floor(x.d/60)}分${x.d%60}秒` : `${x.d}秒`) : "";
+    // 5分超は台本化の工数が跳ね上がるので一覧で判別できるようにする
+    const durHtml = !dur ? "" : x.d > 300
+      ? ` ・ <span style="color:var(--warn);font-weight:700" title="5分超。全展開を残して1分に凝縮するのが難しくなる">${dur}</span>`
+      : ` ・ ${dur}`;
+    const ease = GENRE_EASE[x.g];
     const tr = document.createElement("tr");
     if(picked.has(key)) tr.style.opacity = ".45";
     tr.innerHTML = `
@@ -1921,11 +1973,11 @@ function renderPick(){
         <div style="min-width:0">
           <a class="play" href="https://www.youtube.com/watch?v=${x.id}"
             style="color:var(--tx);text-decoration:none;font-weight:700">${(x.im||0) >= 0.95 ? "⚡" : ""}${x.t}</a>
-          <div style="font-size:10.5px;color:var(--mut)">${x.c}${langTag(x)}${dur ? " ・ " + dur : ""}${x.s ? " ・ " + fmt(x.s) + "人" : ""}</div>
+          <div style="font-size:10.5px;color:var(--mut)">${x.c}${langTag(x)}${durHtml}${x.s ? " ・ " + fmt(x.s) + "人" : ""}</div>
         </div></div></td>
       <td class="num"><b>${fmt(x.v)}</b>${x.x != null
         ? `<span class="sub" style="display:block">${powChip(x.x, `登録者${fmt(x.s)}人に対して${powStr(x.x)}回った = 企画の力(×1未満はファン視聴の疑い)`)}</span>` : ""}</td>
-      <td style="font-size:11.5px;white-space:nowrap">${x.g}</td>`;
+      <td style="font-size:11.5px;white-space:nowrap"${ease ? ` title="${ease[1]}"` : ""}>${ease ? ease[0] : ""}${x.g}</td>`;
     tr.children[0].firstElementChild.onclick = ev => { ev.stopPropagation(); sendToKobo(x.id); };
     const timg = tr.querySelector("img.thumb");
     timg.oncontextmenu = ev => { ev.preventDefault(); copyThumbCard(x, timg); };
@@ -1966,6 +2018,7 @@ function switchView(v){
   }
   // 検索窓はrank/pickだけ。右のインライン再生パネルもrank/pick以外は畳む(他タブへの食い込み防止)
   document.querySelector(".qrow").style.display = t.search ? "" : "none";
+  document.getElementById("pick-chips").style.display = v === "pick" ? "" : "none";
   document.getElementById("player").style.display = (v === "rank" || v === "pick") ? "" : "none";
   t.render();
 }
@@ -2169,6 +2222,13 @@ function buildPrompt(p){
     : "(取得なし)";
   // 解析APIが長さを取れない動画がある(0が返る)→ピッカー収録分から補完し、無ければ表示しない
   const dur = p.length > 0 ? p.length : (((SM || []).find(v => v.id === p.vid) || {}).d || 0);
+  // 長尺ほど「間の展開が抜けたぶつ切り台本」になりやすいので、圧縮率を数字で自覚させる
+  const longWarn = dur > 300 ? `
+# ⚠️この素材は長尺です(${Math.round(dur/60)}分 = 完成尺60秒の約${Math.round(dur/60)}倍)
+- 面白い場面だけを抜き出して繋ぐと、間の展開が消えて「ぶつ切り」になり、視聴者は何が起きたか分からずスワイプする
+- **展開を間引くのではなく、全展開を残したまま1本の筋として縮める**。落としてよいのは文の贅肉であって展開ではない
+- 手順2の展開マップと手順3の叩き台は、長い分だけ細かく作ること(ここが粗いと必ず飛ぶ)
+` : "";
   return `あなたはプロの放送作家。海外バズ動画を日本向け60秒ショート動画に凝縮する専門家です。
 以下の素材を使って、手順どおりに台本を作ってください。
 
@@ -2179,7 +2239,7 @@ function buildPrompt(p){
 - 登録者数: ${koboSubs.toLocaleString()}人 (×倍率=再生÷登録者: ${(p.views/koboSubs).toFixed(1)})` : ""}
 - サムネURL: https://i.ytimg.com/vi/${p.vid}/maxresdefault.jpg
 - URL: https://www.youtube.com/watch?v=${p.vid}
-
+${longWarn}
 # サムネ・タイトル(クリック理由の言語化用)
 - この依頼にサムネ画像が添付されていたら、必ず手順0【サムネ・タイトルの言語化】で読むこと
 - 長尺素材(90秒超)は手順0が必須。画像が無ければタイトルと×倍率だけで行い「サムネ画像を貼るとクリック理由の精度が上がります」と一言添える
@@ -2211,7 +2271,7 @@ function dialogSection(){
   if(!document.getElementById("kobo-dialog").checked) return "";
   return `# 進め方(対話モード・厳守)
 この依頼はディレクター(依頼者)と対話しながら仕上げる。ただし質問だけして止まるターンは作らない。最初の返信で叩き台まで一気に出し、FBは叩き台に対してもらう:
-- 【第1ターン(この返信で出す)】手順0(サムネ・タイトルの言語化)→手順1(全文和訳)→手順2(展開マップ)→手順3(叩き台・展開ベタ書き)→手順4(センターピン)→手順5(冒頭フック)→手順6(60秒台本・700字叩き台)→手順7(使用区間リスト)まで全部一気に出す。センターピン(手順4)は「私のセンターピンは◯◯だと思います。理由: …」と仮説として明示し、その仮説前提で最後まで出し切る
+- 【第1ターン(この返信で出す)】手順0(サムネ・タイトルの言語化)→手順1(全文和訳)→手順2(展開マップ)→手順3(3-a シーン分解の見出し一覧 → 3-b 叩き台・展開ベタ書き)→手順4(センターピン)→手順5(冒頭フック)→手順6(6-a ナレーションだけで通した台本 → 6-b 素材の声を差し込んだ700字叩き台。**両方見せる**)→手順7(使用区間リスト)まで全部一気に出す。センターピン(手順4)は「私のセンターピンは◯◯だと思います。理由: …」と仮説として明示し、その仮説前提で最後まで出し切る
 - 第1ターンの最後に必ずこう聞いて止まる: 「①センターピンはこれで合っていますか? 別の読みがあれば教えてください(変わる場合は冒頭〜台本を作り直します) ②サムネ・タイトル以外に伸びた要素(映像の引き・時事性・コメント欄の空気・投稿タイミング等)があれば教えてください ③冒頭・台本への修正指示があればどうぞ。無ければ"OK"でサブタイトルへ進みます」
 - 【第2ターン】ディレクターの回答を反映(ディレクターの読みはAIの仮説より優先。ただし弱い・矛盾すると感じたら理由付きで率直に指摘してよい)。センターピンが変わったら手順5〜7を作り直す→手順8(サブタイA案)→手順9(サブタイB案)→手順10(セルフレビュー)で完成
 - ディレクターが途中で方針を変えたら(別のセンターピン・別の切り口など)、それを正として以降を作り直す
@@ -2438,8 +2498,9 @@ ${transcriptText()}
 1行目「元動画URL(タブ)URL」、2行目「サブタイトル(タブ)台本にあれば記載/無ければ(なし)」、空行を挟んで【B】→空行→【A】の順に出す(編集者が最初に見るのはBなのでBが先)。
 
 ## 【B】台本行 → 元動画 対応表(本命)
-- セクション見出し行「【B】台本行→元動画 対応表」を1行書き、次にヘッダー行「No(タブ)台本行(タブ)推奨カット(タブ)元動画の該当セリフ/映像(タブ)演出メモ」
+- セクション見出し行「【B】台本行→元動画 対応表」を1行書き、次にヘッダー行「No(タブ)台本行(タブ)推奨カット(タブ)映像イメージ(タブ)元動画の該当セリフ/映像(タブ)演出メモ」
 - 完成台本を1行ずつ(セリフ・ナレ・サブタイトル・テロップ単位で)上から順に全行残し、各行に「元動画のこの区間が合う」を必ず割り当てる(1台本行=1行、Noは連番)
+- **「映像イメージ」は全行必ず埋める**。編集者はこの列を見て素材から画を探すので、**場所+人物+動作**を必ず入れた1文で書く(例「法廷で、うつむいた被告の男が判事に何か言われている画」)。「その場面」「上記の続き」「適当なカット」のような、それだけ読んでも画が浮かばない書き方は禁止
 - 台本内の改行は「／」で繋いで1セルに収める
 - 秒は【A】の細かい秒を引用する。1つの台本行に複数区間が要るなら「0:12-0:15 + 0:41-0:44」と併記
 - 台本の山場(オチ・判決・数字が出る所)は取りこぼさず、必要なら赤丸/ズーム/スロー指定を「演出メモ」に書く
