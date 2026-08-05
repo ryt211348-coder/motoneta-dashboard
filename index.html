@@ -18,6 +18,34 @@
   --bg:#12161b; --sur:#1b2129; --sur2:#242b35; --line:#2e3641;
   --tx:#e7ebf0; --mut:#939eab; --acc:#4cc2ae; --ok:#3dd68c; --warn:#f0c04c; --ng:#6b7482;
   --hot:#ff7a54;}}
+/* 🔍 照合ビュー(3ペイン): 映像 / 秒つき本文 / 叩き台エディタ */
+#mv{display:grid;grid-template-columns:minmax(360px,1.05fr) minmax(300px,1fr) minmax(340px,1.15fr);
+  gap:10px;height:calc(100vh - 90px)}
+#mv>div{background:var(--sur);border:1px solid var(--line);border-radius:12px;padding:10px;
+  display:flex;flex-direction:column;min-height:0}
+#mv-box{background:#000;border-radius:8px;overflow:hidden;aspect-ratio:16/9;flex:0 0 auto}
+#mv-box iframe{width:100%;height:100%;border:0;display:block}
+.mv-h{display:flex;gap:6px;align-items:center;flex-wrap:wrap;font-size:11.5px;margin-bottom:6px}
+#mv-tl,#mv-sheets{flex:1;overflow:auto;min-height:0}
+#mv-tl{position:relative}  /* 追従スクロールの offsetTop 基準をこの要素にする */
+#mv-sheets img{width:100%;border-radius:6px;margin-bottom:6px;display:block}
+#mv-ed{flex:1;min-height:0;resize:none;padding:8px 10px;border:1px solid var(--line);
+  border-radius:8px;background:var(--bg);color:var(--tx);font-size:13px;line-height:1.9;
+  font-family:inherit}
+#mv-jumps{display:flex;gap:4px;flex-wrap:wrap;max-height:70px;overflow:auto;margin-bottom:6px}
+#mv-jumps a{font-size:10.5px;color:var(--acc);border:1px solid var(--line);border-radius:999px;
+  padding:1px 7px;text-decoration:none;font-variant-numeric:tabular-nums}
+#mv-jumps a.on{background:var(--acc);color:var(--sur);border-color:var(--acc);font-weight:700}
+.mvrow{display:flex;gap:8px;padding:2px 4px;border-radius:6px;cursor:pointer;font-size:12px;
+  line-height:1.75}
+.mvrow:hover{background:var(--sur2)}
+.mvrow.on{background:var(--sur2);box-shadow:inset 3px 0 0 var(--acc)}
+.mvrow .t{flex:0 0 46px;color:var(--acc);font-variant-numeric:tabular-nums}
+.mvrow .v{flex:1}
+.mvrow .s{color:var(--mut)}
+.mvscene{color:var(--acc);font-weight:700;margin:6px 0 2px;font-size:11.5px}
+@media(max-width:1100px){#mv{grid-template-columns:1fr;height:auto}
+  #mv>div{max-height:70vh}#mv-tl{min-height:240px;max-height:50vh}#mv-ed{min-height:240px}}
 *{box-sizing:border-box}
 body{margin:0;background:var(--bg);color:var(--tx);
   font-family:"Hiragino Sans","Yu Gothic UI","Noto Sans JP",sans-serif;font-size:14px}
@@ -252,7 +280,7 @@ footer{color:var(--mut);font-size:11px;text-align:center;margin-top:20px;line-he
     <b>1.5 企画力(×倍率)と言語</b> — 再生数の下の <b>×N</b> は<b>再生数 ÷ そのチャンネルの登録者数</b>。登録者の何倍回ったか＝<b>企画そのものの強さ</b>で、<b>×3以上(赤)が狙い目・×1未満はファン視聴の疑い</b>(その人が出ているから見られただけ＝日本語化しても効きにくい)。既定の<b>「企画力順」</b>は倍率が高い順、引用元ランキングの<b>企画力</b>列は「そのchの素材の中央値×倍率／×3以上が何本あるか」で、<b>強い企画を量産しているch</b>ほど上に来ます。検索窓の右の<b>言語セレクタ</b>で英語だけ/言語別に絞れます(既定=英語。<b>EN?</b>は素材タイトル未収集で名前から推定したもの)<br>
     <b>2. 解析する</b> — その行の <b>🎬</b> を押す、またはリストに無い動画はURLを工房の欄に<b>貼るだけ</b>。解析・サムネ取得・<b>文字起こしの自動取得</b>が全部同時に始まります<br>
     <b>3. 文字起こしは自動で入る</b> — 30秒〜2分で下の欄に自動で入ります(何もしなくてOK)。<b>「自動取得できませんでした」と出た時だけ</b>「📺文字起こしを開く」→ 拡張機能「YouTube Summary」のCopy transcript → このタブに戻る(自動取り込み)。※自動取得はチームの「ワーカーPC」が担当します。Windowsで担当してくれる人は<a href="tr_worker_win.zip" download style="color:var(--acc);font-weight:700">ワーカーをダウンロード</a>(中のREADMEどおりstart.batを起動しておくだけ・誰か1人でOK)<br>
-    <b>4. 台本を作る</b> — <b>①「📋 Claude用プロンプトをコピー」→Claudeに貼る</b>(プロンプト＋文字起こし)。<b>②「🖼 サムネをコピー」→もう1回貼る</b>(サムネ画像が付く)。この2セットで送信準備完了。<b>対話モードON(推奨)</b>なら、まずサムネ言語化・全文和訳(話者ラベル付き)・展開マップ(起承転結)と<b>AIのセンターピン仮説</b>が出て「あなたのセンターピンは? 他に伸びた要素は?」と聞かれるので、自分の読みを返して(OKだけでも可)すり合わせてから→<b>冒頭→台本の叩き台(削り候補マーク付き)→サブタイトルA/B案(後付け)</b>・使用区間リストへ進みます。<b>叩き台は字数で縛りません</b>(2026-08-06変更)。元素材の尺に応じて長くなるのが正常で、<b>文字起こしの流れに沿って展開をほぼ削らない「長いあらすじ」を先に書き切り、そこから縮めるのがライターの腕の見せ所</b>(シーンを削る。1シーンを膨らませない)。縮め方は工房プロンプト内の「叩き台の書き方」章に全部書いてあります。<b>訴求はA案(センターピン直球)から選ぶのが基本</b>。<b>「📖 映像タイムライン」ボタンが出る素材は、画像を貼る必要はありません</b>(2026-08-06)。各コマに何が写っているかを秒ごとに読み取り、その秒のセリフと突き合わせた一覧が<b>プロンプトに自動で入ります</b>。台本が文字起こしだけから作られて映像とズレる問題への対処です。ボタンが出ない素材は従来どおり、セリフがほぼ無いなら「🎞ストーリーボード画像」を、「<b>🎞1秒コマ(密)</b>」が出るなら密シートを全部Claudeへ貼る。60秒台本は<b>映像照合前の叩き台</b>なので、そのまま使わず映像と照らしてセリフ・時刻を確定させる<br>
+    <b>4. 台本を作る</b> — <b>①「📋 Claude用プロンプトをコピー」→Claudeに貼る</b>(プロンプト＋文字起こし)。<b>②「🖼 サムネをコピー」→もう1回貼る</b>(サムネ画像が付く)。この2セットで送信準備完了。<b>対話モードON(推奨)</b>なら、まずサムネ言語化・全文和訳(話者ラベル付き)・展開マップ(起承転結)と<b>AIのセンターピン仮説</b>が出て「あなたのセンターピンは? 他に伸びた要素は?」と聞かれるので、自分の読みを返して(OKだけでも可)すり合わせてから→<b>冒頭→台本の叩き台(削り候補マーク付き)→サブタイトルA/B案(後付け)</b>・使用区間リストへ進みます。<b>叩き台は字数で縛りません</b>(2026-08-06変更)。元素材の尺に応じて長くなるのが正常で、<b>文字起こしの流れに沿って展開をほぼ削らない「長いあらすじ」を先に書き切り、そこから縮めるのがライターの腕の見せ所</b>(シーンを削る。1シーンを膨らませない)。<b>さらに2026-08-06、字数指定を完全に撤去して「構造で長さを担保する」方式に変えました</b>: AIは①シーン見出しの数だけブロックを書く ②各ブロックに元動画の秒<b>[m:ss-m:ss]</b>を併記して時間軸に穴が無いか自己検査する(3-c照合表・6-c穴チェック)。<b>対話モードは「読むターン(和訳・見出し)→書くターン(叩き台)→サブタイ」の3ターン</b>に分かれ、叩き台が途中で切れたら<b>「続けて」</b>と言えば続きが出ます(短く畳むことは禁止してあります)。<b>海外の固有名詞は日本人向けに言い換わります</b>(ムース→ヘラジカ／マイル→km／華氏→摂氏／sheriff→保安官／覚えられない人名は「運転手の男」等の役割に)。和訳の最後に<b>【言い換えリスト】</b>(原語→台本で使う日本語)が出るので、意味が変わっていないかはそこで確認してください。縮め方は工房プロンプト内の「叩き台の書き方」章に全部書いてあります。<b>訴求はA案(センターピン直球)から選ぶのが基本</b>。<b>「📖 映像タイムライン」ボタンが出る素材は、画像を貼る必要はありません</b>(2026-08-06)。各コマに何が写っているかを秒ごとに読み取り、その秒のセリフと突き合わせた一覧が<b>プロンプトに自動で入ります</b>。台本が文字起こしだけから作られて映像とズレる問題への対処です。ボタンが出ない素材は従来どおり、セリフがほぼ無いなら「🎞ストーリーボード画像」を、「<b>🎞1秒コマ(密)</b>」が出るなら密シートを全部Claudeへ貼る。60秒台本は<b>映像照合前の叩き台</b>なので、そのまま使わず映像と照らしてセリフ・時刻を確定させる<br>
     <b>5. 編集者に渡す場合</b> — ②の欄に最終台本を貼って「📋 編集指示書プロンプトをコピー」→ Claudeに貼ると、<b>詳細タイムスタンプ付き文字起こし＋台本1行ごとの「元動画のどこ(何秒-何秒)を切るか」対応表</b>が出るので、そのまま編集者へ。URL解析済みなら台本を貼るだけでOK。<b>自分で動画まで仕上げる場合は下の🅑へ</b><br>
     <b>5.5 台本が完成したら③に登録</b> — 工房の「<b>③初稿と完成形を登録</b>」に、最初の台本(初稿)とフィードバック反映後の完成形を貼って送信するだけ。<b>あなたの直しがAIのノウハウになり、次からの叩き台の精度が上がります</b>。余裕があれば「差分分析プロンプト」も自分のClaudeで回すと、なぜ直されたかの言語化が自分のスキルにもなります<br>
     <b>5+. 素材動画のダウンロード</b> — プレイヤーの「<b>⬇素材DL</b>」でURLがコピーされ、<a href="https://www.litexmedia.com/mhdownload.html" target="_blank">MediaHuman YouTube Downloader</a>が起動していれば自動で追加されます。<b>⚠️全部mp3(音声だけ)になる場合はMediaHumanの環境設定で「形式」がMP3になっているのが原因</b>。「オリジナル」または「MP4」・品質=最高に設定してください<br>
@@ -335,9 +363,11 @@ footer{color:var(--mut);font-size:11px;text-align:center;margin-top:20px;line-he
       <button class="chip" id="kobo-copy" style="margin-top:8px;background:var(--acc);
         border-color:var(--acc);color:#fff;font-weight:800;padding:8px 16px">
         📋 Claude用プロンプトをコピー</button>
+      <button class="chip" id="kobo-mv" style="margin-top:8px;font-weight:700"
+        title="映像・秒つき本文・叩き台エディタを1画面に並べる。Claudeが出した叩き台を貼って、行の秒をクリックしながら映像と照合できます">🔍 照合ビューを開く</button>
       <span id="kobo-copied" style="font-size:11px;color:var(--ok);margin-left:8px"></span>
       <div style="font-size:10.5px;color:var(--mut);margin-top:6px">
-        <b>①📋を押してClaudeに貼る(本文) → ②🖼サムネをコピーを押してもう1回貼る(画像)</b>で送信準備完了。<b>対話モードON</b>: まずサムネ言語化・全文和訳・展開マップ・<b>AIのセンターピン仮説</b>が出て、「あなたのセンターピンは?他に伸びた要素は?」と聞かれます。あなたの読みを返す(OKだけでも可)→冒頭→台本の叩き台→最後にサブタイA/B案の順で対話しながら進みます。OFF: 従来どおり一気に出力。<b>叩き台の字数縛り(700字/500字)は廃止しました</b>(2026-08-06)。素材の尺に応じた長さで展開を削らずに出させ、そこから縮めて仕上げるのがライターの腕の見せ所</div>
+        <b>①📋を押してClaudeに貼る(本文) → ②🖼サムネをコピーを押してもう1回貼る(画像)</b>で送信準備完了。<b>対話モードON</b>: <b>①読むターン</b>=サムネ言語化・全文和訳(＋【言い換えリスト】)・展開マップ・<b>シーン見出しの一覧</b>・AIのセンターピン仮説が出て「あなたのセンターピンは?見出しに抜けは?」と聞かれます → あなたの読みを返す(OKだけでも可) → <b>②書くターン</b>=叩き台をまとめて出す(長くなるのが正常。途中で切れたら<b>「続けて」</b>) → <b>③サブタイA/B案</b>。OFF: 従来どおり一気に出力。<b>叩き台の字数指定は使いません</b>。長さは<b>シーン見出しの数</b>で決まり、AIが見出し↔叩き台の対応表と元動画の秒の穴チェックを自分で回します。<b>海外の固有名詞も日本人向けに言い換わります</b>(ムース→ヘラジカ／マイル→km／人名→役割)</div>
 
       <div style="border-top:1px dashed var(--line);margin-top:10px;padding-top:8px">
         <div style="font-size:12px;font-weight:800;margin-bottom:4px">② 台本が完成したら → どこを切るかの指示書(行ごと対応表)</div>
@@ -478,7 +508,7 @@ footer{color:var(--mut);font-size:11px;text-align:center;margin-top:20px;line-he
     <button class="chip" id="p-st" title="サブタイ候補を並べて実物の見た目で比較・視認性チェック">🅰 サブタイ比較</button>
     <button class="chip" id="p-sb" style="display:none">🎞 コマ送り</button>
     <button class="chip" id="p-sbd" style="display:none" title="1秒(等間隔)の高密度コマシート。全枚数をClaudeへ貼ると映像を人間の目レベルで読んで叩き台が作れます">🎞 1秒コマ(密)</button>
-    <button class="chip" id="p-tl" style="display:none" title="各コマの映像描写と文字起こしを秒で突き合わせた一覧。台本プロンプトには自動で入るので、画像を貼る必要はありません">📖 映像タイムライン</button>
+    <button class="chip" id="p-tl" style="display:none" title="映像・秒つき本文・叩き台エディタを1画面に並べて照合する。行をクリックするとその秒へ飛び、再生に合わせて行が光ります。📖が付いている素材は各コマの映像描写つき(台本プロンプトにも自動で入ります)">🔍 照合ビュー</button>
     <button class="chip" id="p-com" title="この動画の人気コメントを和訳付きで表示">💬 コメント</button>
     <button class="chip" id="p-yt">YouTubeで開く ↗</button>
     <button class="chip" id="p-dl" title="動画URLをコピーします。MediaHuman YouTubeダウンローダーが起動していれば自動で追加されます">⬇ 素材DL</button>
@@ -516,16 +546,46 @@ footer{color:var(--mut);font-size:11px;text-align:center;margin-top:20px;line-he
   </div>
 </div>
 <div id="sbmodal2" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.85);
-  z-index:58;overflow:auto;padding:16px">
-  <div style="max-width:900px;margin:0 auto">
+  z-index:58;overflow:auto;padding:12px">
+  <div style="max-width:1800px;margin:0 auto">
     <div style="display:flex;gap:8px;margin-bottom:8px;align-items:center;flex-wrap:wrap">
-      <span style="color:#fff;font-weight:800;font-size:13px" id="tl-title">📖 映像タイムライン</span>
-      <button class="chip" id="tl-copy" style="font-weight:700">📋 コピー</button>
+      <span style="color:#fff;font-weight:800;font-size:13px" id="tl-title">🔍 照合ビュー</span>
+      <button class="chip" id="tl-copy" style="font-weight:700">📋 タイムラインをコピー</button>
       <button class="chip" id="tl-close">✕ 閉じる</button>
+      <span style="color:#9aa4b0;font-size:10.5px">左で映像・中で秒つき本文・右で叩き台。行をクリックするとその秒へ飛びます</span>
     </div>
-    <div style="color:#ccc;font-size:11.5px;margin-bottom:10px;line-height:1.7" id="tl-desc"></div>
-    <div id="tl-body" style="background:var(--sur);border-radius:8px;padding:10px 12px;
-      font-size:12px;line-height:1.85"></div>
+    <div style="color:#ccc;font-size:11.5px;margin-bottom:8px;line-height:1.7" id="tl-desc"></div>
+    <div id="mv">
+      <div id="mv-l">
+        <div id="mv-box"><div id="mv-frame"></div></div>
+        <div id="mv-ng" style="display:none;font-size:11px;color:var(--hot);margin-top:6px">
+          この動画は埋め込み再生できません。行クリック／⏱は<b>YouTubeを別タブでその秒から開く</b>動作になります</div>
+        <div class="mv-h" style="margin-top:8px">現在 <b id="mv-now">0:00</b>
+          <button class="chip" id="mv-b5">⏪5</button>
+          <button class="chip" id="mv-f5">5⏩</button>
+          <button class="chip" id="mv-yt">↗ この秒でYouTube</button>
+          <button class="chip" id="mv-sheets-btn" style="display:none">🎞 コマ送りシート</button>
+        </div>
+        <div id="mv-sheets" style="display:none"></div>
+        <div id="mv-nosbd" style="font-size:10.5px;color:var(--mut);margin-top:6px"></div>
+      </div>
+      <div id="mv-c">
+        <div class="mv-h"><b id="mv-src" style="flex:1"></b>
+          <label style="display:flex;align-items:center;gap:3px;cursor:pointer">
+            <input type="checkbox" id="mv-follow" checked style="width:13px;height:13px"> 再生に追従</label>
+        </div>
+        <div id="mv-tl"></div>
+      </div>
+      <div id="mv-r">
+        <div class="mv-h"><b style="flex:1">叩き台</b>
+          <button class="chip" id="mv-ins" title="Cmd/Ctrl+I">⏱ 現在秒を挿入</button>
+          <button class="chip" id="mv-copy-ed">📋 コピー</button>
+          <span id="mv-save" style="font-size:10.5px;color:var(--mut)"></span>
+        </div>
+        <div id="mv-jumps"></div>
+        <textarea id="mv-ed" placeholder="claude.aiが出した叩き台をここに貼る。行中の [1:23] を拾ってジャンプチップを出します。ダブルクリックでもその秒へ飛べます"></textarea>
+      </div>
+    </div>
   </div>
 </div>
 <div id="edmodal">
@@ -886,6 +946,8 @@ function loadYT(){
 window.onYouTubeIframeAPIReady = () => {
   ytReady = true;
   if(pendingVid){ mountYT(pendingVid); pendingVid = null; }
+  // 照合ビュー側の2つめのプレイヤー。ここを忘れると初回だけ黒画面になる
+  if(mvPendingVid){ mvMount(mvPendingVid); mvPendingVid = null; }
 };
 function mountYT(vid){
   if(ytPlayer){ ytPlayer.loadVideoById(vid); return; }
@@ -918,10 +980,12 @@ function playInline(vid, title, sub, isShort){
   const sbdBtn = document.getElementById("p-sbd");
   sbdBtn.style.display = "none";
   probeSbd(vid).then(m => { if(m && playVid === vid) sbdBtn.style.display = ""; });
-  // 映像タイムライン(秒×映像×セリフ)があればボタンを出す
+  // 🔍 照合ビューは常時出す(映像タイムラインが無い素材は文字起こしで照合できるため)。
+  // タイムラインがある素材だけボタンに📖を添えて区別する。
   const tlBtn = document.getElementById("p-tl");
-  tlBtn.style.display = "none";
-  probeTl(vid).then(t => { if(t && playVid === vid) tlBtn.style.display = ""; });
+  tlBtn.style.display = "";
+  tlBtn.textContent = "🔍 照合ビュー";
+  probeTl(vid).then(t => { if(t && playVid === vid) tlBtn.textContent = "🔍 照合ビュー 📖"; });
 }
 // 1秒コマ(密)のマニフェスト(sbd/<id>.json)取得。無ければnull
 const sbdCache = {};
@@ -958,49 +1022,329 @@ function tsStr(t){
   const frac = Math.abs(s - Math.floor(s)) > 0.04 ? "." + Math.round((s % 1) * 10) : "";
   return `${m}:${String(Math.floor(s)).padStart(2, "0")}${frac}`;
 }
-// 📖 映像タイムライン
-document.getElementById("p-tl").onclick = async () => {
-  const doc = await probeTl(playVid);
-  if(!doc) return;
-  const nV = doc.rows.filter(r => r.v).length, nS = doc.rows.filter(r => r.s).length;
-  document.getElementById("tl-title").textContent =
-    `📖 映像タイムライン — ${doc.rows.length}行(映像${nV}・セリフ${nS})`;
-  document.getElementById("tl-desc").innerHTML =
-    `各コマに<b>何が写っているか</b>と、その秒に喋っている<b>セリフ</b>を突き合わせたものです。` +
-    `ベース${doc.interval}秒間隔${(doc.dense || []).length ? `＋動きのある${doc.dense.length}区間は1秒刻み` : ""}。` +
-    `<b>台本プロンプトには自動で入る</b>ので、Claudeへ画像を貼る必要はありません` +
-    (doc.has_tr ? "" : "　<b style='color:var(--hot)'>※この素材は字幕が取れていないため映像のみ</b>");
-  const esc = s => (s || "").replace(/[<>&]/g, c => ({"<":"&lt;",">":"&gt;","&":"&amp;"}[c]));
-  const marks = (doc.scenes || []).slice();
+// "1:23" / "01:02:03" / 全角コロン → 秒。拾えなければ null
+function tsSec(s){
+  const m = String(s).match(/(\d{1,3})\s*[:：]\s*(\d{1,2})(?:\s*[:：]\s*(\d{1,2}))?/);
+  if(!m) return null;
+  const a = +m[1], b = +m[2], c = m[3] !== undefined ? +m[3] : null;
+  return c === null ? a * 60 + b : a * 3600 + b * 60 + c;
+}
+// 叩き台の「被覆チェック用の枠」。字数の代わりに"元動画の時間軸を覆えているか"で長さを担保する。
+// 映像タイムラインがあれば場面転換の秒を枠に、無ければ文字起こしの秒を30秒刻みに割る。
+function coverFrame(){
+  let marks = [], src = "";
+  if(koboTl && (koboTl.scenes || []).length >= 2){
+    marks = koboTl.scenes.slice();
+    src = "枠＝映像タイムラインが検出した場面転換(画が切り替わった秒)です。";
+  } else {
+    const hit = transcriptText().match(/\[(\d{1,3}[:：]\d{1,2}(?::\d{1,2})?)\]/g) || [];
+    const secs = hit.map(s => tsSec(s.slice(1, -1))).filter(v => v !== null);
+    if(secs.length < 6) return null;
+    const end = secs[secs.length - 1];
+    for(let t = secs[0]; t < end; t += 30) marks.push(t);
+    src = "映像タイムラインが無いので、文字起こしの秒を30秒ずつに区切った枠です。";
+  }
+  const rows = marks.map((t, i) =>
+    `${String(i + 1).padStart(2)}. ${tsStr(t)} 〜 ${i + 1 < marks.length ? tsStr(marks[i + 1]) : "最後"}`);
+  return {src, text: rows.join("\n"), n: rows.length};
+}
+// ===== 🔍 照合ビュー(3ペイン) =====
+// 本人のLoom実演「少し書く→その秒数まで映像を進める→入れる要素を決める」を1画面で回すための面。
+// 左=映像 / 中=秒つき本文(映像タイムライン、無ければ文字起こし) / 右=叩き台エディタ。
+let mvVid = null, mvPlayer = null, mvPendingVid = null, mvRows = [], mvScenes = [],
+    mvSrcLabel = "", mvTimer = null, mvCur = -1, mvPauseUntil = 0, mvEmbedNG = false,
+    mvDoc = null, mvSaveT = null, mvScanT = null;
+const mvEsc = s => (s || "").replace(/[<>&]/g, c => ({"<":"&lt;",">":"&gt;","&":"&amp;"}[c]));
+
+// 行頭に置かれた時刻だけを見る(本文中の "12:34" を誤検出しない)
+const MV_HEAD = /^[\s[(【]*(\d{1,3}[:：]\d{1,2}(?:[:：]\d{1,2})?)[\s\])】]*(?:[〜~\-–—]\s*(\d{1,3}[:：]\d{1,2}(?:[:：]\d{1,2})?)[\s\])】]*)?/;
+// 秒つきテキストを行に割る。秒が拾えない行も捨てず、直前の秒を継承する
+function parseTimedLines(raw){
+  const out = [];
+  let last = null;
+  for(const line of String(raw || "").split(/\r?\n/)){
+    const l = line.trim();
+    if(!l) continue;
+    const m = l.slice(0, 24).match(MV_HEAD);
+    if(m && m[1]){
+      last = tsSec(m[1]);
+      out.push({t: last, t2: m[2] ? tsSec(m[2]) : null,
+                text: l.slice(m[0].length).replace(/^[、,:：\-–—\s]+/, ""), raw: line});
+    } else {
+      out.push({t: last, text: l, raw: line, orphan: true});
+    }
+  }
+  return out;
+}
+
+async function mvLoadRows(vid){
+  mvDoc = await probeTl(vid);
+  if(mvDoc){
+    mvScenes = (mvDoc.scenes || []).slice();
+    mvRows = mvDoc.rows.map(r => ({t: r.t, v: r.v, s: r.s}));
+    const nV = mvRows.filter(r => r.v).length, nS = mvRows.filter(r => r.s).length;
+    mvSrcLabel = `映像タイムライン ${mvRows.length}行(映像${nV}・セリフ${nS})`;
+    return;
+  }
+  // 映像タイムラインが無い素材は文字起こしで同じことをする。
+  // 別動画のテキストが紛れないよう prep.vid / dataset.auto の二重ガードを必ず通す。
+  mvScenes = [];
+  const ta = document.getElementById("kobo-tr");
+  let src = "";
+  if(prep && prep.vid === vid && prep.transcript.length) src = prep.transcript.join("\n");
+  else if((prep && prep.vid === vid) || ta.dataset.auto === vid) src = ta.value;
+  const parsed = parseTimedLines(src).filter(r => r.t !== null);
+  mvRows = parsed.map(r => ({t: r.t, v: "", s: r.text}));
+  mvSrcLabel = mvRows.length ? `文字起こし ${mvRows.length}行(この素材は映像タイムライン未生成)` : "";
+}
+
+function mvRender(){
+  const box = document.getElementById("mv-tl");
+  document.getElementById("mv-src").textContent = mvSrcLabel || "データなし";
+  if(!mvRows.length){
+    box.innerHTML = `<div style="font-size:11.5px;color:var(--mut);line-height:1.9">
+      この素材はまだ解析していないため、秒つきの本文がありません。<br>
+      <button class="chip" id="mv-tokobo" style="margin-top:6px;font-weight:700">🎬 工房で解析する</button><br>
+      解析すると文字起こしが入り、✓着手マークを付けておけば翌朝の自動処理で映像タイムライン(秒ごとの映像描写)も生成されます</div>`;
+    const b = document.getElementById("mv-tokobo");
+    if(b) b.onclick = () => { document.getElementById("sbmodal2").style.display = "none"; sendToKobo(mvVid); };
+    return;
+  }
+  const marks = mvScenes.slice();
   let mi = 0, html = "";
-  for(const r of doc.rows){
+  mvRows.forEach((r, i) => {
     while(mi < marks.length && marks[mi] <= r.t){
-      html += `<div style="color:var(--acc);font-weight:700;margin:6px 0 2px">── ${tsStr(marks[mi])} 場面転換 ──</div>`;
+      html += `<div class="mvscene">── ${tsStr(marks[mi])} 場面転換 ──</div>`;
       mi++;
     }
-    html += `<div style="display:flex;gap:8px;padding:1px 0">
-      <a href="#" class="tlj" data-t="${r.t}" style="flex:0 0 46px;color:var(--acc);text-decoration:none;font-variant-numeric:tabular-nums">${tsStr(r.t)}</a>
-      <span style="flex:1">${esc(r.v)}${r.s ? `<span style="color:var(--mut)">　「${esc(r.s)}」</span>` : ""}</span></div>`;
-  }
-  document.getElementById("tl-body").innerHTML = html;
-  // 時刻クリックでその秒から再生
-  document.querySelectorAll("#tl-body .tlj").forEach(a => a.onclick = ev => {
-    ev.preventDefault();
-    if(ytPlayer && ytPlayer.seekTo) ytPlayer.seekTo(parseFloat(a.dataset.t), true);
+    html += `<div class="mvrow" data-i="${i}" data-t="${r.t}"><span class="t">${tsStr(r.t)}</span>` +
+      `<span class="v">${mvEsc(r.v)}${r.s ? `<span class="s">${r.v ? "　" : ""}「${mvEsc(r.s)}」</span>` : ""}</span></div>`;
   });
+  box.innerHTML = html;
+  mvCur = -1;
+}
+
+function mvSeek(t){
+  if(mvEmbedNG || !mvPlayer || !mvPlayer.seekTo){
+    window.open(`https://www.youtube.com/watch?v=${mvVid}&t=${Math.floor(t)}s`, "_blank", "noopener");
+    return;
+  }
+  mvPlayer.seekTo(t, true);
+  if(mvPlayer.playVideo) mvPlayer.playVideo();
+}
+
+function mvMount(vid){
+  if(!ytReady){ mvPendingVid = vid; loadYT(); return; }
+  mvEmbedNG = false;
+  document.getElementById("mv-ng").style.display = "none";
+  if(mvPlayer && mvPlayer.loadVideoById){ mvPlayer.loadVideoById(vid); return; }
+  mvPlayer = new YT.Player("mv-frame", {videoId: vid, width: "100%", height: "100%",
+    playerVars: {rel: 0, playsinline: 1},
+    events: {onError: () => {
+      mvEmbedNG = true;
+      document.getElementById("mv-ng").style.display = "";
+      document.getElementById("mv-follow").checked = false;
+    }}});
+}
+
+function mvTick(){
+  if(!mvPlayer || !mvPlayer.getCurrentTime) return;
+  let t;
+  try { t = mvPlayer.getCurrentTime(); } catch(e){ return; }
+  if(typeof t !== "number") return;
+  document.getElementById("mv-now").textContent = tsStr(Math.floor(t));
+  mvHiliteJumps(t);
+  let k = -1;
+  for(let i = 0; i < mvRows.length; i++){ if(mvRows[i].t <= t + 0.05) k = i; else break; }
+  if(k === mvCur) return;
+  const prev = document.querySelector("#mv-tl .mvrow.on");
+  if(prev) prev.classList.remove("on");
+  mvCur = k;
+  if(k < 0) return;
+  const el = document.querySelector(`#mv-tl .mvrow[data-i="${k}"]`);
+  if(!el) return;
+  el.classList.add("on");
+  if(document.getElementById("mv-follow").checked && Date.now() > mvPauseUntil){
+    // scrollIntoViewは祖先(モーダル)側のスクロールで満足して中ペインが動かないことがある→自前で計算
+    const box = document.getElementById("mv-tl");
+    box.scrollTo({top: el.offsetTop - box.clientHeight / 2 + el.offsetHeight / 2, behavior: "smooth"});
+  }
+}
+
+// --- 叩き台エディタ ---
+function mvDraftKey(vid){ return "mvdraft:" + vid; }
+function mvSaveDraft(){
+  const ta = document.getElementById("mv-ed");
+  if(!ta.dataset.vid) return;
+  try {
+    localStorage.setItem(mvDraftKey(ta.dataset.vid), ta.value);
+    document.getElementById("mv-save").textContent = "保存済み";
+  } catch(e){
+    // 他機能(daihon:/subtai:/segs)と同居しているので溢れたら古い叩き台から捨てる
+    const keys = Object.keys(localStorage).filter(k => k.startsWith("mvdraft:") && k !== mvDraftKey(ta.dataset.vid));
+    keys.slice(0, 10).forEach(k => localStorage.removeItem(k));
+    try { localStorage.setItem(mvDraftKey(ta.dataset.vid), ta.value); } catch(e2){
+      document.getElementById("mv-save").textContent = "保存できません(容量)";
+    }
+  }
+}
+function mvLoadDraft(vid){
+  const ta = document.getElementById("mv-ed");
+  if(ta.dataset.vid && ta.dataset.vid !== vid) mvSaveDraft();  // 先に旧vidを保存してから入れ替える
+  ta.dataset.vid = vid;
+  try { ta.value = localStorage.getItem(mvDraftKey(vid)) || ""; } catch(e){ ta.value = ""; }
+  document.getElementById("mv-save").textContent = "";
+  mvScanDraft();
+}
+function mvScanDraft(){
+  const ta = document.getElementById("mv-ed");
+  const hits = parseTimedLines(ta.value).filter(r => r.t !== null && !r.orphan);
+  document.getElementById("mv-jumps").innerHTML = hits.length
+    ? hits.map(r => `<a href="#" data-t="${r.t}" data-p="${ta.value.indexOf(r.raw)}">▶${tsStr(r.t)}</a>`).join("")
+    : "";
+}
+function mvHiliteJumps(t){
+  const as = document.querySelectorAll("#mv-jumps a");
+  if(!as.length) return;
+  let best = -1, bd = 1e9;
+  as.forEach((a, i) => { const d = Math.abs(+a.dataset.t - t); if(d < bd){ bd = d; best = i; } });
+  as.forEach((a, i) => a.classList.toggle("on", i === best));
+}
+function mvInsertTs(){
+  const ta = document.getElementById("mv-ed");
+  let t = 0;
+  try { t = (mvPlayer && mvPlayer.getCurrentTime) ? mvPlayer.getCurrentTime() : 0; } catch(e){}
+  const s = `[${tsStr(Math.floor(t))}] `, a = ta.selectionStart, b = ta.selectionEnd;
+  ta.value = ta.value.slice(0, a) + s + ta.value.slice(b);
+  ta.selectionStart = ta.selectionEnd = a + s.length;
+  ta.focus();
+  mvSaveDraft(); mvScanDraft();
+}
+
+async function mvOpen(vid){
+  if(!vid) return;
+  mvVid = vid;
   document.getElementById("sbmodal2").style.display = "block";
+  if(ytPlayer && ytPlayer.pauseVideo) try { ytPlayer.pauseVideo(); } catch(e){}
+  mvMount(vid);
+  mvLoadDraft(vid);
+  document.getElementById("mv-tl").innerHTML =
+    `<div style="font-size:11.5px;color:var(--mut)">読み込み中…</div>`;
+  await mvLoadRows(vid);
+  document.getElementById("tl-title").textContent = "🔍 照合ビュー";
+  document.getElementById("tl-desc").innerHTML = mvDoc
+    ? `各コマに<b>何が写っているか</b>と、その秒の<b>セリフ</b>を突き合わせたものです。` +
+      `ベース${mvDoc.interval}秒間隔${(mvDoc.dense || []).length ? `＋動きのある${mvDoc.dense.length}区間は1秒刻み` : ""}。` +
+      `<b>台本プロンプトには自動で入る</b>ので、Claudeへ画像を貼る必要はありません` +
+      (mvDoc.has_tr ? "" : "　<b style='color:var(--hot)'>※この素材は字幕が取れていないため映像のみ</b>")
+    : `この素材は<b>映像タイムライン未生成</b>のため、文字起こしの秒で照合します(映像に何が写っているかの行はありません)`;
+  mvRender();
+  mvSheets(vid);
+  if(mvTimer) clearInterval(mvTimer);
+  mvTimer = setInterval(mvTick, 250);
+}
+
+function mvSheets(vid){
+  const btn = document.getElementById("mv-sheets-btn"), box = document.getElementById("mv-sheets"),
+        no = document.getElementById("mv-nosbd");
+  btn.style.display = "none"; box.style.display = "none"; box.innerHTML = ""; no.textContent = "";
+  probeSbd(vid).then(m => {
+    if(mvVid !== vid) return;
+    if(!m){
+      no.innerHTML = "この素材は<b>コマ送りシート未生成</b>です。動画ピッカーで<b>✓着手マーク</b>を付けると、その晩の自動処理でコマ送り→映像タイムラインまで生成されます(翌朝反映)";
+      return;
+    }
+    btn.style.display = "";
+    btn.textContent = `🎞 コマ送りシート ${m.sheets}枚(${m.interval}秒間隔)`;
+    btn.onclick = () => {
+      const on = box.style.display === "";
+      box.style.display = on ? "none" : "";
+      if(!on && !box.innerHTML)
+        box.innerHTML = (m.files || []).map(f => `<img src="sbd/${f}" alt="sheet" loading="lazy">`).join("");
+    };
+  });
+}
+
+function mvClose(){
+  if(mvTimer){ clearInterval(mvTimer); mvTimer = null; }
+  mvSaveDraft();
+  let t = null;
+  try { if(mvPlayer && mvPlayer.getCurrentTime) t = mvPlayer.getCurrentTime(); } catch(e){}
+  if(mvPlayer && mvPlayer.pauseVideo) try { mvPlayer.pauseVideo(); } catch(e){}
+  // 見ていた位置を右のプレイヤーへ引き継ぐ(閉じた瞬間に見失わない)
+  if(t !== null && ytPlayer && ytPlayer.seekTo && playVid === mvVid) try { ytPlayer.seekTo(t, true); } catch(e){}
+  document.getElementById("sbmodal2").style.display = "none";
+}
+
+document.getElementById("p-tl").onclick = () => mvOpen(playVid);
+document.getElementById("kobo-mv").onclick = () => {
+  if(!prep){ alert("先にURLを貼って解析してください"); return; }
+  mvOpen(prep.vid);
 };
-document.getElementById("tl-copy").onclick = async () => {
-  const doc = await probeTl(playVid);
-  if(!doc) return;
-  const text = tlText(doc);
-  const done = () => copyToast("📋 映像タイムラインをコピーしました");
+document.getElementById("tl-close").onclick = mvClose;
+document.getElementById("sbmodal2").onclick = ev => { if(ev.target.id === "sbmodal2") mvClose(); };
+// 行クリック→シーク(20分素材で1000行超になるのでイベント委譲)
+document.getElementById("mv-tl").addEventListener("click", ev => {
+  const row = ev.target.closest(".mvrow");
+  if(row) mvSeek(parseFloat(row.dataset.t));
+});
+// 自分でスクロールしたら8秒だけ追従を止める(smoothスクロール自身が発火するscrollではなくwheelを見る)
+["wheel", "touchmove"].forEach(e =>
+  document.getElementById("mv-tl").addEventListener(e, () => { mvPauseUntil = Date.now() + 8000; },
+    {passive: true}));
+document.getElementById("mv-b5").onclick = () => { try { mvSeek(Math.max(0, mvPlayer.getCurrentTime() - 5)); } catch(e){} };
+document.getElementById("mv-f5").onclick = () => { try { mvSeek(mvPlayer.getCurrentTime() + 5); } catch(e){} };
+document.getElementById("mv-yt").onclick = () => {
+  let t = 0;
+  try { t = mvPlayer && mvPlayer.getCurrentTime ? mvPlayer.getCurrentTime() : 0; } catch(e){}
+  window.open(`https://www.youtube.com/watch?v=${mvVid}&t=${Math.floor(t)}s`, "_blank", "noopener");
+};
+document.getElementById("mv-ins").onclick = mvInsertTs;
+document.getElementById("mv-ed").addEventListener("input", () => {
+  clearTimeout(mvSaveT); mvSaveT = setTimeout(mvSaveDraft, 500);
+  clearTimeout(mvScanT); mvScanT = setTimeout(mvScanDraft, 300);
+});
+document.getElementById("mv-ed").addEventListener("dblclick", () => {
+  const ta = document.getElementById("mv-ed");
+  const head = ta.value.lastIndexOf("\n", Math.max(0, ta.selectionStart - 1)) + 1;
+  let end = ta.value.indexOf("\n", ta.selectionStart);
+  if(end < 0) end = ta.value.length;
+  const m = ta.value.slice(head, end).trim().slice(0, 24).match(MV_HEAD);
+  if(m && m[1]) mvSeek(tsSec(m[1]));
+});
+document.getElementById("mv-jumps").addEventListener("click", ev => {
+  const a = ev.target.closest("a");
+  if(!a) return;
+  ev.preventDefault();
+  mvSeek(parseFloat(a.dataset.t));
+  const ta = document.getElementById("mv-ed"), p = +a.dataset.p;
+  if(p >= 0){ ta.focus(); ta.selectionStart = ta.selectionEnd = p; }
+});
+document.getElementById("mv-copy-ed").onclick = () => {
+  const text = document.getElementById("mv-ed").value;
+  const done = () => copyToast("📋 叩き台をコピーしました");
+  if(navigator.clipboard && navigator.clipboard.writeText)
+    navigator.clipboard.writeText(text).then(done).catch(() => fallbackCopy(text, done));
+  else fallbackCopy(text, done);
+};
+document.addEventListener("keydown", ev => {
+  if(document.getElementById("sbmodal2").style.display !== "block") return;
+  if(ev.isComposing) return;                       // 日本語入力の変換中は拾わない
+  if((ev.metaKey || ev.ctrlKey) && ev.key.toLowerCase() === "i"){ ev.preventDefault(); mvInsertTs(); }
+  else if(ev.key === "Escape" && document.activeElement.id !== "mv-ed") mvClose();
+});
+window.addEventListener("beforeunload", () => {
+  if(document.getElementById("mv-ed").dataset.vid) mvSaveDraft();
+});
+document.getElementById("tl-copy").onclick = () => {
+  const text = mvDoc ? tlText(mvDoc)
+    : mvRows.map(r => `${tsStr(r.t)}  ${r.v || ""}${r.s ? "　「" + r.s + "」" : ""}`).join("\n");
+  if(!text){ copyToast("コピーするデータがありません"); return; }
+  const done = () => copyToast("📋 タイムラインをコピーしました");
   if(navigator.clipboard && navigator.clipboard.writeText){
     navigator.clipboard.writeText(text).then(done).catch(() => fallbackCopy(text, done));
   } else fallbackCopy(text, done);
 };
-document.getElementById("tl-close").onclick = () =>
-  document.getElementById("sbmodal2").style.display = "none";
 document.getElementById("sbmodal2").onclick = ev => {
   if(ev.target.id === "sbmodal2") document.getElementById("sbmodal2").style.display = "none";
 };
@@ -2180,8 +2524,12 @@ function koboRun(){
     probeTl(p.vid).then(t => {
       if(prep && prep.vid === p.vid) koboTl = t;
       const el = document.getElementById("kobo-tlstat");
-      el.textContent = t ? `📖 映像タイムライン ${t.rows.length}行をプロンプトに同梱します(画像を貼る必要はありません)` : "";
-      el.style.color = "var(--ok)";
+      // 未生成のときも黙って空にせず、次に何をすれば出るのかを出す
+      el.innerHTML = t
+        ? `📖 映像タイムライン ${t.rows.length}行をプロンプトに同梱します(画像を貼る必要はありません)`
+        : `映像タイムラインは未生成です(この素材は文字起こしだけで台本を作ります)。動画ピッカーで<b>✓着手マーク</b>を付けておくと、その晩の自動処理で生成され翌朝から使えます`;
+      el.style.color = t ? "var(--ok)" : "var(--mut)";
+      el.style.fontWeight = t ? "700" : "400";
     });
     if(!pv) startTrAuto(p.vid);  // 生IDなど貼り付け形式がURLでなかった場合はここで開始
     document.getElementById("kobo-status").textContent = p.errors.length ? "注意: " + p.errors.join(" / ") : "";
@@ -2278,6 +2626,9 @@ async function startTrAuto(vid){
           ta.dataset.auto = vid;
           stat.style.color = "var(--ok)";
           stat.textContent = `✔ 文字起こしを自動取得しました(${j.tr.length.toLocaleString()}文字) → そのまま📋コピーへ`;
+          // 照合ビューを開いたまま流し込みが届いた場合に反映する
+          if(mvVid === vid && document.getElementById("sbmodal2").style.display === "block")
+            mvLoadRows(vid).then(mvRender);
         }
         return;
       }
@@ -2320,15 +2671,23 @@ function buildPrompt(p){
     : "(取得なし)";
   // 解析APIが長さを取れない動画がある(0が返る)→ピッカー収録分から補完し、無ければ表示しない
   const dur = p.length > 0 ? p.length : (((SM || []).find(v => v.id === p.vid) || {}).d || 0);
-  // 長尺ほど「間の展開が抜けたぶつ切り台本」になりやすいので、圧縮率を数字で自覚させる
+  const cv = coverFrame();   // 叩き台の長さを字数でなく「時間軸の被覆」で担保するための枠
+  // 長尺ほど「間の展開が抜けたぶつ切り台本」になりやすい。圧縮率(◯倍)を出すと逆に短くまとめる圧に
+  // なるので、2026-08-06以降は「尺が長い=見出しが多い=ブロックが多い」という量の話にしてある
   const longWarn = dur > 300 ? `
-# ⚠️この素材は長尺です(${Math.round(dur/60)}分 = 完成尺60秒の約${Math.round(dur/60)}倍)
+# ⚠️この素材は長尺です(${Math.round(dur/60)}分)
 - 面白い場面だけを抜き出して繋ぐと、間の展開が消えて「ぶつ切り」になり、視聴者は何が起きたか分からずスワイプする
-- **展開を間引くのではなく、全展開を残したまま1本の筋として縮める**。落としてよいのは文の贅肉であって展開ではない
-- 手順2の展開マップと手順3の叩き台は、長い分だけ細かく作ること(ここが粗いと必ず飛ぶ)
+- **展開を間引くのではなく、全展開を残したまま1本の筋にまとめる**。落としてよいのは文の贅肉であって展開ではない
+- **尺が長い＝手順3-aの見出しが多い**ということ。見出しの数だけ叩き台のブロックが要る。長い素材で叩き台が短く出てきたら、それは要約であって叩き台ではない
+- 手順2の展開マップと手順3-aの見出しは、長い分だけ細かく作ること(ここが粗いと必ず飛ぶ)
+- **1回の返信に収まらない場合は、要約して畳まず「(続きます)」と書いて止め、次の返信で続きの見出しから再開する。** 途中を飛ばして先の手順へ進んではいけない
 ` : "";
-  return `あなたはプロの放送作家。海外バズ動画を日本向け60秒ショート動画に凝縮する専門家です。
+  return `あなたはプロの放送作家。海外の動画を日本向けショート動画に作り替える専門家です。
 以下の素材を使って、手順どおりに台本を作ってください。
+
+**この依頼であなたが作るのは「叩き台」です。** 叩き台は完成品ではなく中間生成物で、完成尺の制約を受けません。
+最終的に人間のライターが60秒に仕上げますが、**削るのは人間の仕事**です。あなたの仕事は「削れるだけの展開が全部そこにある状態」を作ること。
+元動画で起きたことが1つでも叩き台から抜けていたら、その時点で失敗です(長すぎることでは失敗になりません)。
 
 # 元動画
 - タイトル: ${p.title}
@@ -2359,8 +2718,19 @@ ${koboTl ? `# 映像タイムライン(この素材の映像を秒ごとに読�
 - 「叩き台の書き方」章の「セリフから読み取れない映像の情報はナレで補う」「映像を見ないと書けない描写を拾う」は、この記録から直接拾える
 - 「同左」は直前のコマとほぼ同じ画という意味。「判別不能」は読み取れなかったコマ
 - 映像の描写が空欄で「セリフ」だけの行は、映像の読み取りが届いていない時間帯
+- **この記録の行数がそのまま叩き台の材料の量**。行があるのに叩き台に出てこない時間帯は「落とした区間」なので、手順6-cで必ず検出すること
+- 場面転換の行(── m:ss 場面転換 ──)は、**1つ残らず叩き台のどこかに現れる**のが正しい。場面が変わったのに叩き台が同じ話を続けていたら、そこで展開を1つ飛ばしている
 
 ${tlText(koboTl)}
+
+` : ""}${cv ? `# 叩き台の被覆チェック用データ(手順3-cと6-cで使う・${cv.n}枠)
+叩き台が元動画の時間軸に穴を空けていないかを、**あなた自身が照合する**ための枠です。${cv.src}
+
+${cv.text}
+
+- 手順3-aの見出しは、この枠を**1つ残らず**カバーすること。見出しが0個の枠があれば、それはその区間をまだ読めていないということなので、映像タイムライン/文字起こしのその区間を読み直して見出しを足す
+- 手順3-bと手順6の各ブロックの行頭には、その内容が元動画のどこかを **[m:ss-m:ss]** の形で必ず併記する
+- 併記した区間を頭から並べたとき、ブロックとブロックのあいだに**空白の区間**があってはいけない。空いていたらそこは落とした区間なので、書き直して埋める
 
 ` : ""}# 映像ストーリーボード(画像が添付されている場合)
 - この依頼にタイムスタンプ付きの「コマ送り画像」が添付されていたら、それが元動画のシーン展開である
@@ -2370,6 +2740,9 @@ ${tlText(koboTl)}
 - 上の文字起こしが【未貼付】のままで、かつ映像タイムラインもストーリーボード画像の添付も無い場合、台本は一切作らず「文字起こしまたはストーリーボード画像を貼ってください」とだけ返すこと
 - タイトル・コメント・盛り上がりからの推測でストーリーや台詞を創作することを禁止する。台本の内容は必ず文字起こし(またはストーリーボード画像に写っていること)だけから作る
 - 自動文字起こしの数字・固有のセリフは、映像テロップ・スクショと照合して確定する。食い違った場合は映像を正とする。照合できないセリフ・事実(SNS投稿等の画面外の事実を含む)は台本に載せない
+- **叩き台(手順3-b・手順6)を短くまとめることを禁止する。字数・行数の上限は無い**。短く畳むより、長くて削り甲斐がある方が常に良い
+- 出力が1回の返信に収まらない時は、要約して短く畳まず「(続きます)」と書いて止め、次の返信で続きから書くこと。**長さを削って1回に収めることを禁止する**
+- 海外の固有名詞・単位・制度は「日本人向けの言い換え」章に従って日本人に伝わる語へ置き換える(カタカナに音写しただけの語を残さない)。単位・金額の換算で数値が変わった場合は、手順1の【言い換えリスト】に原語と原数値を必ず残すこと(リストに無い数値の書き換えは創作にあたるので禁止)
 
 ${dialogSection()}${KNOWHOW}
 `;
@@ -2378,10 +2751,12 @@ ${dialogSection()}${KNOWHOW}
 function dialogSection(){
   if(!document.getElementById("kobo-dialog").checked) return "";
   return `# 進め方(対話モード・厳守)
-この依頼はディレクター(依頼者)と対話しながら仕上げる。ただし質問だけして止まるターンは作らない。最初の返信で叩き台まで一気に出し、FBは叩き台に対してもらう:
-- 【第1ターン(この返信で出す)】手順0(サムネ・タイトルの言語化)→手順1(全文和訳)→手順2(展開マップ)→手順3(3-a シーン分解の見出し一覧 → 3-b 叩き台・展開ベタ書き)→手順4(センターピン)→手順5(冒頭フック)→手順6(6-a ナレーションだけで通した台本 → 6-b 素材の声を差し込んだ叩き台。**両方見せる**。**字数で縛らず、元素材の尺に応じた分量で展開をほぼ削らずに書き切る**)→手順7(使用区間リスト)まで全部一気に出す。センターピン(手順4)は「私のセンターピンは◯◯だと思います。理由: …」と仮説として明示し、その仮説前提で最後まで出し切る
-- 第1ターンの最後に必ずこう聞いて止まる: 「①センターピンはこれで合っていますか? 別の読みがあれば教えてください(変わる場合は冒頭〜台本を作り直します) ②サムネ・タイトル以外に伸びた要素(映像の引き・時事性・コメント欄の空気・投稿タイミング等)があれば教えてください ③冒頭・台本への修正指示があればどうぞ。無ければ"OK"でサブタイトルへ進みます」
-- 【第2ターン】ディレクターの回答を反映(ディレクターの読みはAIの仮説より優先。ただし弱い・矛盾すると感じたら理由付きで率直に指摘してよい)。センターピンが変わったら手順5〜7を作り直す→手順8(サブタイA案)→手順9(サブタイB案)→手順10(セルフレビュー)で完成
+この依頼はディレクター(依頼者)と対話しながら仕上げる。**1ターンに詰め込みすぎて後半が息切れするのを防ぐため、「読むターン」と「書くターン」を分ける**。ただし質問だけして止まるターンは作らない:
+- 【第1ターン=読む(この返信で出す)】手順0(サムネ・タイトルの言語化)→手順1(全文和訳＋末尾に【言い換えリスト】)→手順2(展開マップ)→**手順3-a(シーン分解の見出し一覧・ここまで)**→手順4(センターピン)。3-aの見出しは省略せず全部出す(ここが叩き台の設計図で、後の分量はこの見出しの数で決まる)。「叩き台の被覆チェック用データ」が渡されていれば、見出しが枠を全部カバーしているかもここで確認して報告する。センターピン(手順4)は「私のセンターピンは◯◯だと思います。理由: …」と仮説として明示する
+- 第1ターンの最後に必ずこう聞いて止まる: 「①センターピンはこれで合っていますか? 別の読みがあれば教えてください ②サムネ・タイトル以外に伸びた要素(映像の引き・時事性・コメント欄の空気・投稿タイミング等)があれば教えてください ③シーン見出しに抜け・不要があれば教えてください。無ければ"OK"で叩き台を書きます」
+- 【第2ターン=書く】ディレクターの回答を反映(ディレクターの読みはAIの仮説より優先。ただし弱い・矛盾すると感じたら理由付きで率直に指摘してよい)。手順3-b(叩き台・展開ベタ書き)→3-c(照合表)→手順5(冒頭フック)→手順6(6-a ナレーションだけで通した台本 → 6-b 素材の声を差し込んだ叩き台。**両方見せる**)→6-c(穴チェック)→手順7(使用区間リスト)。**このターンは長くなるのが正常**。和訳をもう一度出す必要は無いので、その分の出力を全部叩き台に使うこと
+- **第2ターンが1回の返信に収まらない場合は、要約して畳むのではなく「(続きます)」と書いて止め、次の返信で続きの見出しから再開する。** 見出しを飛ばして手順5〜7へ進んではいけない。ディレクターは「続けて」と言うだけで続きを受け取れる
+- 【第3ターン】手順8(サブタイA案)→手順9(サブタイB案)→手順10(提出前セルフレビュー)で完成。センターピンが第2ターン以降で変わった場合は手順5〜7を作り直してから進む
 - ディレクターが途中で方針を変えたら(別のセンターピン・別の切り口など)、それを正として以降を作り直す
 
 `;
