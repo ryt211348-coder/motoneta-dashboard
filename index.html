@@ -300,7 +300,14 @@ footer{color:var(--mut);font-size:11px;text-align:center;margin-top:20px;line-he
   <div class="sub" id="upd"></div>
   <div id="kobo" style="display:none;border:1px solid var(--line);border-radius:10px;
       background:var(--sur);padding:10px 12px;margin-bottom:10px">
-    <div style="font-size:12px;font-weight:800;margin-bottom:6px">元動画URL → Claude用台本プロンプトを生成</div>
+    <div style="font-size:11px;color:var(--mut);border:1px dashed var(--line);border-radius:8px;
+        padding:6px 9px;margin-bottom:8px;line-height:1.75">
+      <b style="color:var(--tx)">この工房は独立した4つの道具です。動画1本につき1ページではありません</b>（下に全部並んでいて、いつでも使えます）<br>
+      <b>①素材を解析 → 台本プロンプト</b>＝素材ごと ／ <b>②完成台本 → 編集指示書</b>＝素材ごと ／
+      <b>③初稿と完成形を登録</b>＝素材と無関係・いつでも ／ <b>④投稿後の理由を書く</b>＝結果が出た分だけ自動で並ぶ<br>
+      別の動画をやるときは、①のURL欄を貼り替えるだけです（②③④はそのまま使えます）
+    </div>
+    <div style="font-size:12px;font-weight:800;margin-bottom:6px">① 元動画URL → Claude用台本プロンプトを生成</div>
     <div style="display:flex;gap:6px">
       <input type="text" id="kobo-url" placeholder="https://www.youtube.com/watch?v=... か https://www.instagram.com/reel/... を貼る"
         style="flex:1;padding:8px 12px;border:1px solid var(--line);border-radius:8px;
@@ -373,7 +380,7 @@ footer{color:var(--mut);font-size:11px;text-align:center;margin-top:20px;line-he
         title="映像・秒つき本文・叩き台エディタを1画面に並べる。Claudeが出した叩き台を貼って、行の秒をクリックしながら映像と照合できます">🔍 照合ビューを開く</button>
       <span id="kobo-copied" style="font-size:11px;color:var(--ok);margin-left:8px"></span>
       <div style="font-size:10.5px;color:var(--mut);margin-top:6px">
-        <b>①📋を押してClaudeに貼る(本文) → ②🖼サムネをコピーを押してもう1回貼る(画像)</b>で送信準備完了。<b>対話モードON</b>: <b>①読むターン</b>=サムネ言語化・全文和訳(＋【言い換えリスト】)・展開マップ・<b>シーン見出しの一覧</b>・AIのセンターピン仮説が出て「あなたのセンターピンは?見出しに抜けは?」と聞かれます → あなたの読みを返す(OKだけでも可) → <b>②書くターン</b>=叩き台をまとめて出す(長くなるのが正常。途中で切れたら<b>「続けて」</b>) → <b>③サブタイA/B案</b>。OFF: 従来どおり一気に出力。<b>叩き台の字数指定は使いません</b>。長さは<b>シーン見出しの数</b>で決まり、AIが見出し↔叩き台の対応表と元動画の秒の穴チェックを自分で回します。<b>海外の固有名詞も日本人向けに言い換わります</b>(ムース→ヘラジカ／マイル→km／人名→役割)</div>
+        <b>まず📋を押してClaudeに貼る(本文) → 次に🖼サムネをコピーを押してもう1回貼る(画像)</b>で送信準備完了。<b>対話モードON</b>: <b>1つ目・読むターン</b>=サムネ言語化・全文和訳(＋【言い換えリスト】)・展開マップ・<b>シーン見出しの一覧</b>・AIのセンターピン仮説が出て「あなたのセンターピンは?見出しに抜けは?」と聞かれます → あなたの読みを返す(OKだけでも可) → <b>2つ目・書くターン</b>=叩き台をまとめて出す(長くなるのが正常。途中で切れたら<b>「続けて」</b>) → <b>3つ目・サブタイA/B案</b>。OFF: 従来どおり一気に出力。<b>叩き台の字数指定は使いません</b>。長さは<b>シーン見出しの数</b>で決まり、AIが見出し↔叩き台の対応表と元動画の秒の穴チェックを自分で回します。<b>海外の固有名詞も日本人向けに言い換わります</b>(ムース→ヘラジカ／マイル→km／人名→役割)</div>
 
       <div style="border-top:1px dashed var(--line);margin-top:10px;padding-top:8px">
         <div style="font-size:12px;font-weight:800;margin-bottom:4px">② 台本が完成したら → どこを切るかの指示書(行ごと対応表)</div>
@@ -413,7 +420,8 @@ footer{color:var(--mut);font-size:11px;text-align:center;margin-top:20px;line-he
     <div id="reason-panel" style="display:none;border-top:1px dashed var(--line);margin-top:10px;padding-top:8px">
       <div style="font-size:12px;font-weight:800;margin-bottom:4px">④ 投稿後の結果に「なぜそうなったか」を添える</div>
       <div style="font-size:10.5px;color:var(--mut);margin-bottom:6px">
-        ③で登録した台本のうち、投稿1週間後に結果が出たものです。<b>伸びた台本は「何が良かったか」＝勝ち型</b>、<b>伸び悩んだ台本は「なぜ伸びなかったか」＝避けるべき型</b>として、書いた分だけAIに反映されます（空欄は反映されません）。</div>
+        ③で登録した台本のうち、投稿1週間後に結果が出たものです。<b>伸びた台本は「何が良かったか」＝勝ち型</b>、<b>伸び悩んだ台本は「なぜ伸びなかったか」＝避けるべき型</b>として、書いた分だけAIに反映されます（空欄は反映されません）。<br>
+        各行の頭にある名前は<b>③でその台本を登録した人</b>です。チーム全員分がここに並ぶので、<b>自分の名前の行だけ書けばOK</b>（自分の行が上に来ます）。</div>
       <div id="reason-list"></div>
     </div>
   </div>
@@ -439,6 +447,12 @@ footer{color:var(--mut);font-size:11px;text-align:center;margin-top:20px;line-he
 <div class="more" id="more"></div>
 </div>
 <div id="view-pick" style="display:none">
+  <div style="margin:0 0 8px;border:1px solid var(--acc);border-radius:8px;padding:7px 10px;
+      font-size:11.5px;line-height:1.8;background:var(--bg)">
+    <b>探す前にこの2つを使ってください</b><br>
+    <b>①上の「尺」チップ</b>＝<b>〜3分／〜5分</b>に絞れます。長い素材は台本の工数が跳ね上がるので、まずここで切るのが一番効きます<br>
+    <b>②再生数の下の ×N</b>＝<b>再生数 ÷ そのchの登録者数</b>＝企画そのものの強さ。<b>×3以上(赤)が狙い目・×1未満はファン視聴の疑い</b>。既定の並びは この×N順 です（拡張機能を入れなくてもここで見られます）
+  </div>
   <div class="sub" style="margin:0 0 8px">ここに並ぶのは<b>海外の一次素材そのもの</b>(日本の競合で需要が証明された引用元チャンネルの人気動画・<b>300万再生以上のみ</b>)。🎬を押すとそのまま台本プロンプト工房に入ります。<br>
     <b>尺は5分以下が扱いやすい</b>(10分超は全展開を残して1分に凝縮するのが難しく、ぶつ切りになりがち)。ジャンルの🟢は台本化が速い・⚠️は負荷が高い目安です。
     ストックを早く貯めたい時は、<b>既に伸びている構成をそのまま踏襲する ♻️型移植モード</b>(工房の解析欄の下)が速いです。</div>
@@ -730,6 +744,9 @@ const WRITERS = ["こうよう", "あいき", "まなか"];
 const CH_NAMES = {tame: "タメニナルハナシ", aiki: "アイキマン"};       // ch id(ASCII) → 表示名
 const CH_WRITERS = {tame: ["こうよう"], aiki: ["あいき", "まなか"]};    // ch id → 所属作成者
 const WRITER_CH = {"こうよう": "tame", "あいき": "aiki", "まなか": "aiki"}; // 作成者 → 主ch id
+// 「自分は誰か」の記憶。③の作成者セレクトと④の並び順・強調で共通に使う
+// (毎回選び直す手間をなくす＋④に他人の名前ばかり並んで自分ごとに見えない問題への対処)
+const myWriter = () => { try{ return localStorage.getItem("kwWho") || ""; }catch(e){ return ""; } };
 function fillWriterSelect(sel, withBlank){
   if(!sel) return;
   sel.innerHTML = (withBlank ? '<option value="">作成者を選択</option>' : "")
@@ -811,6 +828,20 @@ const CHIP_DEFS = [
   ["✓のみ", () => pickedOnly = !pickedOnly],
   ["全列表示", () => allCols = !allCols],
 ];
+// チップの意味は名前だけだと伝わらない(MTGで「300万+」「2本+」が何のことか分からないと指摘)
+const CHIP_TIPS = {
+  "企画力順": "登録者数の割に回った素材が多い引用元chほど上。移植して伸びやすい順",
+  "平均順": "その引用元を使った日本の切り抜きの平均再生数が高い順",
+  "本数順": "日本の競合がその引用元から作った本数が多い順",
+  "最大順": "その引用元から生まれた日本の切り抜きの最高再生数が高い順",
+  "企画力データあり": "登録者数が取れていて×倍率を計算できた引用元だけに絞る",
+  "300万+": "日本の切り抜きの平均再生数が300万以上の引用元だけに絞る(需要が証明済み)",
+  "2本+": "日本の競合が2本以上その引用元から作っている＝1本のまぐれではない引用元に絞る",
+  "リンクあり": "元チャンネルのURLが判明している引用元だけに絞る",
+  "🔥": "直近で伸びている引用元だけに絞る",
+  "✓のみ": "誰かが着手宣言した引用元だけに絞る",
+  "全列表示": "チャンネル別の内訳など、隠れている列も出す",
+};
 const chipOn = l => (l.endsWith("順") && l.startsWith(sort)) ||
   (l === "企画力データあり" && powOnly) ||
   (l === "300万+" && minAvg > 0) || (l === "2本+" && minN === 2) ||
@@ -839,6 +870,7 @@ function render(){
   for(const [label, fn] of CHIP_DEFS){
     const b = document.createElement("button");
     b.className = "chip" + (chipOn(label) ? " on" : ""); b.textContent = label;
+    if(CHIP_TIPS[label]) b.title = CHIP_TIPS[label];
     b.onclick = () => {fn(); limit = 300; render();}; el.appendChild(b);
   }
   const q = document.getElementById("q").value.trim().toLowerCase();
@@ -3205,6 +3237,14 @@ function fallbackCopy(text, done){
 }
 // ===== ③ 差分還流(初稿→完成形): 登録POST + 差分分析プロンプト =====
 fillWriterSelect(document.getElementById("diff-who"), true);  // 作成者ドロップダウンを一元定義から生成
+{  // 前回選んだ作成者を復元して記憶(選び直しの手間をなくす。④の並び順にも効く)
+  const wsel = document.getElementById("diff-who");
+  if(WRITERS.includes(myWriter())) wsel.value = myWriter();
+  wsel.onchange = () => {
+    try{ localStorage.setItem("kwWho", wsel.value); }catch(e){}
+    renderReasonPanel();
+  };
+}
 function diffStatus(msg, ok){
   const el = document.getElementById("diff-status");
   el.style.color = ok ? "var(--ok)" : "var(--hot)";
@@ -3613,10 +3653,20 @@ function renderReasonPanel(){
     {kind:"under", items:(rem.underperformed||[]), head:"❌ 伸び悩んだ台本 — なぜ伸びなかったか（避けるべき型）",
      ph:"なぜ伸びなかったか（仮説と照らして）例: 冒頭2秒に引きがなく離脱／サブタイと中身がズレて期待外れ／情報を詰めすぎてテンポが死んだ など"},
   ];
+  // 自分が登録した台本を各グループの先頭へ(他人の名前ばかり並ぶと自分ごとに見えない)
+  const me = myWriter();
+  if(me) groups.forEach(g => g.items = g.items.slice()
+    .sort((a, b) => (b.who === me ? 1 : 0) - (a.who === me ? 1 : 0)));
   const all = [];
   groups.forEach(g => g.items.forEach(it => all.push(it)));  // sendReasonが参照する平坦index
-  if(!all.length){ panel.style.display = "none"; return; }
-  panel.style.display = "";
+  panel.style.display = "";  // 0件でも隠さない(③④の存在自体に気づかれないため)
+  if(!all.length){
+    list.innerHTML = `<div style="font-size:11px;color:var(--mut);border:1px dashed var(--line);
+      border-radius:8px;padding:8px 10px;background:var(--bg)">
+      いまは0件です。③で登録した台本に投稿後の実績がひも付くと、
+      <b>⭐伸びた</b>／<b>❌伸び悩み</b>に分かれてここに並びます（判定は投稿1週間後・後伸びで昇格もします）。</div>`;
+    return;
+  }
   let gi = 0, html = "";
   for(const g of groups){
     if(!g.items.length) continue;
@@ -3625,8 +3675,9 @@ function renderReasonPanel(){
       const i = gi++;
       const title = u.title ? escapeHtml(u.title) : "(タイトル未取得)";
       const link = u.vid ? `<a href="https://www.youtube.com/watch?v=${u.vid}" target="_blank" rel="noopener" style="color:var(--mut);font-size:10.5px">▶動画</a>` : "";
-      return `<div data-ts="${u.ts}" style="border:1px solid var(--line);border-radius:8px;padding:8px 10px;margin-bottom:8px;background:var(--bg)">
-        <div style="font-size:11.5px;font-weight:700;margin-bottom:4px">${escapeHtml(u.who||"")}｜${title} ${link}</div>
+      const mine = me && u.who === me;  // 自分の行だけ枠を強調して「書くのは自分の行」と分かるように
+      return `<div data-ts="${u.ts}" style="border:1px solid ${mine ? "var(--acc)" : "var(--line)"};border-radius:8px;padding:8px 10px;margin-bottom:8px;background:var(--bg)">
+        <div style="font-size:11.5px;font-weight:700;margin-bottom:4px">${mine ? "🙋 " : ""}${escapeHtml(u.who||"")}｜${title} ${link}</div>
         <textarea class="reason-in" data-i="${i}" rows="2" placeholder="${escapeHtml(g.ph)}"
           style="width:100%;padding:6px 8px;border:1px solid var(--line);border-radius:6px;background:var(--sur);color:var(--tx);font-size:11.5px;resize:vertical"></textarea>
         <div style="display:flex;gap:8px;align-items:center;margin-top:5px">
