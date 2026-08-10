@@ -283,7 +283,7 @@ footer{color:var(--mut);font-size:11px;text-align:center;margin-top:20px;line-he
     <b>1. ネタを選ぶ</b> — 「🎯動画ピッカー」を開く。並んでいるのは海外の元動画(日本で需要が証明済みの供給元だけ)。ジャンルで絞って、良さそうな動画の <b>✓</b> を押して着手宣言(全員に共有され、被りを防げます)<br>
     <b>1.5 企画力(×倍率)と言語</b> — 再生数の下の <b>×N</b> は<b>再生数 ÷ そのチャンネルの登録者数</b>。登録者の何倍回ったか＝<b>企画そのものの強さ</b>で、<b>×3以上(赤)が狙い目・×1未満はファン視聴の疑い</b>(その人が出ているから見られただけ＝日本語化しても効きにくい)。既定の<b>「企画力順」</b>は倍率が高い順、引用元ランキングの<b>企画力</b>列は「そのchの素材の中央値×倍率／×3以上が何本あるか」で、<b>強い企画を量産しているch</b>ほど上に来ます。検索窓の右の<b>言語セレクタ</b>で英語だけ/言語別に絞れます(既定=英語。<b>EN?</b>は素材タイトル未収集で名前から推定したもの)<br>
     <b>2. 解析する</b> — その行の <b>🎬</b> を押す、またはリストに無い動画はURLを工房の欄に<b>貼るだけ</b>。解析・サムネ取得・<b>文字起こしの自動取得</b>が全部同時に始まります<br>
-    <b>3. 文字起こしは自動で入る</b> — 30秒〜2分で下の欄に自動で入ります(何もしなくてOK)。<b>「自動取得できませんでした」と出た時だけ</b>「📺文字起こしを開く」→ 拡張機能「YouTube Summary」のCopy transcript → このタブに戻る(自動取り込み)。※自動取得はチームの「ワーカーPC」が担当します。Windowsで担当してくれる人は<a href="tr_worker_win.zip" download style="color:var(--acc);font-weight:700">ワーカーをダウンロード</a>(中のREADMEどおりstart.batを起動しておくだけ・誰か1人でOK)。<b>Instagramのリールも解析欄にURLを貼ればOK</b>(2026-08-06〜)。<b>IGの文字起こしも自動で入ります</b>(2026-08-09〜・30秒〜2分)。入らなかった時だけ予備の「📸 IG文字起こしサイトを開く(無料・ログイン不要)」→ サイトにURLを貼り付け → 文字起こし → コピー → このタブに戻ると自動で入ります<br>
+    <b>3. 文字起こしは自動で入る</b> — 30秒〜2分で下の欄に自動で入ります(何もしなくてOK)。<b>「自動取得できませんでした」と出た時だけ</b>「📺文字起こしを開く」→ 拡張機能「YouTube Summary」のCopy transcript → このタブに戻る(自動取り込み)。※自動取得はチームの「ワーカーPC」が担当します。Windowsで担当してくれる人は<a href="tr_worker_win.zip" download style="color:var(--acc);font-weight:700">ワーカーをダウンロード</a>(中のREADMEどおりstart.batを起動しておくだけ・誰か1人でOK)。<b>Instagramのリール・TikTok・X(旧Twitter)の動画も解析欄にURLを貼ればOK</b>(IG 2026-08-06〜 / TikTok・X 2026-08-10〜)。<b>文字起こしはどれも自動で入ります</b>(30秒〜2分。音声をDL→Whisperで文字起こし)。IGで入らなかった時だけ予備の「📸 IG文字起こしサイトを開く(無料・ログイン不要)」→ サイトにURLを貼り付け → 文字起こし → コピー → このタブに戻ると自動で入ります<br>
     <b>4. 台本を作る</b> — <b>①「📋 Claude用プロンプトをコピー」→Claudeに貼る</b>(プロンプト＋文字起こし)。<b>②「🖼 サムネをコピー」→もう1回貼る</b>(サムネ画像が付く)。この2セットで送信準備完了。<b>対話モードON(推奨)</b>なら、まずサムネ言語化・全文和訳(話者ラベル付き)・展開マップ(起承転結)と<b>AIのセンターピン仮説</b>が出て「あなたのセンターピンは? 他に伸びた要素は?」と聞かれるので、自分の読みを返して(OKだけでも可)すり合わせてから→<b>冒頭→台本の叩き台(削り候補マーク付き)→サブタイトルA/B案(後付け)</b>・使用区間リストへ進みます。<b>叩き台は字数で縛りません</b>(2026-08-06変更)。元素材の尺に応じて長くなるのが正常で、<b>文字起こしの流れに沿って展開をほぼ削らない「長いあらすじ」を先に書き切り、そこから縮めるのがライターの腕の見せ所</b>(シーンを削る。1シーンを膨らませない)。<b>さらに2026-08-06、字数指定を完全に撤去して「構造で長さを担保する」方式に変えました</b>: AIは①シーン見出しの数だけブロックを書く ②各ブロックに元動画の秒<b>[m:ss-m:ss]</b>を併記して時間軸に穴が無いか自己検査する(3-c照合表・6-c穴チェック)。<b>対話モードは「読むターン(和訳・見出し)→書くターン(叩き台)→サブタイ」の3ターン</b>に分かれ、叩き台が途中で切れたら<b>「続けて」</b>と言えば続きが出ます(短く畳むことは禁止してあります)。<b>海外の固有名詞は日本人向けに言い換わります</b>(ムース→ヘラジカ／マイル→km／華氏→摂氏／sheriff→保安官／覚えられない人名は「運転手の男」等の役割に)。和訳の最後に<b>【言い換えリスト】</b>(原語→台本で使う日本語)が出るので、意味が変わっていないかはそこで確認してください。縮め方は工房プロンプト内の「叩き台の書き方」章に全部書いてあります。<b>訴求はA案(センターピン直球)から選ぶのが基本</b>。<b>「📖 映像タイムライン」ボタンが出る素材は、画像を貼る必要はありません</b>(2026-08-06)。各コマに何が写っているかを秒ごとに読み取り、その秒のセリフと突き合わせた一覧が<b>プロンプトに自動で入ります</b>。台本が文字起こしだけから作られて映像とズレる問題への対処です。ボタンが出ない素材は従来どおり、セリフがほぼ無いなら「🎞ストーリーボード画像」を、「<b>🎞1秒コマ(密)</b>」が出るなら密シートを全部Claudeへ貼る。60秒台本は<b>映像照合前の叩き台</b>なので、そのまま使わず映像と照らしてセリフ・時刻を確定させる<br>
     <b>5. 編集者に渡す場合</b> — ②の欄に最終台本を貼って「📋 編集指示書プロンプトをコピー」→ Claudeに貼ると、<b>詳細タイムスタンプ付き文字起こし＋台本1行ごとの「元動画のどこ(何秒-何秒)を切るか」対応表</b>が出るので、そのまま編集者へ。URL解析済みなら台本を貼るだけでOK。<b>自分で動画まで仕上げる場合は下の🅑へ</b><br>
     <b>5.5 台本が完成したら③に登録</b> — 工房の「<b>③初稿と完成形を登録</b>」に、最初の台本(初稿)とフィードバック反映後の完成形を貼って送信するだけ。<b>あなたの直しがAIのノウハウになり、次からの叩き台の精度が上がります</b>。余裕があれば「差分分析プロンプト」も自分のClaudeで回すと、なぜ直されたかの言語化が自分のスキルにもなります<br>
@@ -405,9 +405,9 @@ footer{color:var(--mut);font-size:11px;text-align:center;margin-top:20px;line-he
         <input type="text" id="diff-vid" placeholder="元動画URL(任意)" style="flex:1;min-width:150px;padding:6px 8px;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--tx);font-size:12px">
       </div>
       <input type="text" id="diff-posturl" placeholder="投稿後のYouTube URL(任意) — 貼ると成果と自動でひも付き、伸びた型だけがノウハウ化されます" style="width:100%;margin-bottom:6px;padding:6px 8px;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--tx);font-size:12px">
-      <textarea id="diff-first" rows="3" placeholder="① 初稿(最初にAI/自分が書いた台本)"
+      <textarea id="diff-first" rows="3" placeholder="初稿(最初にAI/自分が書いた台本)"
         style="width:100%;padding:8px 10px;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--tx);font-size:12px;resize:vertical"></textarea>
-      <textarea id="diff-final" rows="3" placeholder="② 完成形(フィードバック反映後の最終台本)"
+      <textarea id="diff-final" rows="3" placeholder="完成形(フィードバック反映後の最終台本)"
         style="width:100%;margin-top:6px;padding:8px 10px;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--tx);font-size:12px;resize:vertical"></textarea>
       <div style="display:flex;gap:8px;align-items:center;margin-top:6px;flex-wrap:wrap">
         <button class="chip" id="diff-send" style="background:var(--acc);border-color:var(--acc);color:#fff;font-weight:800">📤 登録して送信</button>
@@ -783,6 +783,7 @@ const LANG_NAMES = {en:"英語", es:"スペイン語", pt:"ポルトガル語", 
   tr:"トルコ語", vi:"ベトナム語", he:"ヘブライ語", el:"ギリシャ語"};
 let langFilter = "en";   // 既定は英語だけ(本人指示 2026-07-25)。セレクタで言語別に切替
 const langPass = o => !langFilter ? true
+  : o.p ? true  // IG/TikTok/bilibili素材は言語フィルタ(引用元chの言語)の対象外
   : langFilter === "!en" ? (o.lg && o.lg !== "en") : (o.lg || "") === langFilter;
 const langTag = o => o.lg && o.lg !== "en"
   ? ` <span class="lgtag">${LANG_NAMES[o.lg] || o.lg}</span>`
@@ -821,8 +822,8 @@ const CHIP_DEFS = [
   ["企画力順", () => sort = "企画力"],
   ["平均順", () => sort = "平均"], ["本数順", () => sort = "本数"], ["最大順", () => sort = "最大"],
   ["企画力データあり", () => powOnly = !powOnly],
-  ["300万+", () => minAvg = minAvg ? 0 : 3e6],
-  ["2本+", () => minN = minN === 2 ? 1 : 2],
+  ["平均300万+", () => minAvg = minAvg ? 0 : 3e6],
+  ["競合2本+", () => minN = minN === 2 ? 1 : 2],
   ["リンクあり", () => ytOnly = !ytOnly],
   ["🔥", () => hotOnly = !hotOnly],
   ["✓のみ", () => pickedOnly = !pickedOnly],
@@ -835,8 +836,8 @@ const CHIP_TIPS = {
   "本数順": "日本の競合がその引用元から作った本数が多い順",
   "最大順": "その引用元から生まれた日本の切り抜きの最高再生数が高い順",
   "企画力データあり": "登録者数が取れていて×倍率を計算できた引用元だけに絞る",
-  "300万+": "日本の切り抜きの平均再生数が300万以上の引用元だけに絞る(需要が証明済み)",
-  "2本+": "日本の競合が2本以上その引用元から作っている＝1本のまぐれではない引用元に絞る",
+  "平均300万+": "日本の切り抜きの平均再生数が300万以上の引用元だけに絞る(需要が証明済み)",
+  "競合2本+": "日本の競合が2本以上その引用元から作っている＝1本のまぐれではない引用元に絞る",
   "リンクあり": "元チャンネルのURLが判明している引用元だけに絞る",
   "🔥": "直近で伸びている引用元だけに絞る",
   "✓のみ": "誰かが着手宣言した引用元だけに絞る",
@@ -844,7 +845,7 @@ const CHIP_TIPS = {
 };
 const chipOn = l => (l.endsWith("順") && l.startsWith(sort)) ||
   (l === "企画力データあり" && powOnly) ||
-  (l === "300万+" && minAvg > 0) || (l === "2本+" && minN === 2) ||
+  (l === "平均300万+" && minAvg > 0) || (l === "競合2本+" && minN === 2) ||
   (l === "リンクあり" && ytOnly) || (l === "🔥" && hotOnly) ||
   (l === "✓のみ" && pickedOnly) || (l === "全列表示" && allCols);
 // 企画力スコア(xs = Σmin(倍率,30))。素材未収集のchはデータなし=最下部へ
@@ -983,9 +984,17 @@ const DUR_BUCKETS = [
   ["10分+",  d => d > 600,                    "文字起こしだけで時間がかかる。型移植モード向き"],
   ["尺不明", d => !d,                          "まだ尺を取得できていない素材(毎晩自動で補完中)"],
 ];
-let pickDur = "全部";
-try{ pickDur = localStorage.getItem("pickDur") || "全部"; }catch(e){}
-if(!DUR_BUCKETS.some(b => b[0] === pickDur)) pickDur = "全部";
+let pickDur = "〜5分";  // 既定は〜5分(本人指示2026-08-10「理想は尺5分以内。切り抜きやすい」)
+try{ pickDur = localStorage.getItem("pickDur") || "〜5分"; }catch(e){}
+if(!DUR_BUCKETS.some(b => b[0] === pickDur)) pickDur = "〜5分";
+// プラットフォームフィルタ(YT=従来 / IG・TikTok=500万+ / bilibili=急上昇=中国リサーチ)
+let pickPlat = "全部";
+const PLAT_LABELS = {IG: "Instagram", TT: "TikTok", BL: "🇨🇳bilibili"};
+const platPass = x => pickPlat === "全部" || (pickPlat === "YT" ? !x.p : x.p === pickPlat);
+// 😂面白系 = 先が予想できない系の複合ジャンル(まなかさんMTG 2026-08-09)
+const FUNNY_SET = ["コメディ", "検証・実験", "ハプニング", "ドッキリ"];
+const genrePass = x => pickGenre === "全部" ||
+  (pickGenre === "😂面白系" ? FUNNY_SET.includes(x.g) : x.g === pickGenre);
 const durPass = x => (DUR_BUCKETS.find(b => b[0] === pickDur) || DUR_BUCKETS[0])[1](x.d || 0);
 // ジャンルの「台本化しやすさ」。除外はせず印だけ出す(主力の引用元が犯罪・法廷系のため)
 const GENRE_EASE = {
@@ -1077,6 +1086,16 @@ async function probeTl(vid){
     tlCache[vid] = r.ok ? await r.json() : null;
   }catch(e){ tlCache[vid] = null; }
   return tlCache[vid];
+}
+// AI叩き台(draft/<id>.json・映像タイムラインからclaudeが書いた実況風の初稿)取得。無ければnull
+const draftCache = {};
+async function probeDraft(vid){
+  if(draftCache[vid] !== undefined) return draftCache[vid];
+  try{
+    const r = await fetch("draft/" + vid + ".json");
+    draftCache[vid] = r.ok ? await r.json() : null;
+  }catch(e){ draftCache[vid] = null; }
+  return draftCache[vid];
 }
 // タイムライン → プロンプト/コピー用のプレーンテキスト(scripts/timeline.py の as_text と同じ形)
 function tlText(doc){
@@ -1176,7 +1195,7 @@ function mvRender(){
     box.innerHTML = `<div style="font-size:11.5px;color:var(--mut);line-height:1.9">
       この素材はまだ解析していないため、秒つきの本文がありません。<br>
       <button class="chip" id="mv-tokobo" style="margin-top:6px;font-weight:700">🎬 工房で解析する</button><br>
-      解析すると文字起こしが入り、✓着手マークを付けておけば翌朝の自動処理で映像タイムライン(秒ごとの映像描写)も生成されます</div>`;
+      解析すると文字起こしが入り、✓着手マークを付けておけば翌朝の自動処理で映像タイムライン(秒ごとの映像描写)とAI叩き台(実況風の初稿・照合ビューに自動で入る)も生成されます</div>`;
     const b = document.getElementById("mv-tokobo");
     if(b) b.onclick = () => { document.getElementById("sbmodal2").style.display = "none"; sendToKobo(mvVid); };
     return;
@@ -1299,6 +1318,15 @@ async function mvOpen(vid){
   if(ytPlayer && ytPlayer.pauseVideo) try { ytPlayer.pauseVideo(); } catch(e){}
   mvMount(vid);
   mvLoadDraft(vid);
+  // 叩き台エディタが空ならAI叩き台を初期値として流し込む(書きかけがあるときは触らない)
+  probeDraft(vid).then(d => {
+    const ta = document.getElementById("mv-ed");
+    if(d && d.text && mvVid === vid && ta.dataset.vid === vid && !ta.value.trim()){
+      ta.value = d.text;
+      mvSaveDraft(); mvScanDraft();
+      document.getElementById("mv-save").textContent = "🤖 AI叩き台を読み込みました(映像と突き合わせて自由に直してOK)";
+    }
+  });
   document.getElementById("mv-tl").innerHTML =
     `<div style="font-size:11.5px;color:var(--mut)">読み込み中…</div>`;
   await mvLoadRows(vid);
@@ -1322,7 +1350,7 @@ function mvSheets(vid){
   probeSbd(vid).then(m => {
     if(mvVid !== vid) return;
     if(!m){
-      no.innerHTML = "この素材は<b>コマ送りシート未生成</b>です。動画ピッカーで<b>✓着手マーク</b>を付けると、その晩の自動処理でコマ送り→映像タイムラインまで生成されます(翌朝反映)";
+      no.innerHTML = "この素材は<b>コマ送りシート未生成</b>です。動画ピッカーで<b>✓着手マーク</b>を付けると、その晩の自動処理でコマ送り→映像タイムライン→AI叩き台まで生成されます(翌朝反映)";
       return;
     }
     btn.style.display = "";
@@ -1494,6 +1522,26 @@ function parseIgUrl(u){
   const m = (u || "").match(/instagram\.com\/(?:[\w.]+\/)?(?:reels?|p|tv)\/([A-Za-z0-9_-]{5,})/);
   if(!m) return null;
   return {code: m[1], url: `https://www.instagram.com/reel/${m[1]}/`};
+}
+// TikTok素材URL。GASのvidは20字までなので19桁の数字IDはbase36に圧縮して運ぶ(デーモン側で復元)
+function parseTtUrl(u){
+  let m = (u || "").match(/tiktok\.com\/@[\w.-]*\/(?:video|photo)\/(\d+)/);
+  if(m) return {vid: "tt_" + BigInt(m[1]).toString(36), url: `https://www.tiktok.com/@_/video/${m[1]}`, plat: "TikTok"};
+  m = (u || "").match(/(?:vt\.tiktok\.com|tiktok\.com\/t)\/([A-Za-z0-9]{5,})/);  // 短縮リンク
+  if(m) return {vid: "tts_" + m[1], url: `https://vt.tiktok.com/${m[1]}/`, plat: "TikTok"};
+  return null;
+}
+// X(旧Twitter)のポストURL
+function parseXUrl(u){
+  const m = (u || "").match(/(?:x|twitter)\.com\/\w+\/status\/(\d+)/);
+  if(!m) return null;
+  return {vid: "x_" + BigInt(m[1]).toString(36), url: `https://twitter.com/i/status/${m[1]}`, plat: "X"};
+}
+// bilibili(中国リサーチ)の動画URL
+function parseBlUrl(u){
+  const m = (u || "").match(/bilibili\.com\/video\/(BV[\w]+)/);
+  if(!m) return null;
+  return {vid: "bl_" + m[1], url: `https://www.bilibili.com/video/${m[1]}`, plat: "bilibili"};
 }
 function openByUrl(){
   const u = document.getElementById("p-url-in").value.trim();
@@ -2354,12 +2402,14 @@ document.getElementById("seg-copy").onclick = () => {
 };
 function sendToKobo(vid){
   document.getElementById("kobo").style.display = "";
-  document.getElementById("kobo-url").value = "https://www.youtube.com/watch?v=" + vid;
+  const x = (SM || []).find(v => v.id === vid);
+  // IG/TikTok/bilibili素材はDBに持っている元URLを流し込む(YTはIDから組み立て)
+  document.getElementById("kobo-url").value = (x && x.url) ? x.url
+    : "https://www.youtube.com/watch?v=" + vid;
   window.scrollTo({top: 0, behavior: "smooth"});
   document.getElementById("kobo-run").click();
   // ピッカー由来なら登録者数をプロンプトに載せる(×倍率=属人性判定用)
-  const x = (SM || []).find(v => v.id === vid);
-  koboSubs = x && x.s > 0 ? x.s : 0;
+  koboSubs = x && !x.p && x.s > 0 ? x.s : 0;
 }
 // ── サムネ右クリック → 画像＋リンク＋再生数(色付き)をまとめてコピー（Googleドキュメント貼り付け用・スマホ企画ダッシュボードと同仕様）──
 function copyToast(msg){
@@ -2431,8 +2481,22 @@ function renderPick(){
   };
   top.appendChild(sortBtn);
   const q = document.getElementById("q").value.trim().toLowerCase();
+  // プラットフォームチップ(件数つき)
+  const forPlat = SM.filter(x => genrePass(x) && (!q || (x.t + x.c).toLowerCase().includes(q)));
+  for(const [key, label] of [["全部","全部"], ["YT","YouTube"], ["IG","Instagram"], ["TT","TikTok"], ["BL","🇨🇳bilibili"]]){
+    const cnt = key === "全部" ? forPlat.length
+      : forPlat.filter(x => key === "YT" ? !x.p : x.p === key).length;
+    if(key !== "全部" && key !== "YT" && cnt === 0) continue;  // データが来るまで隠す
+    const b = document.createElement("button");
+    b.className = "chip" + (key === pickPlat ? " on" : "");
+    b.textContent = `${label} (${cnt})`;
+    b.title = key === "BL" ? "bilibili急上昇=中国で伸びている切り口の輸入元。工房にURLを貼れば文字起こし＆和訳されます"
+      : key === "IG" || key === "TT" ? "500万再生以上のバズだけ。工房で自動文字起こしできます" : "";
+    b.onclick = () => {pickPlat = key; pickLimit = 100; renderPick();};
+    top.appendChild(b);
+  }
   // 尺チップの件数は「ジャンル・検索を適用した後・尺を適用する前」で数える(押す前に結果数が読める)
-  const forDur = SM.filter(x => (pickGenre === "全部" || x.g === pickGenre) &&
+  const forDur = SM.filter(x => genrePass(x) && platPass(x) &&
       (!q || (x.t + x.c).toLowerCase().includes(q))).filter(langPass);
   top.appendChild(Object.assign(document.createElement("span"),
     {className: "sub", style: "margin:0 2px 0 6px;align-self:center", textContent: "尺"}));
@@ -2448,16 +2512,17 @@ function renderPick(){
     };
     top.appendChild(b);
   }
-  for(const g of ["全部", ...GENRES_SORTED]){
+  for(const g of ["全部", "😂面白系", ...GENRES_SORTED]){
     const b = document.createElement("button");
     b.className = "chip" + (g === pickGenre ? " on" : "");
     const ease = GENRE_EASE[g];
     b.textContent = (ease ? ease[0] : "") + g;
     if(ease) b.title = ease[1];
+    if(g === "😂面白系") b.title = "実験・ドッキリ・コント・ハプニングなど先が予想できない系。編集のテンポで見せやすい(まなかさん向け)";
     b.onclick = () => {pickGenre = g; pickLimit = 100; renderPick();};
     el.appendChild(b);
   }
-  const pre = SM.filter(x => (pickGenre === "全部" || x.g === pickGenre) &&
+  const pre = SM.filter(x => genrePass(x) && platPass(x) &&
       durPass(x) && (!q || (x.t + x.c).toLowerCase().includes(q)));
   buildLangSelect(pre, () => {pickLimit = 100; renderPick();});
   const list = pre.filter(langPass)
@@ -2474,24 +2539,30 @@ function renderPick(){
     const ease = GENRE_EASE[x.g];
     const tr = document.createElement("tr");
     if(picked.has(key)) tr.style.opacity = ".45";
+    // IG/TikTok/bilibili行: サムネはローカル保存webp・クリックは各サイトへ(インライン再生はYTのみ)
+    const href = x.p ? x.url : `https://www.youtube.com/watch?v=${x.id}`;
+    const thumbSrc = x.p ? `thumbs/${x.id}.webp` : `https://i.ytimg.com/vi/${x.id}/mqdefault.jpg`;
+    const linkCls = x.p ? "" : ` class="play"`;
+    const platTag = x.p ? `<b style="color:var(--acc)">${PLAT_LABELS[x.p] || x.p}</b> ・ ` : "";
     tr.innerHTML = `
       <td><button class="chip" style="border-color:var(--acc);color:var(--acc);font-weight:800;padding:4px 9px">🎬</button></td>
       <td><button class="pick${picked.has(key) ? " on" : ""}" aria-label="着手">✓</button></td>
       <td><div style="display:flex;gap:8px;align-items:center">
-        <a class="play" href="https://www.youtube.com/watch?v=${x.id}" style="flex:0 0 auto">
-          <img class="thumb" src="https://i.ytimg.com/vi/${x.id}/mqdefault.jpg" loading="lazy" alt=""
-            title="右クリックでサムネ＋情報をコピー"></a>
+        <a${linkCls} href="${href}" style="flex:0 0 auto">
+          <img class="thumb" src="${thumbSrc}" loading="lazy" alt=""
+            title="${x.p ? "クリックで元サイトを開く" : "右クリックでサムネ＋情報をコピー"}"
+            onerror="this.style.visibility='hidden'"></a>
         <div style="min-width:0">
-          <a class="play" href="https://www.youtube.com/watch?v=${x.id}"
+          <a${linkCls} href="${href}"
             style="color:var(--tx);text-decoration:none;font-weight:700">${(x.im||0) >= 0.95 ? "⚡" : ""}${x.t}</a>
-          <div style="font-size:10.5px;color:var(--mut)">${x.c}${langTag(x)}${durHtml}${x.s ? " ・ " + fmt(x.s) + "人" : ""}</div>
+          <div style="font-size:10.5px;color:var(--mut)">${platTag}${x.c}${langTag(x)}${durHtml}${x.s ? " ・ " + fmt(x.s) + "人" : ""}</div>
         </div></div></td>
       <td class="num"><b>${fmt(x.v)}</b>${x.x != null
         ? `<span class="sub" style="display:block">${powChip(x.x, `登録者${fmt(x.s)}人に対して${powStr(x.x)}回った = 企画の力(×1未満はファン視聴の疑い)`)}</span>` : ""}</td>
       <td style="font-size:11.5px;white-space:nowrap"${ease ? ` title="${ease[1]}"` : ""}>${ease ? ease[0] : ""}${x.g}</td>`;
     tr.children[0].firstElementChild.onclick = ev => { ev.stopPropagation(); sendToKobo(x.id); };
     const timg = tr.querySelector("img.thumb");
-    timg.oncontextmenu = ev => { ev.preventDefault(); copyThumbCard(x, timg); };
+    if(!x.p) timg.oncontextmenu = ev => { ev.preventDefault(); copyThumbCard(x, timg); };
     tr.querySelectorAll("a.play").forEach(a => a.onclick = ev => {
       ev.stopPropagation();
       playInline(x.id, x.t, `${x.c}${dur ? " ・ " + dur : ""} ・ ${fmt(x.v)}再生`, x.d > 0 && x.d <= 90);
@@ -2656,19 +2727,21 @@ document.getElementById("help-toggle").onclick = () => {
 // 失敗時の予備が「📸文字起こしサイト(無料・ログイン不要)→コピー→タブに戻って自動取り込み」
 const IG_TR_SITE = "https://saveto.ai/instagram-transcript-generator/";
 let igArmed = false;  // 📸を押した後だけクリップボード取り込みを許可(無関係コピーの誤取り込み防止)
-function setIgUi(on){
+function setIgUi(on, igBtn){
   document.getElementById("kobo-open-yt").style.display = on ? "none" : "";
   document.getElementById("kobo-yt-hint").style.display = on ? "none" : "";
   document.getElementById("kobo-copy-thumb").style.display = on ? "none" : "";
   document.getElementById("kobo-open-thumb").style.display = on ? "none" : "";
-  document.getElementById("kobo-open-ig").style.display = on ? "" : "none";
-  document.getElementById("kobo-ig-hint").style.display = on ? "" : "none";
+  document.getElementById("kobo-open-ig").style.display = (on && igBtn) ? "" : "none";  // 📸予備サイトはIGのみ
+  document.getElementById("kobo-ig-hint").style.display = (on && igBtn) ? "" : "none";
   document.getElementById("kobo-mv").style.display = on ? "none" : "";  // 照合ビューはYT専用
 }
-function koboRunIg(ig){
+// IG/TikTok/X素材の共通入口。alt = {vid, url, plat, ig(IGのみ1)}
+function koboRunAlt(alt){
   igArmed = false;
   koboSubs = 0; koboThumb = null; koboTl = null;
-  prep = {vid: "ig_" + ig.code, ig: 1, url: ig.url, title: "", author: "", views: 0,
+  prep = {vid: alt.vid, ig: alt.ig ? 1 : 0, alt: 1, plat: alt.plat, url: alt.url,
+          title: "", author: "", views: 0,
           length: 0, transcript: [], heat: [], comments: [], errors: []};
   const ta = document.getElementById("kobo-tr");
   if(ta.dataset.auto && ta.dataset.auto !== prep.vid){
@@ -2677,13 +2750,13 @@ function koboRunIg(ig){
   }
   document.getElementById("kobo-thumbbox").style.display = "none";
   document.getElementById("kobo-status").textContent = "";
-  document.getElementById("kobo-meta").textContent = `Instagram素材 ・ ${ig.url}`;
-  document.getElementById("kobo-heat").textContent = "盛り上がりデータなし(Instagram素材)";
-  document.getElementById("kobo-com").textContent = "コメント取得なし(Instagram素材)";
+  document.getElementById("kobo-meta").textContent = `${alt.plat}素材 ・ ${alt.url}`;
+  document.getElementById("kobo-heat").textContent = `盛り上がりデータなし(${alt.plat}素材)`;
+  document.getElementById("kobo-com").textContent = `コメント取得なし(${alt.plat}素材)`;
   document.getElementById("kobo-sb").style.display = "none";
   document.getElementById("kobo-tlstat").textContent = "";
   document.getElementById("kobo-result").style.display = "";
-  setIgUi(true);
+  setIgUi(true, !!alt.ig);
   startTrAuto(prep.vid);  // YouTubeと同じ経路で自動取得(りゅうとMacがDL→Whisper文字起こし)
 }
 document.getElementById("kobo-open-ig").onclick = async () => {
@@ -2702,7 +2775,9 @@ function koboRun(){
   const url = document.getElementById("kobo-url").value.trim();
   if(!url) return;
   const ig = parseIgUrl(url);
-  if(ig){ koboRunIg(ig); return; }
+  if(ig){ koboRunAlt({vid: "ig_" + ig.code, url: ig.url, plat: "Instagram", ig: 1}); return; }
+  const alt = parseTtUrl(url) || parseXUrl(url) || parseBlUrl(url);
+  if(alt){ koboRunAlt(alt); return; }
   setIgUi(false);
   koboSubs = 0;  // URL直貼りは登録者不明(ピッカー経由ならsendToKoboが直後に上書き)
   koboThumb = null;
@@ -2727,9 +2802,13 @@ function koboRun(){
       // 未生成のときも黙って空にせず、次に何をすれば出るのかを出す
       el.innerHTML = t
         ? `📖 映像タイムライン ${t.rows.length}行をプロンプトに同梱します(画像を貼る必要はありません)`
-        : `映像タイムラインは未生成です(この素材は文字起こしだけで台本を作ります)。動画ピッカーで<b>✓着手マーク</b>を付けておくと、その晩の自動処理で生成され翌朝から使えます`;
+        : `映像タイムラインは未生成です(この素材は文字起こしだけで台本を作ります)。動画ピッカーで<b>✓着手マーク</b>を付けておくと、その晩の自動処理で映像タイムライン→AI叩き台まで生成され翌朝から使えます`;
       el.style.color = t ? "var(--ok)" : "var(--mut)";
       el.style.fontWeight = t ? "700" : "400";
+      if(t) probeDraft(p.vid).then(d => {
+        if(d && prep && prep.vid === p.vid)
+          el.innerHTML += `　🤖 <b>AI叩き台あり</b> → 「🔍 照合ビューを開く」の右ペインに入っています`;
+      });
     });
     if(!pv) startTrAuto(p.vid);  // 生IDなど貼り付け形式がURLでなかった場合はここで開始
     document.getElementById("kobo-status").textContent = p.errors.length ? "注意: " + p.errors.join(" / ") : "";
@@ -2772,7 +2851,7 @@ koboOpt("kobo-dialog", "koboDialog", true);
 // URL貼り付け → 自動で解析開始(value反映後に実行)
 document.getElementById("kobo-url").addEventListener("paste", e => {
   const txt = (e.clipboardData && e.clipboardData.getData("text")) || "";
-  if(!parseYtUrl(txt) && !parseIgUrl(txt)) return;
+  if(!parseYtUrl(txt) && !parseIgUrl(txt) && !parseTtUrl(txt) && !parseXUrl(txt) && !parseBlUrl(txt)) return;
   setTimeout(koboRun, 0);
 });
 // --- サムネ自動取得(i.ytimg.comはCORS許可あり) → プレビュー表示＋📋コピーに画像同梱 ---
@@ -2808,10 +2887,10 @@ async function loadKoboThumb(vid){
 let trAutoVid = null;
 async function startTrAuto(vid){
   trAutoVid = vid;
-  const isIg = vid.startsWith("ig_");
+  const isIg = /^(ig|tts?|x|bl)_/.test(vid);  // IG/TikTok/X/bilibiliはDL+Whisperのぶん長め
   const ta = document.getElementById("kobo-tr");
   const stat = document.getElementById("kobo-trstat");
-  // IGはDL+Whisper文字起こしのぶん長め(最大5分)。YouTubeは従来どおり2分半
+  // IG/TT/XはDL+Whisper文字起こしのぶん長め(最大5分)。YouTubeは従来どおり2分半
   const deadline = Date.now() + (isIg ? 300000 : 150000);
   let api = "trreq";  // 初回は依頼、以降は結果確認のみ
   stat.style.color = "";
@@ -2866,6 +2945,8 @@ function transcriptText(){
   if(manual) return normalizeManualTr(manual);
   if(prep && prep.ig)
     return "【未貼付】(文字起こしは自動で入ります(30秒〜2分)。入るのを待ってからもう一度コピーしてください。入らない時は予備の「📸 IG文字起こしサイトを開く」→ URLを貼って文字起こし → コピー → タブに戻って取り込み)";
+  if(prep && prep.alt)
+    return "【未貼付】(文字起こしは自動で入ります(30秒〜2分)。入るのを待ってからもう一度コピーしてください)";
   return "【未貼付】(YouTubeの「文字起こしを表示」からコピーして、ダッシュボードの貼り付け欄に入れてからコピーし直してください)";
 }
 function buildPrompt(p){
@@ -2896,8 +2977,8 @@ function buildPrompt(p){
 元動画で起きたことが1つでも叩き台から抜けていたら、その時点で失敗です(長すぎることでは失敗になりません)。
 
 # 元動画
-${p.ig ? `- URL: ${p.url}
-- Instagram素材です。タイトル・再生数・いいねはインスタ側で確認してください
+${p.alt || p.ig ? `- URL: ${p.url}
+- ${p.plat || "Instagram"}素材です。タイトル・再生数・いいねは${p.plat || "Instagram"}側で確認してください
 - 再生バーの盛り上がり・人気コメント・映像タイムラインはこの素材では取得できません(文字起こしを正として作ります)` : `- タイトル: ${p.title}
 - チャンネル: ${p.author}
 - 再生数: ${p.views.toLocaleString()}${dur > 0 ? ` / 長さ: ${Math.floor(dur/60)}分${dur%60}秒` : ""}${koboSubs > 0 ? `
@@ -3031,9 +3112,10 @@ document.getElementById("kobo-copy").onclick = async () => {
     el.style.color = noTr ? "var(--hot)" : "var(--ok)";
     el.textContent = noTr
       ? (prep.ig ? "コピーしましたが文字起こしが未貼付です(📸IGサイトを開く→貼り付け→文字起こし→コピー→戻って再コピー)"
+                 : prep.alt ? "コピーしましたが文字起こしが未貼付です(自動取得(30秒〜2分)を待ってから再コピー)"
                  : "コピーしましたが文字起こしが未貼付です(📺文字起こしを開く→拡張機能でコピー→戻って再コピー)")
       : (grabbed ? "文字起こしを自動取り込みして合体。" : "") +
-        (prep.ig ? "本文をコピーしました。Claudeに貼ってください(IG素材はサムネ同梱なし。必要ならインスタのスクショを貼る)"
+        (prep.alt || prep.ig ? `本文をコピーしました。Claudeに貼ってください(${prep.plat || "Instagram"}素材はサムネ同梱なし。必要ならスクショを貼る)`
                  : "本文をコピーしました。Claudeに貼ったら、次に「🖼サムネをコピー」→もう1回貼り付け");
     setTimeout(() => el.textContent = "", 9000);
   };
@@ -3204,6 +3286,8 @@ ${transcriptText()}
 - 台本内の改行は「／」で繋いで1セルに収める
 - 秒は【A】の細かい秒を引用する。1つの台本行に複数区間が要るなら「0:12-0:15 + 0:41-0:44」と併記
 - 台本の山場(オチ・判決・数字が出る所)は取りこぼさず、必要なら赤丸/ズーム/スロー指定を「演出メモ」に書く
+- **冒頭の訴求テロップ(最初の2〜3行)の演出メモには必ず「エフェクトなし・動画の1フレーム目から全文表示」と書く**(1行ずつアニメーションで出すと訴求が伝わる前にスワイプされる。動きのあるテロップは中盤以降で使う)
+- 台本に「5秒間〜」のような数える要素があれば、演出メモに「カウント表示(5→4→3…)を画面に出す」と書く(視聴者は数え切るまで見る)
 - 元動画に対応箇所が見つからない台本行は、推奨カットを空欄にして演出メモに「※要確認(元動画に該当なし)」と書き、行自体は消さない
 - 表の直後に「合計使用尺(タブ)約◯秒(タブ)使用区間数(タブ)◯個」を1行書く
 
