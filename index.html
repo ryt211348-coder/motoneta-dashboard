@@ -138,6 +138,26 @@ footer{color:var(--mut);font-size:11px;text-align:center;margin-top:20px;line-he
 @media(min-width:1280px){#player{display:flex}}
 #player .pbox{background:#000;border-radius:12px;overflow:hidden;margin:0 auto;
   aspect-ratio:16/9;width:100%}
+/* チャンネルプレビュー(引用元ランキングのch名クリック→右ペイン) */
+#chpane{display:none;border:1px solid var(--line);border-radius:12px;background:var(--sur);
+  padding:12px;max-height:calc(100vh - 90px);overflow:auto}
+#chpane .chp-head{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:4px}
+#chpane .chp-av{width:44px;height:44px;border-radius:50%;background:var(--bg);flex:0 0 44px}
+#chpane .chp-nm{font-weight:800;font-size:14px;line-height:1.3}
+#chpane .chp-sub{font-size:11px;color:var(--mut)}
+#chpane h4{font-size:11.5px;color:var(--mut);margin:14px 0 6px;font-weight:700}
+#chpane .chp-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px 8px}
+#chpane .chp-grid.shorts{grid-template-columns:repeat(3,1fr)}
+#chpane .chp-it{cursor:pointer;min-width:0}
+#chpane .chp-it img{width:100%;display:block;border-radius:8px;background:#000;
+  aspect-ratio:16/9;object-fit:cover}
+#chpane .chp-grid.shorts .chp-it img{aspect-ratio:9/16}
+#chpane .chp-it:hover img{outline:2px solid var(--acc)}
+#chpane .chp-it .t{font-size:11px;line-height:1.4;margin-top:3px;display:-webkit-box;
+  -webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+#chpane .chp-it .v{font-size:10.5px;color:var(--mut)}
+#chpane .chp-msg{font-size:11.5px;color:var(--mut);padding:8px 0;line-height:1.7}
+a.chext{font-size:12px;text-decoration:none;margin-left:2px}
 #pframe{width:100%;height:100%;display:none}
 #player iframe{width:100%;height:100%;border:0}
 #seglist .seg{display:flex;gap:8px;align-items:center;padding:3px 0;
@@ -516,6 +536,20 @@ footer{color:var(--mut);font-size:11px;text-align:center;margin-top:20px;line-he
       background:var(--sur);color:var(--tx);font-size:12px">
     <button class="chip" id="p-url-go" style="border-color:var(--acc);color:var(--acc);font-weight:800">▶ 開く</button>
   </div>
+  <div id="chpane">
+    <div class="chp-head">
+      <img class="chp-av" id="chp-av" alt="" style="display:none">
+      <div style="flex:1;min-width:0">
+        <div class="chp-nm" id="chp-nm"></div>
+        <div class="chp-sub" id="chp-sub"></div>
+      </div>
+    </div>
+    <div class="pbtns" style="margin:6px 0 2px">
+      <button class="chip" id="chp-yt" style="border-color:var(--acc);color:var(--acc);font-weight:700">YouTubeで開く ↗</button>
+      <button class="chip" id="chp-close">✕ 閉じる</button>
+    </div>
+    <div id="chp-body"></div>
+  </div>
   <div class="pbox" id="pbox">
     <div id="pph">👈 リストの動画をクリックすると<br>ここで再生されます</div>
     <div id="pframe"></div>
@@ -763,6 +797,7 @@ document.addEventListener("click", e => {
   if(!a) return;
   e.preventDefault();
   if(a.classList.contains("play")) return;
+  if(a.classList.contains("chprev")) return;  // ch名クリック=右ペインプレビュー(各行のハンドラが処理)
   e.stopPropagation();
   window.open(a.href, "_blank", "noopener");
 }, true);
@@ -892,7 +927,8 @@ function render(){
       : "";
     let name, yt;
     if(s.u){
-      name = `<a href="${s.u}" target="_blank" rel="noopener" onclick="event.stopPropagation()">${s.c} ↗</a>${igReal}`;
+      // ch名クリック=右ペインでプレビュー(最新動画・雰囲気をパッと見る)。↗=YouTubeを直接開く
+      name = `<a class="chprev" href="${s.u}" title="クリックでチャンネルの最新動画をその場でプレビュー">${s.c}</a><a class="chext" href="${s.u}" target="_blank" rel="noopener" title="YouTubeでチャンネルを開く" onclick="event.stopPropagation()">↗</a>${igReal}`;
       yt = `${PLAT[s.p] || ""}${s.s ? " ・ " + fmt(s.s) + "人" : ""}`;
     } else if(s.ig){
       // YT/TTは未照合だがInstagramは特定できたアカウント
@@ -951,6 +987,8 @@ function render(){
       if(v) playInline(v.id, v.t, `@${v.ch} ・ ${fmt(v.v)}再生`, true);
     });
     tr.onclick = () => ex.style.display = ex.style.display === "none" ? "" : "none";
+    const pv = tr.querySelector("a.chprev");
+    if(pv) pv.onclick = ev => { ev.stopPropagation(); showChannel(s); };
     tr.querySelector(".fixbtn").onclick = ev => { ev.stopPropagation(); openSrcFix(s); };
     tr.querySelector(".pick").onclick = ev => {
       ev.stopPropagation();
@@ -1036,6 +1074,8 @@ function mountYT(vid){
 }
 function playInline(vid, title, sub, isShort){
   if(!canDock()){ window.open("https://www.youtube.com/watch?v=" + vid, "_blank", "noopener"); return; }
+  document.getElementById("chpane").style.display = "none";  // チャンネルプレビューをたたむ
+  document.getElementById("pbox").style.display = "";
   playVid = vid;
   const box = document.getElementById("pbox");
   if(isShort){ box.style.aspectRatio = "9/16"; box.style.height = "min(66vh,700px)"; box.style.width = "auto"; }
@@ -1447,6 +1487,101 @@ document.getElementById("tl-copy").onclick = () => {
 document.getElementById("sbmodal2").onclick = ev => {
   if(ev.target.id === "sbmodal2") document.getElementById("sbmodal2").style.display = "none";
 };
+// ===== チャンネルプレビュー(2026-08-11 こうようさんFB「チャンネルの雰囲気をパッと見たい」) =====
+// ch名クリック→右ペインに最新動画+ショートのグリッド。クリックでそのままインライン再生
+const chvCache = {};
+let chvSeq = 0, chvSrc = null;
+const enNum = s => {  // "711K views"/"1.1 million views" → 万表示
+  const m = String(s).replace(/,/g, "").match(/([\d.]+)\s*(K|M|B|thousand|million|billion)?/i);
+  if(!m) return "";
+  let n = parseFloat(m[1]);
+  const u = (m[2] || "").toLowerCase();
+  if(u === "k" || u === "thousand") n *= 1e3;
+  else if(u === "m" || u === "million") n *= 1e6;
+  else if(u === "b" || u === "billion") n *= 1e9;
+  return fmt(Math.round(n));
+};
+const enAgo = s => {
+  const m = String(s).match(/(\d+)\s*(year|month|week|day|hour|minute)/i);
+  if(!m) return "";
+  return m[1] + ({year:"年",month:"ヶ月",week:"週間",day:"日",hour:"時間",minute:"分"})[m[2].toLowerCase()] + "前";
+};
+function chpClose(){
+  document.getElementById("chpane").style.display = "none";
+  document.getElementById("pbox").style.display = "";
+  if(!playVid) document.getElementById("pph").style.display = "";
+}
+document.getElementById("chp-close").onclick = chpClose;
+document.getElementById("chp-yt").onclick = () => { if(chvSrc) window.open(chvSrc.u, "_blank", "noopener"); };
+function chpItem(x, isShort, ch){
+  const d = document.createElement("div");
+  d.className = "chp-it";
+  const im = document.createElement("img");
+  im.loading = "lazy"; im.alt = "";
+  // ショートもhqdefault(9:16枠にobject-fit:coverで縦切り出し)。oar2/frame0は新しい動画だと真っ黒
+  im.src = `https://i.ytimg.com/vi/${x.id}/${isShort ? "hqdefault" : "mqdefault"}.jpg`;
+  const views = enNum(x.v);
+  const meta = [views ? views + "再生" : "", enAgo(x.pub), x.len].filter(Boolean).join(" ・ ");
+  d.appendChild(im);
+  const t = document.createElement("div"); t.className = "t"; t.textContent = x.t; d.appendChild(t);
+  const v = document.createElement("div"); v.className = "v"; v.textContent = meta; d.appendChild(v);
+  d.onclick = () => playInline(x.id, x.t, `@${ch} ・ ${views ? views + "再生" : ""}`, isShort);
+  return d;
+}
+async function showChannel(s){
+  if(!canDock() || !s.u){ window.open(s.u, "_blank", "noopener"); return; }
+  chvSrc = s;
+  const seq = ++chvSeq;
+  // プレイヤー表示をたたんでプレビューに切り替え
+  if(playVid) document.getElementById("p-close").onclick();
+  document.getElementById("pph").style.display = "none";
+  document.getElementById("pbox").style.display = "none";
+  document.getElementById("chpane").style.display = "block";
+  document.getElementById("chp-nm").textContent = s.c;
+  document.getElementById("chp-sub").textContent =
+    [s.y && s.y !== s.c ? s.y : "", s.s ? fmt(s.s) + "人" : ""].filter(Boolean).join(" ・ ");
+  const av = document.getElementById("chp-av");
+  av.style.display = "none"; av.src = "";
+  const body = document.getElementById("chp-body");
+  body.innerHTML = `<div class="chp-msg">読み込み中…</div>`;
+  let d = chvCache[s.k];
+  if(!d){
+    try{
+      d = await (await fetch(`${API}?api=chvideos&u=${encodeURIComponent(s.u)}`)).json();
+      if(d && (d.videos?.length || d.shorts?.length)) chvCache[s.k] = d;
+    }catch(e){ d = {error: String(e), videos: [], shorts: []}; }
+  }
+  if(seq !== chvSeq) return;  // 別のchを開いた後に届いた古い応答は捨てる
+  if(d.t && d.t !== s.c) document.getElementById("chp-sub").textContent =
+    [d.t, s.s ? fmt(s.s) + "人" : ""].filter(Boolean).join(" ・ ");
+  if(d.av){ av.src = d.av; av.style.display = ""; }
+  body.innerHTML = "";
+  const ch = d.t || s.c;
+  if(d.shorts && d.shorts.length){
+    const h = document.createElement("h4"); h.textContent = "ショート(最新)"; body.appendChild(h);
+    const g = document.createElement("div"); g.className = "chp-grid shorts";
+    d.shorts.forEach(x => g.appendChild(chpItem(x, true, ch)));
+    body.appendChild(g);
+  }
+  if(d.videos && d.videos.length){
+    const h = document.createElement("h4"); h.textContent = "動画(最新)"; body.appendChild(h);
+    const g = document.createElement("div"); g.className = "chp-grid";
+    d.videos.forEach(x => g.appendChild(chpItem(x, false, ch)));
+    body.appendChild(g);
+  }
+  if(!body.children.length){
+    // 取得失敗 → 収集済みの300万+素材があればそれを出す(なければ直接リンク案内)
+    const sm = SM.filter(x => x.k === s.k && !x.p).slice(0, 12);
+    if(sm.length){
+      const h = document.createElement("h4"); h.textContent = "収集済みの300万+素材"; body.appendChild(h);
+      const g = document.createElement("div"); g.className = "chp-grid";
+      sm.forEach(x => g.appendChild(chpItem({id: x.id, t: x.t, v: String(x.v || "")}, x.d > 0 && x.d <= 90, ch)));
+      body.appendChild(g);
+    } else {
+      body.innerHTML = `<div class="chp-msg">動画一覧を取得できませんでした${d.error ? "(" + d.error + ")" : ""}。<br>「YouTubeで開く ↗」から直接ご覧ください。</div>`;
+    }
+  }
+}
 document.getElementById("p-close").onclick = () => {
   playVid = null;
   document.getElementById("p-dl-hint").style.display = "none";
