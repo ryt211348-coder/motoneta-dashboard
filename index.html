@@ -163,6 +163,15 @@ a.chext{font-size:12px;text-decoration:none;margin-left:2px}
 #seglist .seg{display:flex;gap:8px;align-items:center;padding:3px 0;
   border-bottom:1px dashed var(--line);font-variant-numeric:tabular-nums}
 #seglist .seg button{border:none;background:none;cursor:pointer;font-size:12px;padding:0 2px}
+/* 大きめの自前シークバー(埋め込みプレイヤーのバーが小さくて掴みづらい対策) */
+#seekrow{display:flex;align-items:center;gap:8px;margin-top:8px}
+#seekrow .tm{font-size:11px;color:var(--mut);font-variant-numeric:tabular-nums;min-width:46px}
+#seekbar{-webkit-appearance:none;appearance:none;flex:1;height:28px;background:transparent;cursor:pointer;margin:0;touch-action:none}
+#seekbar::-webkit-slider-runnable-track{height:8px;border-radius:4px;background:var(--line)}
+#seekbar::-webkit-slider-thumb{-webkit-appearance:none;width:22px;height:22px;border-radius:50%;
+  background:var(--acc);margin-top:-7px;border:2px solid var(--sur);box-shadow:0 1px 4px rgba(0,0,0,.35)}
+#seekbar::-moz-range-track{height:8px;border-radius:4px;background:var(--line)}
+#seekbar::-moz-range-thumb{width:22px;height:22px;border-radius:50%;background:var(--acc);border:2px solid var(--sur)}
 #sbmodal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.82);z-index:50;
   overflow:auto;padding:20px}
 /* テロップ編集UI */
@@ -310,7 +319,7 @@ a.chext{font-size:12px;text-decoration:none;margin-left:2px}
     <b>5+. 素材動画のダウンロード</b> — プレイヤーの「<b>⬇素材DL</b>」でURLがコピーされ、<a href="https://www.litexmedia.com/mhdownload.html" target="_blank">MediaHuman YouTube Downloader</a>が起動していれば自動で追加されます。<b>⚠️全部mp3(音声だけ)になる場合はMediaHumanの環境設定で「形式」がMP3になっているのが原因</b>。「オリジナル」または「MP4」・品質=最高に設定してください<br>
     <div style="border-top:1px dashed var(--line);margin:8px 0 6px"></div>
     <b style="font-size:13px">🅑 動画に仕上げる(カット→テロップ→デモ試聴→Premiere)</b><br>
-    <b>6. 使う区間を決める</b> — 右のプレイヤーで再生しながら「<b>✂IN</b>」→「<b>→OUT</b>」で使う区間を登録(複数OK・登録順につながります)。▶で頭出し、✕で削除。決まったら「<b>📋カット表コピー</b>」<br>
+    <b>6. 使う区間を決める</b> — 右のプレイヤーで再生しながら「<b>✂IN</b>」を押すとその瞬間がカット開始点として登録されます(INだけでOK・複数可)。区間にしたい時は続けて「<b>→OUT</b>」。プレイヤー下の<b>大きいシークバー</b>と「⏪5秒/◀1秒/⏯/1秒▶/5秒⏩」で位置合わせできます。▶で頭出し、✕で削除。スプシのカット位置列には「<b>📋INだけコピー</b>」(13:09〜形式・1行=1セル)、Premiere書き出し用には「<b>📋カット表コピー</b>」(IN→OUTの区間のみ)<br>
     <b>7. テロップ台本を入れる</b> — 「<b>📝テロップ編集</b>」を開き、Claudeが出した台本を1行=1テロップで入力。行の種類は各行のチップで切替: <b>タイトル</b>(全編表示)・<b>ナレ</b>(白・めたんが読む)・<b>緑</b>(めたんが読む)・<b>素材</b>(素材セリフ=ナレ無し・素材音声100%でテロップだけ出す)・<b>間</b>(ナレ無しで聞かせる秒数)。ナレ行の<b>🔉スライダー</b>=そのナレ中の素材音量(ダッキング量)。<b>SE</b>行=効果音(名前を候補から選ぶ・⏱で鳴らす時刻・A3に配置)。コマ送りがある動画は「🎬シーン切替」の時刻チップからSE行をワンタップ追加。スプシに台本がある場合はA〜C列(種別・セリフ・素材時刻)をコピーして「<b>📥スプシ取り込み</b>」で一括変換(C列の時刻は@アンカーとして自動付与)。テキスト選択→「《大きく》」で部分強調、<b>Enterキーでそのまま改行</b>。プレビューは<b>テロップを上下ドラッグで位置調整・ダブルクリックで該当行へ</b>。タイトル/緑セリフの色はカラーピッカー、タイトル黒背景(<b>全幅帯</b>=映像に隠れない黒帯/OFFで角丸ピル)・<b>タイトル2行目サイズ</b>・<b>行間</b>・<b>《》倍率</b>・セリフ影(ぼかし/ふくらみ)もスライダーで変更可(標準はチームテンプレ準拠)。<b>《1.2:文字》のように数字を書くとその文字だけ任意倍率</b>。「📱UIかぶり」でショートUIとの重なりを確認<br>
     <b>8. ナレのタイミング合わせ</b> — 素材のセリフ(叫び声・会話など)の頭で動画を一時停止 → その直前に言い終わってほしいセリフ行をクリック → 「<b>⏱ここまでに言い終わる</b>」。行頭に@時刻が付き、ナレが自動で逆算配置されます<br>
     <b>9. デモ再生で確認</b> — 「<b>▶デモ再生</b>」で、めたんナレ+カット+テロップ+SEを本番とほぼ同じ状態で試聴(ナレ中は素材音声が🔉の値まで自動で小さくなります)。SEの音はSEライブラリのあるMacでのみ鳴ります(<code>python3 scripts/se_server.py</code>・make_edit.py実行時は自動起動)。※要VOICEVOX: Macのターミナルで <code>tools/macos-arm64/run --cors_policy_mode all</code> を起動しておく(「address already in use」と出たら既に起動済みなのでそのままでOK。無いPCはこのステップを飛ばしてOK)<br>
@@ -573,14 +582,28 @@ a.chext{font-size:12px;text-decoration:none;margin-left:2px}
   <div id="p-dl-hint" style="display:none;font-size:10.5px;color:var(--mut);margin-top:6px;
     border:1px solid var(--line);border-radius:8px;padding:8px 10px;line-height:1.8"></div>
   <div id="segwrap" style="display:none">
+    <div id="seekrow">
+      <span class="tm" id="seek-cur">0:00.0</span>
+      <input type="range" id="seekbar" min="0" max="0" step="0.1" value="0">
+      <span class="tm" id="seek-dur" style="text-align:right">0:00</span>
+    </div>
+    <div class="pbtns" style="margin-top:4px">
+      <button class="chip" id="sk-b5">⏪ 5秒</button>
+      <button class="chip" id="sk-b1">◀ 1秒</button>
+      <button class="chip" id="sk-pp" title="再生/一時停止">⏯</button>
+      <button class="chip" id="sk-f1">1秒 ▶</button>
+      <button class="chip" id="sk-f5">5秒 ⏩</button>
+    </div>
     <div class="pbtns" style="margin-top:10px">
       <button class="chip" id="seg-in" style="font-weight:800;border-color:var(--hot);color:var(--hot)">✂ IN</button>
       <button class="chip" id="seg-out" style="font-weight:800">→ OUT</button>
       <button class="chip" id="seg-copy">📋 カット表コピー</button>
+      <button class="chip" id="seg-copy-in" title="INの時刻だけを「13:09〜」形式で1行ずつコピー(スプシのカット位置用)">📋 INだけコピー</button>
       <span id="seg-copied" style="font-size:11px;color:var(--ok);align-self:center"></span>
     </div>
     <div style="font-size:10.5px;color:var(--mut);margin-top:4px">
-      再生しながら「✂IN」→「→OUT」で<b>使う区間</b>を登録(複数OK)。▶で頭出し、✕で削除</div>
+      「✂IN」を押すとその瞬間が<b>カット開始点</b>として登録されます(INだけでOK・複数可)。
+      区間にしたい時は続けて「→OUT」。▶で頭出し、✕で削除</div>
     <div id="seglist"></div>
   </div>
 </aside>
@@ -1089,7 +1112,7 @@ function playInline(vid, title, sub, isShort){
   document.getElementById("p-dl-hint").style.display = "none";
   document.getElementById("p-com-box").style.display = "none";
   document.getElementById("segwrap").style.display = "";
-  segIn = null; updateSegBtn(); renderSegs();
+  renderSegs(); seekStart();
   // ストーリーボードがあればボタンを出す
   const sbBtn = document.getElementById("p-sb");
   sbBtn.style.display = "none";
@@ -1595,6 +1618,7 @@ document.getElementById("p-close").onclick = () => {
   document.getElementById("psub").textContent = "";
   document.getElementById("pbtns").style.display = "none";
   document.getElementById("segwrap").style.display = "none";
+  seekStop();
 };
 document.getElementById("p-yt").onclick = () => {
   if(playVid) window.open("https://www.youtube.com/watch?v=" + playVid, "_blank", "noopener");
@@ -2293,7 +2317,7 @@ document.getElementById("ed-sheet").onclick = async () => {
   // C列の「開始-終了」区間 → 使用区間(IN/OUT)にも自動登録=カット済み状態
   if(segs.length && playVid){
     SEGS[playVid] = segs;
-    saveSegs(); segIn = null; updateSegBtn(); renderSegs();
+    saveSegs(); renderSegs();
   }
   const anchored = lines.filter(l => /^@>/.test(l.t)).length;
   const el = document.getElementById("ed-copied");
@@ -2367,7 +2391,7 @@ document.getElementById("ed-demo").onclick = async () => {
       "(make_edit.pyを一度実行した場合も自動起動されます)");
     return;
   }
-  const raw = SEGS[playVid] || [];
+  const raw = closedSegs(playVid);  // INのみの行はデモでは無視(OUT必須)
   const segs = raw.length ? raw.slice().sort((x, y) => x[0] - y[0])
                           : [[0, (ytPlayer.getDuration() || 9999)]];
   btn.textContent = "⏳ 合成中…";
@@ -2486,20 +2510,19 @@ document.getElementById("ed-copy").onclick = () => {
     navigator.clipboard.writeText(text).then(done).catch(() => fallbackCopy(text, done));
   else fallbackCopy(text, done);
 };
-// --- 使う区間(IN/OUT・複数) ---
-let segIn = null;
+// --- 使う区間(IN/OUT・複数。INだけ=カット開始点の登録もOK) ---
+// SEGSの要素は [in, out] または [in, null](INのみ)。out必須の機能(カット表/デモ/make_edit)はclosedSegs()を使う
 let SEGS = {};
 try{ SEGS = JSON.parse(localStorage.getItem("segs") || "{}"); }catch(e){}
 const tf = s => `${Math.floor(s/60)}:${String(Math.floor(s%60)).padStart(2,"0")}.${Math.floor(s*10%10)}`;
-function updateSegBtn(){
-  document.getElementById("seg-in").textContent = segIn == null ? "✂ IN" : `✂ IN ${tf(segIn)}…`;
-}
 function saveSegs(){ try{ localStorage.setItem("segs", JSON.stringify(SEGS)); }catch(e){} }
+function closedSegs(vid){ return (SEGS[vid] || []).filter(s => s[1] != null); }
 function renderSegs(){
   const list = SEGS[playVid] || [];
   document.getElementById("seglist").innerHTML = list.map((s, i) => `
-    <div class="seg"><b>${i+1}.</b> <span>${tf(s[0])} → ${tf(s[1])}</span>
-    <span style="color:var(--mut)">(${(s[1]-s[0]).toFixed(1)}秒)</span>
+    <div class="seg"><b>${i+1}.</b> ${s[1] == null
+      ? `<span>${tf(s[0])} 〜</span> <span style="color:var(--mut)">(INのみ)</span>`
+      : `<span>${tf(s[0])} → ${tf(s[1])}</span> <span style="color:var(--mut)">(${(s[1]-s[0]).toFixed(1)}秒)</span>`}
     <button data-seek="${s[0]}" title="頭出し">▶</button>
     <button data-del="${i}" title="削除" style="color:var(--hot)">✕</button></div>`).join("");
   document.querySelectorAll("#seglist [data-seek]").forEach(b =>
@@ -2509,31 +2532,94 @@ function renderSegs(){
 }
 document.getElementById("seg-in").onclick = () => {
   if(!ytPlayer || !ytPlayer.getCurrentTime) return;
-  segIn = ytPlayer.getCurrentTime(); updateSegBtn();
+  const t = Math.round(ytPlayer.getCurrentTime()*10)/10;
+  (SEGS[playVid] = SEGS[playVid] || []).push([t, null]);
+  SEGS[playVid].sort((a,b) => a[0] - b[0]);
+  saveSegs(); renderSegs();
 };
 document.getElementById("seg-out").onclick = () => {
-  if(!ytPlayer || !ytPlayer.getCurrentTime || segIn == null) return;
-  const t = ytPlayer.getCurrentTime();
-  if(t <= segIn + 0.2) return;
-  (SEGS[playVid] = SEGS[playVid] || []).push([Math.round(segIn*10)/10, Math.round(t*10)/10]);
-  SEGS[playVid].sort((a,b) => a[0] - b[0]);
-  segIn = null; updateSegBtn(); saveSegs(); renderSegs();
+  if(!ytPlayer || !ytPlayer.getCurrentTime) return;
+  const t = Math.round(ytPlayer.getCurrentTime()*10)/10;
+  // 現在時刻より前で一番近い「INのみ」の行にOUTを付ける
+  const list = SEGS[playVid] || [];
+  let target = -1;
+  list.forEach((s, i) => { if(s[1] == null && t > s[0] + 0.2) target = i; });
+  if(target < 0) return;
+  list[target][1] = t;
+  saveSegs(); renderSegs();
 };
 document.getElementById("seg-copy").onclick = () => {
-  const list = SEGS[playVid] || [];
-  if(!list.length) return;
+  const list = closedSegs(playVid);
+  if(!list.length){ segCopied("OUTまで登録した区間がありません(INだけなら📋INだけコピー)"); return; }
   const text = `元動画: https://www.youtube.com/watch?v=${playVid}\n`
     + `タイトル: ${document.getElementById("ptitle").textContent}\n使用区間:\n`
     + list.map((s, i) => `${i+1}. ${tf(s[0])} - ${tf(s[1])} (${(s[1]-s[0]).toFixed(1)}秒)`).join("\n")
     + `\n合計 ${list.reduce((a,s)=>a+s[1]-s[0],0).toFixed(1)}秒`;
-  const done = () => {
-    const el = document.getElementById("seg-copied");
-    el.textContent = "コピーしました";
-    setTimeout(() => el.textContent = "", 4000);
-  };
+  copySegText(text, "コピーしました");
+};
+// INの時刻だけを「13:09〜」形式で1行ずつコピー(スプシのカット位置列に貼る用)
+document.getElementById("seg-copy-in").onclick = () => {
+  const list = SEGS[playVid] || [];
+  if(!list.length) return;
+  const text = list.map(s =>
+    `${Math.floor(s[0]/60)}:${String(Math.floor(s[0]%60)).padStart(2,"0")}〜`).join("\n");
+  copySegText(text, `INを${list.length}件コピーしました(1行=1セル)`);
+};
+function segCopied(msg){
+  const el = document.getElementById("seg-copied");
+  el.textContent = msg;
+  setTimeout(() => el.textContent = "", 4000);
+}
+function copySegText(text, msg){
+  const done = () => segCopied(msg);
   if(navigator.clipboard && navigator.clipboard.writeText)
     navigator.clipboard.writeText(text).then(done).catch(() => fallbackCopy(text, done));
   else fallbackCopy(text, done);
+}
+// --- 自前シークバー(埋め込みのバーが小さくて掴みづらい対策) ---
+let seekTimer = null, seekDrag = false, seekLast = 0;
+const skBar = document.getElementById("seekbar");
+const skCur = document.getElementById("seek-cur");
+function seekTick(){
+  if(!ytPlayer || !ytPlayer.getCurrentTime) return;
+  const d = ytPlayer.getDuration() || 0;
+  if(d && Math.abs((+skBar.max || 0) - d) > 0.5){
+    skBar.max = Math.round(d*10)/10;
+    document.getElementById("seek-dur").textContent = tf(d);
+  }
+  if(!seekDrag){
+    const t = ytPlayer.getCurrentTime();
+    skBar.value = t; skCur.textContent = tf(t);
+  }
+}
+function seekStart(){ if(!seekTimer) seekTimer = setInterval(seekTick, 250); }
+function seekStop(){ if(seekTimer){ clearInterval(seekTimer); seekTimer = null; } }
+skBar.addEventListener("input", () => {
+  seekDrag = true;
+  skCur.textContent = tf(+skBar.value);
+  const now = Date.now();  // ドラッグ中も200ms間隔でライブシーク(毎フレームだと固まる)
+  if(ytPlayer && ytPlayer.seekTo && now - seekLast > 200){ seekLast = now; ytPlayer.seekTo(+skBar.value, true); }
+});
+const seekDone = () => {
+  if(!seekDrag) return;
+  seekDrag = false;
+  if(ytPlayer && ytPlayer.seekTo) ytPlayer.seekTo(+skBar.value, true);
+};
+skBar.addEventListener("change", seekDone);
+skBar.addEventListener("pointerup", seekDone);
+function skStep(d){
+  if(!ytPlayer || !ytPlayer.getCurrentTime) return;
+  const t = Math.max(0, ytPlayer.getCurrentTime() + d);
+  ytPlayer.seekTo(t, true);
+  skBar.value = t; skCur.textContent = tf(t);
+}
+document.getElementById("sk-b5").onclick = () => skStep(-5);
+document.getElementById("sk-b1").onclick = () => skStep(-1);
+document.getElementById("sk-f1").onclick = () => skStep(1);
+document.getElementById("sk-f5").onclick = () => skStep(5);
+document.getElementById("sk-pp").onclick = () => {
+  if(!ytPlayer || !ytPlayer.getPlayerState) return;
+  ytPlayer.getPlayerState() === 1 ? ytPlayer.pauseVideo() : ytPlayer.playVideo();
 };
 function sendToKobo(vid){
   document.getElementById("kobo").style.display = "";
