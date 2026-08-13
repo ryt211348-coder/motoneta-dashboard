@@ -2629,8 +2629,6 @@ function sendToKobo(vid){
     : "https://www.youtube.com/watch?v=" + vid;
   window.scrollTo({top: 0, behavior: "smooth"});
   document.getElementById("kobo-run").click();
-  // ピッカー由来なら登録者数をプロンプトに載せる(×倍率=属人性判定用)
-  koboSubs = x && !x.p && x.s > 0 ? x.s : 0;
 }
 // ── サムネ右クリック → 画像＋リンク＋再生数(色付き)をまとめてコピー（Googleドキュメント貼り付け用・スマホ企画ダッシュボードと同仕様）──
 function copyToast(msg){
@@ -2932,7 +2930,6 @@ Promise.all([
 
 // ===== 台本プロンプト工房 =====
 let prep = null;
-let koboSubs = 0;  // ピッカー経由のときだけ入る登録者数(×倍率の属人性判定用)
 let koboTl = null; // 映像タイムライン(tl/<id>.json)。あればプロンプトに丸ごと同梱する
 document.getElementById("kobo-toggle").onclick = () => {
   const k = document.getElementById("kobo");
@@ -2960,7 +2957,7 @@ function setIgUi(on, igBtn){
 // IG/TikTok/X素材の共通入口。alt = {vid, url, plat, ig(IGのみ1)}
 function koboRunAlt(alt){
   igArmed = false;
-  koboSubs = 0; koboThumb = null; koboTl = null;
+  koboThumb = null; koboTl = null;
   prep = {vid: alt.vid, ig: alt.ig ? 1 : 0, alt: 1, plat: alt.plat, url: alt.url,
           title: "", author: "", views: 0,
           length: 0, transcript: [], heat: [], comments: [], errors: []};
@@ -3000,7 +2997,6 @@ function koboRun(){
   const alt = parseTtUrl(url) || parseXUrl(url) || parseBlUrl(url);
   if(alt){ koboRunAlt(alt); return; }
   setIgUi(false);
-  koboSubs = 0;  // URL直貼りは登録者不明(ピッカー経由ならsendToKoboが直後に上書き)
   koboThumb = null;
   document.getElementById("kobo-thumbbox").style.display = "none";
   document.getElementById("kobo-status").textContent = "解析中…(20〜40秒かかります)";
@@ -3202,15 +3198,14 @@ ${p.alt || p.ig ? `- URL: ${p.url}
 - ${p.plat || "Instagram"}素材です。タイトル・再生数・いいねは${p.plat || "Instagram"}側で確認してください
 - 再生バーの盛り上がり・人気コメント・映像タイムラインはこの素材では取得できません(文字起こしを正として作ります)` : `- タイトル: ${p.title}
 - チャンネル: ${p.author}
-- 再生数: ${p.views.toLocaleString()}${dur > 0 ? ` / 長さ: ${Math.floor(dur/60)}分${dur%60}秒` : ""}${koboSubs > 0 ? `
-- 登録者数: ${koboSubs.toLocaleString()}人 (×倍率=再生÷登録者: ${(p.views/koboSubs).toFixed(1)})` : ""}
+- 再生数: ${p.views.toLocaleString()}${dur > 0 ? ` / 長さ: ${Math.floor(dur/60)}分${dur%60}秒` : ""}
 - サムネURL: https://i.ytimg.com/vi/${p.vid}/maxresdefault.jpg
 - URL: https://www.youtube.com/watch?v=${p.vid}`}
 ${longWarn}
 # サムネ・タイトル(クリック理由の言語化用)
 - この依頼にサムネ画像が添付されていたら、必ず手順0【サムネ・タイトルの言語化】で読むこと
-- 長尺素材(90秒超)は手順0が必須。画像が無ければタイトルと×倍率だけで行い「サムネ画像を貼るとクリック理由の精度が上がります」と一言添える
-- ×倍率が1未満の場合は属人性(ファンが見ているだけ)の疑いを必ず報告する
+- 長尺素材(90秒超)は手順0が必須。画像が無ければタイトルだけで行い「サムネ画像を貼るとクリック理由の精度が上がります」と一言添える
+- **長尺素材の台本の冒頭は、原則この元動画のサムネの訴求をそのまま持ってくる**(長尺をクリックするかどうかはサムネで決まっている=実証済みの訴求)。サムネが文字情報の無いインパクト画像だけなら、視聴者はタイトルを見てクリックしているので**元動画のタイトルの訴求をそのまま冒頭に持ってくる**。詳細は手順0と手順5
 
 # 再生バーの盛り上がりポイント(視聴者が繰り返し見た場所=訴求の核)
 ${heat}
