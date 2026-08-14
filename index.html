@@ -191,6 +191,10 @@ a.chext{font-size:12px;text-decoration:none;margin-left:2px}
 .shrow .tc input{width:100%;text-align:center;font-size:11.5px;padding:5px 2px}
 .shrow .ops{flex:0 0 56px;display:flex;align-items:center;justify-content:center;gap:2px;border-left:1px solid var(--line)}
 .shrow .ops button{border:none;background:none;cursor:pointer;font-size:11px;padding:0 2px}
+/* 2026-08-15 シンプル化: 使わない機能をUIから非表示(機能・データは温存。戻す時はこの1行から外すだけ)
+   テロップ編集(#p-ed)・サブタイ比較(#p-st,#hd-st)・照合ビュー(#p-tl,#kobo-mv)・✂IN/OUT(#seg-adv)・
+   VV列(.sh-vv,.hc-vv,#sh-copy-vv,#sh-vv-gen)・表ごとコピー(#sh-copy-tsv) */
+#p-ed,#p-st,#hd-st,#p-tl,#kobo-mv,#seg-adv,#sh-copy-vv,#sh-vv-gen,#sh-copy-tsv,.sh-vv,.hc-vv{display:none !important}
 /* 大きめの自前シークバー(埋め込みプレイヤーのバーが小さくて掴みづらい対策) */
 #seekrow{display:flex;align-items:center;gap:8px;margin-top:8px}
 #seekrow .tm{font-size:11px;color:var(--mut);font-variant-numeric:tabular-nums;min-width:46px}
@@ -346,13 +350,15 @@ a.chext{font-size:12px;text-decoration:none;margin-left:2px}
     <b>5.5 台本が完成したら③に登録</b> — 工房の「<b>③初稿と完成形を登録</b>」に、最初の台本(初稿)とフィードバック反映後の完成形を貼って送信するだけ。<b>あなたの直しがAIのノウハウになり、次からの叩き台の精度が上がります</b>。余裕があれば「差分分析プロンプト」も自分のClaudeで回すと、なぜ直されたかの言語化が自分のスキルにもなります<br>
     <b>5+. 素材動画のダウンロード</b> — プレイヤーの「<b>⬇素材DL</b>」でURLがコピーされ、<a href="https://www.litexmedia.com/mhdownload.html" target="_blank">MediaHuman YouTube Downloader</a>が起動していれば自動で追加されます。<b>⚠️全部mp3(音声だけ)になる場合はMediaHumanの環境設定で「形式」がMP3になっているのが原因</b>。「オリジナル」または「MP4」・品質=最高に設定してください<br>
     <div style="border-top:1px dashed var(--line);margin:8px 0 6px"></div>
-    <b style="font-size:13px">🅑 動画に仕上げる(カット→テロップ→デモ試聴→Premiere)</b><br>
-    <b>6. 使う区間を決める</b> — 右のプレイヤーで再生しながら「<b>✂IN</b>」を押すとその瞬間がカット開始点として登録されます(INだけでOK・複数可)。区間にしたい時は続けて「<b>→OUT</b>」。プレイヤー下の<b>大きいシークバー</b>と「⏪5秒/◀1秒/⏯/1秒▶/5秒⏩」で位置合わせできます。▶で頭出し、✕で削除。スプシのカット位置列には「<b>📋INだけコピー</b>」(13:09〜形式・1行=1セル)、Premiere書き出し用には「<b>📋カット表コピー</b>」(IN→OUTの区間のみ)。
-    <b>おすすめは下の「📝台本シート」</b>: スプシのB列(台本)を貼り付けると疑似スプシになり、<b>カット位置セルを選んで「⏱ 現在秒を選択セルへ」を押す</b>とその瞬間の秒数が入って選択が次の行へ進みます(行を飛ばすのも自由)。<b>D列=ボイスボックスに読ませる単位</b>(連続する同じ話者を自動連結・編集OK・「🎙VV列コピー」で1行=1セル)。「📋カット位置列コピー」で空行も空のままコピーされるので、C列に行ズレなく貼り戻せます<br>
+    <b style="font-size:13px">🅑 カット位置を決める(📝台本シート)</b><br>
+    <b>6. カット位置を入れる</b> — プレイヤー下の「<b>📝台本シート</b>」にスプシのB列(台本)を貼り付けると疑似スプシになります。<b>カット位置セルを選んで「⏱ 現在秒を選択セルへ」を押す</b>とその瞬間の秒数が入って選択が次の行へ進みます(行を飛ばすのも自由)。位置合わせは<b>大きいシークバー</b>と「⏪5秒/◀1秒/⏯/1秒▶/5秒⏩」。間違えても<b>⌘Z/Ctrl+Zでひとつ前に戻せます</b>。終わったら「<b>📋カット位置列コピー</b>」→ 空行も空のままコピーされるので、スプシの<b>C列の先頭セルに貼るだけで行ズレしません</b><br>
+    <span style="display:none"><!-- 2026-08-15 シンプル化で非表示(✂IN/OUT・テロップ編集・デモ再生・Premiere書き出しの手順。機能ごとUIから隠したがコードは温存) -->
+    <b>6+. ✂IN/OUT区間登録</b> — 右のプレイヤーで再生しながら「<b>✂IN</b>」を押すとその瞬間がカット開始点として登録されます(INだけでOK・複数可)。区間にしたい時は続けて「<b>→OUT</b>」。▶で頭出し、✕で削除。スプシのカット位置列には「<b>📋INだけコピー</b>」(13:09〜形式・1行=1セル)、Premiere書き出し用には「<b>📋カット表コピー</b>」(IN→OUTの区間のみ)。<br>
     <b>7. テロップ台本を入れる</b> — 「<b>📝テロップ編集</b>」を開き、Claudeが出した台本を1行=1テロップで入力。行の種類は各行のチップで切替: <b>タイトル</b>(全編表示)・<b>ナレ</b>(白・めたんが読む)・<b>緑</b>(めたんが読む)・<b>素材</b>(素材セリフ=ナレ無し・素材音声100%でテロップだけ出す)・<b>間</b>(ナレ無しで聞かせる秒数)。ナレ行の<b>🔉スライダー</b>=そのナレ中の素材音量(ダッキング量)。<b>SE</b>行=効果音(名前を候補から選ぶ・⏱で鳴らす時刻・A3に配置)。コマ送りがある動画は「🎬シーン切替」の時刻チップからSE行をワンタップ追加。スプシに台本がある場合はA〜C列(種別・セリフ・素材時刻)をコピーして「<b>📥スプシ取り込み</b>」で一括変換(C列の時刻は@アンカーとして自動付与)。テキスト選択→「《大きく》」で部分強調、<b>Enterキーでそのまま改行</b>。プレビューは<b>テロップを上下ドラッグで位置調整・ダブルクリックで該当行へ</b>。タイトル/緑セリフの色はカラーピッカー、タイトル黒背景(<b>全幅帯</b>=映像に隠れない黒帯/OFFで角丸ピル)・<b>タイトル2行目サイズ</b>・<b>行間</b>・<b>《》倍率</b>・セリフ影(ぼかし/ふくらみ)もスライダーで変更可(標準はチームテンプレ準拠)。<b>《1.2:文字》のように数字を書くとその文字だけ任意倍率</b>。「📱UIかぶり」でショートUIとの重なりを確認<br>
     <b>8. ナレのタイミング合わせ</b> — 素材のセリフ(叫び声・会話など)の頭で動画を一時停止 → その直前に言い終わってほしいセリフ行をクリック → 「<b>⏱ここまでに言い終わる</b>」。行頭に@時刻が付き、ナレが自動で逆算配置されます<br>
     <b>9. デモ再生で確認</b> — 「<b>▶デモ再生</b>」で、めたんナレ+カット+テロップ+SEを本番とほぼ同じ状態で試聴(ナレ中は素材音声が🔉の値まで自動で小さくなります)。SEの音はSEライブラリのあるMacでのみ鳴ります(<code>python3 scripts/se_server.py</code>・make_edit.py実行時は自動起動)。※要VOICEVOX: Macのターミナルで <code>tools/macos-arm64/run --cors_policy_mode all</code> を起動しておく(「address already in use」と出たら既に起動済みなのでそのままでOK。無いPCはこのステップを飛ばしてOK)<br>
     <b>10. Premiere用に書き出す(Macの管理者)</b> — 「📋カット表コピー」した状態で、テロップ編集の「<b>📋台本をコピー</b>」→ 台本.txtに保存 → ターミナルで <code>python3 scripts/make_edit.py -s 台本.txt</code> → デスクトップの「元ネタ編集」フォルダにXML一式が生成 → Premiereで「ファイル→読み込み」でほぼ完成形(V1素材/V2セリフ/V3タイトル/A1素材音声/A2めたんナレ)。A1にはナレ中のダッキング(音量バーの値)とカット点の30msフェードが音量キーフレームで焼き込み済み。素材セリフの時刻一覧「素材セリフ.txt」も自動生成されるので@アンカーの下調べにも使えます<br>
+    </span>
     <span style="color:var(--mut)">※データは毎晩自動更新。引用元を自分で探す場合は「📊引用元ランキング」から</span>
   </div>
   <div class="sub" id="upd"></div>
@@ -642,7 +648,7 @@ a.chext{font-size:12px;text-decoration:none;margin-left:2px}
           <span class="hc" style="flex:0 0 72px">A 話者</span>
           <span class="hc" style="flex:1.2">B 台本</span>
           <span class="hc" style="flex:0 0 78px">C カット位置</span>
-          <span class="hc" style="flex:1">D ボイスボックス用</span>
+          <span class="hc hc-vv" style="flex:1">D ボイスボックス用</span>
           <span class="hc" style="flex:0 0 56px;border-left:none"></span>
         </div>
         <div id="sheet"></div>
@@ -651,7 +657,7 @@ a.chext{font-size:12px;text-decoration:none;margin-left:2px}
       <div style="font-size:10.5px;color:var(--mut);margin:4px 0 6px;line-height:1.6">
         <b>カット位置セルをクリックで選択</b>(青枠)→動画を止めて「<b>⏱ 現在秒を選択セルへ</b>」でその瞬間の秒数が入り、選択は次の行へ移ります(行を飛ばす時はクリックで選び直し・Escで解除)。
         台本セルは直接編集OK・<b>Enterでカーソル位置から行を分割</b>。時刻はダブルクリックで手入力/クリア。
-        <b>D列=ボイスボックスに読ませる単位</b>(連続する同じ話者を自動連結・直接編集OK)
+        <b>⌘Z / Ctrl+Z でひとつ前に戻せます</b>(行の削除・貼り替え・⏱入力・セル編集もOK)
       </div>
     </div>
     <details id="seg-adv" style="margin-top:10px">
@@ -939,9 +945,12 @@ const powChip = (x, tip) => x == null ? "" :
   `<span class="pow" style="color:${powCol(x)}" title="${tip || "再生数÷登録者数。×1未満はファン視聴の疑い(企画の力ではない)"}">${powStr(x)}</span>`;
 let sort = "企画力", minN = 2, minAvg = 3e6, ytOnly = false, hotOnly = false,
     pickedOnly = false, allCols = false, powOnly = false, limit = 300;
+// 発掘ch = ChatGPTリサーチ/ワード発掘で見つけたch(競合の引用実績なし)。別カテゴリで表示
+let discOnly = false, rankGenre = "全部";
 const CHIP_DEFS = [
   ["企画力順", () => sort = "企画力"],
   ["平均順", () => sort = "平均"], ["本数順", () => sort = "本数"], ["最大順", () => sort = "最大"],
+  ["🧭発掘ch", () => { discOnly = !discOnly; rankGenre = "全部"; }],
   ["企画力データあり", () => powOnly = !powOnly],
   ["平均300万+", () => minAvg = minAvg ? 0 : 3e6],
   ["競合2本+", () => minN = minN === 2 ? 1 : 2],
@@ -956,6 +965,7 @@ const CHIP_TIPS = {
   "平均順": "その引用元を使った日本の切り抜きの平均再生数が高い順",
   "本数順": "日本の競合がその引用元から作った本数が多い順",
   "最大順": "その引用元から生まれた日本の切り抜きの最高再生数が高い順",
+  "🧭発掘ch": "競合の引用実績とは別カテゴリ。ChatGPTリサーチ・ワード発掘で見つけた海外chだけを一覧(企画力順で見るのがおすすめ)",
   "企画力データあり": "登録者数が取れていて×倍率を計算できた引用元だけに絞る",
   "平均300万+": "日本の切り抜きの平均再生数が300万以上の引用元だけに絞る(需要が証明済み)",
   "競合2本+": "日本の競合が2本以上その引用元から作っている＝1本のまぐれではない引用元に絞る",
@@ -2642,12 +2652,20 @@ function copySegText(text, msg){
 // --- 📝 台本シート(疑似スプシ): 行=スプシの1行。カット位置セルを選択→一時停止で秒数が入る ---
 // SHEETの要素は {who, line, t}(t=秒 or null)。空行も行として保持=スプシとの行ズレを起こさない
 let shRows = [], shSel = null, shVid = null;
+let shUndo = [], shPend = null;  // ↩︎ アンドゥ履歴(動画ごとにリセット) / shPend=編集セッション開始時の退避
 function shLoad(vid){
   if(shVid === vid) return;
   shVid = vid; shSel = null; shRows = [];
+  shUndo = []; shPend = null;
   try{ shRows = JSON.parse(localStorage.getItem("sheet:" + vid) || "[]"); }catch(e){}
 }
 function shSave(){ try{ localStorage.setItem("sheet:" + shVid, JSON.stringify(shRows)); }catch(e){} }
+// 変更前の状態を履歴に積む(⌘Z/Ctrl+Zで戻す)。全ての破壊的操作の直前に呼ぶ
+function shSnap(){
+  shUndo.push({rows: JSON.parse(JSON.stringify(shRows)), sel: shSel});
+  if(shUndo.length > 100) shUndo.shift();
+  shPend = null;
+}
 function shMsg(msg){
   const el = document.getElementById("sh-msg");
   el.textContent = msg;
@@ -2674,7 +2692,7 @@ function renderSheet(){
   box.innerHTML = shRows.map((r, i) => `
     <div class="shrow"><span class="n">${i+1}</span>
       <input class="sh-who" data-i="${i}" value="${escapeHtml(r.who || "")}" placeholder="" title="話者">
-      <input class="sh-line" data-i="${i}" value="${escapeHtml(r.line || "")}" placeholder="">
+      <input class="sh-line" data-i="${i}" value="${escapeHtml(r.line || "")}" placeholder="" title="${escapeHtml(r.line || "")}">
       <span class="tc${i === shSel ? " sel" : ""}" data-i="${i}"
         title="クリック=選択(⏱でここに入る) / ダブルクリック=手入力">${r.t == null ? "" : shTf(r.t)}</span>
       <input class="sh-vv" data-i="${i}" value="${escapeHtml(r.vv || "")}" placeholder="" title="ボイスボックスに読ませる単位(直接編集OK)">
@@ -2687,10 +2705,19 @@ function renderSheet(){
   box.querySelectorAll("input.sh-line, input.sh-who, input.sh-vv").forEach(inp => {
     const i = +inp.dataset.i,
       key = inp.classList.contains("sh-who") ? "who" : inp.classList.contains("sh-vv") ? "vv" : "line";
-    inp.oninput = () => { shRows[i][key] = inp.value; shSave(); };
+    // アンドゥ用: フォーカス時点の状態を退避し、最初の変更でまとめて履歴に積む(=1編集セッション1履歴)
+    inp.onfocus = () => { shPend = {rows: JSON.parse(JSON.stringify(shRows)), sel: shSel}; };
+    inp.onblur = () => { shPend = null; };
+    inp.oninput = () => {
+      if(shPend){ shUndo.push(shPend); if(shUndo.length > 100) shUndo.shift(); shPend = null; }
+      shRows[i][key] = inp.value;
+      if(key === "line") inp.title = inp.value;
+      shSave();
+    };
     if(key === "line") inp.onkeydown = ev => {
       if(ev.key !== "Enter") return;
       ev.preventDefault();
+      shSnap();
       const pos = inp.selectionStart;
       const before = inp.value.slice(0, pos), after = inp.value.slice(pos);
       shRows[i].line = before;
@@ -2712,7 +2739,11 @@ function renderSheet(){
       tc.innerHTML = `<input value="${cur == null ? "" : shTf(cur).replace("〜","")}" placeholder="1:10">`;
       const inp = tc.firstChild;
       inp.focus(); inp.select();
-      const commit = () => { shRows[i].t = shParseTime(inp.value); shSave(); renderSheet(); };
+      const commit = () => {
+        const nv = shParseTime(inp.value);
+        if(nv !== shRows[i].t) shSnap();
+        shRows[i].t = nv; shSave(); renderSheet();
+      };
       inp.onblur = commit;
       inp.onkeydown = e => { if(e.key === "Enter") inp.blur(); if(e.key === "Escape"){ inp.onblur = null; renderSheet(); } };
     };
@@ -2723,12 +2754,14 @@ function renderSheet(){
   });
   box.querySelectorAll("[data-ins]").forEach(b => b.onclick = () => {
     const i = +b.dataset.ins;
+    shSnap();
     shRows.splice(i + 1, 0, {who: "", line: "", t: null, vv: ""});
     if(shSel != null && shSel > i) shSel++;
     shSave(); renderSheet();
   });
   box.querySelectorAll("[data-del]").forEach(b => b.onclick = () => {
     const i = +b.dataset.del;
+    shSnap();
     shRows.splice(i, 1);
     if(shSel != null){ if(shSel === i) shSel = null; else if(shSel > i) shSel--; }
     shSave(); renderSheet();
@@ -2742,6 +2775,7 @@ document.getElementById("sh-paste").addEventListener("paste", ev => {
   if(!text) return;
   ev.preventDefault();
   if(shRows.length && !confirm("今の台本シートを貼り付けた内容で置き換えます。よろしいですか?")) return;
+  shSnap();  // 貼り替えも⌘Zで戻せる
   const lines = text.replace(/\r/g, "").split("\n");
   if(lines.length && lines[lines.length - 1] === "") lines.pop();  // スプシコピー末尾の改行
   const hasTab = lines.some(l => l.includes("\t"));
@@ -2773,6 +2807,7 @@ function vvGen(){
 document.getElementById("sh-vv-gen").onclick = () => {
   if(!shRows.length){ shMsg("台本を貼り付けてください"); return; }
   if(!confirm("D列(ボイスボックス用)を自動生成し直します。手で直した内容は上書きされます。OK?")) return;
+  shSnap();
   vvGen();
   shMsg("D列を自動生成しました(連続する同じ話者を連結)");
 };
@@ -2787,12 +2822,14 @@ document.getElementById("sh-copy-vv").onclick = () => {
 document.getElementById("sh-add").onclick = () => {
   if(!playVid) return;
   shLoad(playVid);
+  shSnap();
   shRows.push({who: "", line: "", t: null, vv: ""});
   shSave(); renderSheet();
 };
 document.getElementById("sh-clear").onclick = () => {
   if(!shRows.length) return;
   if(!confirm("台本シートを全消去します。よろしいですか?")) return;
+  shSnap();  // 全消去も⌘Zで戻せる
   shRows = []; shSel = null;
   shSave(); renderSheet();
 };
@@ -2818,6 +2855,21 @@ document.addEventListener("keydown", ev => {
   if(document.getElementById("sbmodal2").style.display === "block") return;
   shSel = null; renderSheet();
 });
+// ⌘Z / Ctrl+Z: 台本シートのアンドゥ(行削除・貼り替え・⏱入力・セル編集を1手ずつ戻す)。
+// シート外の入力欄(工房のテキストエリア等)にフォーカスがある時はブラウザ標準のUndoに任せる
+document.addEventListener("keydown", ev => {
+  if(!(ev.metaKey || ev.ctrlKey) || ev.shiftKey || ev.altKey || ev.key.toLowerCase() !== "z") return;
+  const ae = document.activeElement;
+  const inSheet = ae && ae.closest && ae.closest("#sheetwrap");
+  if(!inSheet && ae && (ae.isContentEditable || /^(INPUT|TEXTAREA|SELECT)$/.test(ae.tagName))) return;
+  if(!shUndo.length) return;
+  ev.preventDefault();
+  const s = shUndo.pop();
+  shPend = null;
+  shRows = s.rows; shSel = s.sel;
+  shSave(); renderSheet();
+  shMsg(`↩︎ 元に戻しました(残り${shUndo.length}手)`);
+});
 // ⏱ボタン: 動画の現在秒を選択セルへ書き込み、選択を次の行へ
 document.getElementById("sh-stamp").onclick = () => {
   if(shSel == null || !shRows[shSel]){ shMsg("先にカット位置セルをクリックで選択してください"); return; }
@@ -2825,6 +2877,7 @@ document.getElementById("sh-stamp").onclick = () => {
   let t;
   try{ t = Math.round(ytPlayer.getCurrentTime() * 10) / 10; }catch(e){ return; }
   const row = shSel;
+  shSnap();
   shRows[row].t = t;
   shSel = row + 1 < shRows.length ? row + 1 : null;
   shSave(); renderSheet();
