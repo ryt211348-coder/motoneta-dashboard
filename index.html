@@ -179,7 +179,9 @@ a.chext{font-size:12px;text-decoration:none;margin-left:2px}
   background:var(--sur2);border-right:1px solid var(--line);font-variant-numeric:tabular-nums;user-select:none}
 .shrow input{border:none;background:none;color:var(--tx);font-size:12px;padding:5px 6px;min-width:0;font-family:inherit}
 .shrow input:focus{outline:2px solid #1a73e8;outline-offset:-2px;background:var(--sur)}
-.shrow input.sh-who{flex:0 0 72px;font-size:10.5px;color:var(--mut);border-right:1px solid var(--line)}
+.shrow select.sh-who{flex:0 0 72px;font-size:10.5px;color:var(--mut);border:none;border-right:1px solid var(--line);
+  background:none;padding:0 2px;min-width:0;font-family:inherit;cursor:pointer;appearance:auto}
+.shrow select.sh-who:focus{outline:2px solid #1a73e8;outline-offset:-2px;background:var(--sur)}
 .shrow input.sh-line{flex:1.2}
 .shrow input.sh-vv{flex:1;font-size:11px;border-left:1px solid var(--line);
   background:color-mix(in srgb,var(--acc) 4%,transparent)}
@@ -191,6 +193,9 @@ a.chext{font-size:12px;text-decoration:none;margin-left:2px}
 .shrow .tc input{width:100%;text-align:center;font-size:11.5px;padding:5px 2px}
 .shrow .ops{flex:0 0 56px;display:flex;align-items:center;justify-content:center;gap:2px;border-left:1px solid var(--line)}
 .shrow .ops button{border:none;background:none;cursor:pointer;font-size:11px;padding:0 2px}
+/* 範囲選択(複数セル)のハイライトとドラッグ中のテキスト選択抑止 */
+.shrow .rsel{background:color-mix(in srgb,#1a73e8 13%,transparent) !important}
+#sheetframe.dragsel, #sheetframe.dragsel *{user-select:none;cursor:cell}
 /* 2026-08-15 シンプル化: 使わない機能をUIから非表示(機能・データは温存。戻す時はこの1行から外すだけ)
    テロップ編集(#p-ed)・サブタイ比較(#p-st,#hd-st)・照合ビュー(#p-tl,#kobo-mv)・✂IN/OUT(#seg-adv)・
    VV列(.sh-vv,.hc-vv,#sh-copy-vv,#sh-vv-gen)・表ごとコピー(#sh-copy-tsv) */
@@ -657,7 +662,9 @@ a.chext{font-size:12px;text-decoration:none;margin-left:2px}
       <div style="font-size:10.5px;color:var(--mut);margin:4px 0 6px;line-height:1.6">
         <b>カット位置セルをクリックで選択</b>(青枠)→動画を止めて「<b>⏱ 現在秒を選択セルへ</b>」でその瞬間の秒数が入り、選択は次の行へ移ります(行を飛ばす時はクリックで選び直し・Escで解除)。
         台本セルは直接編集OK・<b>Enterでカーソル位置から行を分割</b>。時刻はダブルクリックで手入力/クリア。
-        <b>⌘Z / Ctrl+Z でひとつ前に戻せます</b>(行の削除・貼り替え・⏱入力・セル編集もOK)
+        <b>A列(話者)はプルダウン</b>: 貼り付けた台本から話者の種類を自動で読み取ります(「＋新規…」で追加)。
+        <b>複数セルはドラッグ or Shift+クリックで範囲選択</b>(スプシと同じ)→ <b>⌘Cコピー・⌘X切り取り・Delete/Backspaceで消去</b>・Escで解除。
+        <b>⌘Z / Ctrl+Z でひとつ前に戻せます</b>(行の削除・貼り替え・⏱入力・範囲消去もOK)
       </div>
     </div>
     <details id="seg-adv" style="margin-top:10px">
@@ -2685,6 +2692,7 @@ function shLoad(vid){
   if(shVid === vid) return;
   shVid = vid; shSel = null; shRows = [];
   shUndo = []; shPend = null;
+  shRange = null; shLastCell = null;  // 範囲選択も動画ごとにリセット
   try{ shRows = JSON.parse(localStorage.getItem("sheet:" + vid) || "[]"); }catch(e){}
 }
 function shSave(){ try{ localStorage.setItem("sheet:" + shVid, JSON.stringify(shRows)); }catch(e){} }
@@ -2708,6 +2716,20 @@ function shParseTime(s){  // "1:10" "1:10.5" "70.5" "1:10〜" → 秒。空/解�
   if(!m) return null;
   return Math.round(((+m[1] || 0) * 60 + +m[2]) * 10) / 10;
 }
+// A列プルダウン用: シートに入っている話者を出現順にユニーク収集(貼り付けた台本から自動で読み取る)
+function shWhoList(){
+  const seen = [];
+  for(const r of shRows){ const w = (r.who || "").trim(); if(w && !seen.includes(w)) seen.push(w); }
+  return seen;
+}
+function shWhoOpts(cur){
+  cur = (cur || "").trim();
+  const list = shWhoList();
+  if(cur && !list.includes(cur)) list.push(cur);
+  return `<option value=""${cur === "" ? " selected" : ""}></option>` +
+    list.map(w => `<option value="${escapeHtml(w)}"${w === cur ? " selected" : ""}>${escapeHtml(w)}</option>`).join("") +
+    `<option value="__new__">＋ 新規…</option>`;
+}
 function renderSheet(){
   shLoad(playVid);
   const box = document.getElementById("sheet");
@@ -2719,9 +2741,9 @@ function renderSheet(){
     : "ここにスプシのB列(台本)を貼り付け(A+B列を一緒にコピーしてもOK・空行もそのまま行になります)";
   box.innerHTML = shRows.map((r, i) => `
     <div class="shrow"><span class="n">${i+1}</span>
-      <input class="sh-who" data-i="${i}" value="${escapeHtml(r.who || "")}" placeholder="" title="話者">
-      <input class="sh-line" data-i="${i}" value="${escapeHtml(r.line || "")}" placeholder="" title="${escapeHtml(r.line || "")}">
-      <span class="tc${i === shSel ? " sel" : ""}" data-i="${i}"
+      <select class="sh-who" data-i="${i}" data-c="0" title="話者(シート内の話者から選択・「＋新規…」で追加)">${shWhoOpts(r.who)}</select>
+      <input class="sh-line" data-i="${i}" data-c="1" value="${escapeHtml(r.line || "")}" placeholder="" title="${escapeHtml(r.line || "")}">
+      <span class="tc${i === shSel ? " sel" : ""}" data-i="${i}" data-c="2"
         title="クリック=選択(⏱でここに入る) / ダブルクリック=手入力">${r.t == null ? "" : shTf(r.t)}</span>
       <input class="sh-vv" data-i="${i}" value="${escapeHtml(r.vv || "")}" placeholder="" title="ボイスボックスに読ませる単位(直接編集OK)">
       <span class="ops">
@@ -2729,10 +2751,24 @@ function renderSheet(){
         <button data-ins="${i}" title="下に行を追加">＋</button>
         <button data-del="${i}" title="行を削除" style="color:var(--hot)">✕</button>
       </span></div>`).join("");
-  // 台本・話者セル: 入力は都度モデルへ(再描画しない=フォーカス維持)。Enterでカーソル位置から行分割
-  box.querySelectorAll("input.sh-line, input.sh-who, input.sh-vv").forEach(inp => {
+  // A列(話者): シート内の話者を自動収集したプルダウン。行やセリフの入れ替え時にここで選び直す
+  box.querySelectorAll("select.sh-who").forEach(sel => {
+    const i = +sel.dataset.i;
+    sel.onchange = () => {
+      let v = sel.value;
+      if(v === "__new__"){
+        v = (prompt("新しい話者名(例: 女性ナレーション)") || "").trim();
+        if(!v){ sel.value = shRows[i].who || ""; return; }
+      }
+      shSnap();
+      shRows[i].who = v;
+      shSave(); renderSheet();  // 新規話者を全行のプルダウン選択肢に反映
+    };
+  });
+  // 台本セル: 入力は都度モデルへ(再描画しない=フォーカス維持)。Enterでカーソル位置から行分割
+  box.querySelectorAll("input.sh-line, input.sh-vv").forEach(inp => {
     const i = +inp.dataset.i,
-      key = inp.classList.contains("sh-who") ? "who" : inp.classList.contains("sh-vv") ? "vv" : "line";
+      key = inp.classList.contains("sh-vv") ? "vv" : "line";
     // アンドゥ用: フォーカス時点の状態を退避し、最初の変更でまとめて履歴に積む(=1編集セッション1履歴)
     inp.onfocus = () => { shPend = {rows: JSON.parse(JSON.stringify(shRows)), sel: shSel}; };
     inp.onblur = () => { shPend = null; };
@@ -2761,7 +2797,8 @@ function renderSheet(){
   // カット位置セル: クリック=選択トグル / ダブルクリック=手入力
   box.querySelectorAll(".tc").forEach(tc => {
     const i = +tc.dataset.i;
-    tc.onclick = () => { shSel = shSel === i ? null : i; renderSheet(); };
+    tc.onclick = ev => { if(ev.shiftKey) return;  // Shift+クリックは範囲選択なので⏱用の選択は動かさない
+      shSel = shSel === i ? null : i; renderSheet(); };
     tc.ondblclick = ev => {
       ev.preventDefault();
       const cur = shRows[i].t;
@@ -2800,9 +2837,127 @@ function renderSheet(){
     if(shSel != null){ if(shSel === i) shSel = null; else if(shSel > i) shSel--; }
     shSave(); renderSheet();
   });
+  // 範囲選択(スプシ同様): ドラッグ or Shift+クリックで矩形選択。ハイライトはDOM直操作(再描画するとドラッグが切れる)
+  box.querySelectorAll("[data-c]").forEach(cell => {
+    const r = +cell.dataset.i, c = +cell.dataset.c;
+    cell.addEventListener("mousedown", ev => {
+      if(ev.shiftKey){  // Shift+クリック=アンカーから拡張
+        const a = shRange ? {r: shRange.ar, c: shRange.ac} : shLastCell;
+        if(a){ shRange = {ar: a.r, ac: a.c, fr: r, fc: c}; shApplyRange(); ev.preventDefault(); }
+        return;
+      }
+      shLastCell = {r, c};
+      shDrag = {r, c};
+      if(shRange){ shRange = null; shApplyRange(); }  // 普通のクリックで選択解除(スプシと同じ)
+    });
+    cell.addEventListener("mouseenter", () => {
+      if(!shDrag || (shDrag.r === r && shDrag.c === c && !shRange)) return;
+      if(!shRange){  // セルをまたいだ瞬間にドラッグ選択開始(それまでは通常のテキスト選択)
+        if(document.activeElement && document.activeElement.blur) document.activeElement.blur();
+        getSelection().removeAllRanges();
+        document.getElementById("sheetframe").classList.add("dragsel");
+      }
+      shRange = {ar: shDrag.r, ac: shDrag.c, fr: r, fc: c};
+      shApplyRange();
+    });
+  });
+  shApplyRange();  // 再描画後もハイライトを復元
   const selEl = box.querySelector(".tc.sel");
   if(selEl) selEl.scrollIntoView({block: "nearest"});  // 選択セルがシート内スクロールで隠れないように
 }
+// ===== 範囲選択(複数セル): ドラッグ/Shift+クリック → ⌘Cコピー・⌘X切り取り・Delete/Backspaceで消去 =====
+let shRange = null, shDrag = null, shLastCell = null;  // shRange={ar,ac,fr,fc} アンカー/フォーカスセル
+function shRangeNorm(){  // 正規化+行数クランプ。無効ならnull
+  if(!shRange || !shRows.length) return null;
+  const r1 = Math.max(0, Math.min(shRange.ar, shRange.fr)),
+        r2 = Math.min(shRows.length - 1, Math.max(shRange.ar, shRange.fr)),
+        c1 = Math.min(shRange.ac, shRange.fc), c2 = Math.max(shRange.ac, shRange.fc);
+  if(r1 > r2) return null;
+  return {r1, r2, c1, c2};
+}
+function shApplyRange(){
+  const box = document.getElementById("sheet");
+  box.querySelectorAll(".rsel").forEach(el => el.classList.remove("rsel"));
+  const n = shRangeNorm();
+  if(!n) return;
+  box.querySelectorAll("[data-c]").forEach(el => {
+    const r = +el.dataset.i, c = +el.dataset.c;
+    if(r >= n.r1 && r <= n.r2 && c >= n.c1 && c <= n.c2) el.classList.add("rsel");
+  });
+}
+document.addEventListener("mouseup", () => {
+  if(!shDrag) return;
+  shDrag = null;
+  document.getElementById("sheetframe").classList.remove("dragsel");
+});
+const shCellVal = (r, c) => c === 0 ? (shRows[r].who || "")
+  : c === 1 ? (shRows[r].line || "") : (shRows[r].t == null ? "" : shTfCopy(shRows[r].t));
+function shRangeText(n){
+  const out = [];
+  for(let r = n.r1; r <= n.r2; r++){
+    const cols = [];
+    for(let c = n.c1; c <= n.c2; c++) cols.push(shCellVal(r, c));
+    out.push(cols.join("\t"));
+  }
+  return out.join("\n");
+}
+function shRangeClear(){  // 選択範囲の中身を消す(行自体は残す)
+  const n = shRangeNorm();
+  if(!n) return false;
+  shSnap();
+  for(let r = n.r1; r <= n.r2; r++)
+    for(let c = n.c1; c <= n.c2; c++){
+      if(c === 0) shRows[r].who = "";
+      else if(c === 1) shRows[r].line = "";
+      else shRows[r].t = null;
+    }
+  shSave(); renderSheet();
+  return true;
+}
+// セル編集中(入力欄フォーカス中)は通常のコピー/削除に任せる
+const shRangeActive = () => {
+  const ae = document.activeElement;
+  if(ae && (ae.isContentEditable || /^(INPUT|TEXTAREA|SELECT)$/.test(ae.tagName))) return null;
+  return shRangeNorm();
+};
+document.addEventListener("copy", ev => {
+  const n = shRangeActive();
+  if(!n) return;
+  ev.clipboardData.setData("text/plain", shRangeText(n));
+  ev.preventDefault();
+  shMsg(`${n.r2 - n.r1 + 1}行×${n.c2 - n.c1 + 1}列をコピー`);
+});
+document.addEventListener("cut", ev => {
+  const n = shRangeActive();
+  if(!n) return;
+  ev.clipboardData.setData("text/plain", shRangeText(n));
+  ev.preventDefault();
+  shRangeClear();
+  shMsg(`${n.r2 - n.r1 + 1}行×${n.c2 - n.c1 + 1}列を切り取り`);
+});
+document.addEventListener("keydown", ev => {
+  if(ev.key !== "Delete" && ev.key !== "Backspace") return;
+  const ae = document.activeElement;
+  if(ae && (ae.isContentEditable || /^(INPUT|TEXTAREA|SELECT)$/.test(ae.tagName))) return;  // 入力中は通常の文字削除
+  const n = shRangeNorm();
+  if(n){
+    ev.preventDefault();
+    shRangeClear();
+    shMsg("選択範囲を消去しました(⌘Zで戻せます)");
+  }else if(shSel != null && shRows[shSel] && shRows[shSel].t != null){
+    // 範囲が無くても、⏱用に選択中(青枠)のカット位置セルはDeleteで消せる
+    ev.preventDefault();
+    shSnap();
+    shRows[shSel].t = null;
+    shSave(); renderSheet();
+    shMsg("カット位置を消去しました(⌘Zで戻せます)");
+  }
+});
+document.addEventListener("keydown", ev => {  // Escで範囲選択解除
+  if(ev.key !== "Escape" || !shRange) return;
+  if(ev.isComposing || ev.keyCode === 229) return;
+  shRange = null; shApplyRange();
+});
 // 貼り付け: 改行区切りで1行=1レコード(空行も保持)。タブがあれば 1列目=話者・2列目=セリフ
 document.getElementById("sh-paste").addEventListener("paste", ev => {
   const text = (ev.clipboardData || window.clipboardData).getData("text");
