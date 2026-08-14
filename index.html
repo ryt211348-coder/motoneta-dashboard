@@ -975,6 +975,7 @@ const CHIP_TIPS = {
   "全列表示": "チャンネル別の内訳など、隠れている列も出す",
 };
 const chipOn = l => (l.endsWith("順") && l.startsWith(sort)) ||
+  (l === "🧭発掘ch" && discOnly) ||
   (l === "企画力データあり" && powOnly) ||
   (l === "平均300万+" && minAvg > 0) || (l === "競合2本+" && minN === 2) ||
   (l === "リンクあり" && ytOnly) || (l === "🔥" && hotOnly) ||
@@ -1006,11 +1007,36 @@ function render(){
     b.onclick = () => {fn(); limit = 300; render();}; el.appendChild(b);
   }
   const q = document.getElementById("q").value.trim().toLowerCase();
-  const pre = SRC.filter(s => s.n >= minN && s.avg >= minAvg && (!ytOnly || s.u) &&
-      (!hotOnly || isHot(s)) && (!pickedOnly || picked.has(s.k)) && (!powOnly || s.xn) &&
+  // 通常=引用実績ランキング(発掘chは含まない) / 🧭発掘ch=ChatGPTリサーチ・ワード発掘の別カテゴリ
+  const catPass = s => discOnly ? !!s.dc
+    : !s.dc && s.n >= minN && s.avg >= minAvg && (!hotOnly || isHot(s));
+  const pre = SRC.filter(s => catPass(s) && (!ytOnly || s.u) &&
+      (!pickedOnly || picked.has(s.k)) && (!powOnly || s.xn) &&
       (!q || (s.c + s.y).toLowerCase().includes(q)));
   buildLangSelect(pre, () => {limit = 300; render();});
-  const list = pre.filter(langPass)
+  const afterLang = pre.filter(langPass);
+  // 2段目: ジャンルチップ(ch単位の主ジャンル)。#pick-chipsはpickタブと共用で各renderが上書きする
+  const top = document.getElementById("pick-chips"); top.innerHTML = ""; top.style.display = "";
+  const gcnt = {};
+  for(const s of afterLang){ const g = s.g || "その他"; gcnt[g] = (gcnt[g] || 0) + 1; }
+  const funnyCnt = afterLang.filter(s => FUNNY_SET.includes(s.g)).length;
+  const glist = ["全部", "😂面白系", ...Object.keys(gcnt).sort((a, b) => gcnt[b] - gcnt[a])];
+  if(!glist.includes(rankGenre)) glist.push(rankGenre);  // 件数0でも選択中チップは消さない(解除不能になる)
+  for(const g of glist){
+    const b = document.createElement("button");
+    b.className = "chip" + (g === rankGenre ? " on" : "");
+    const cnt = g === "全部" ? afterLang.length : g === "😂面白系" ? funnyCnt : (gcnt[g] || 0);
+    const ease = GENRE_EASE[g];
+    b.textContent = (ease ? ease[0] : "") + g + ` (${cnt})`;
+    b.title = g === "全部" ? "ジャンルで絞らない"
+      : g === "😂面白系" ? "コメディ・検証・実験・ハプニング・ドッキリの複合。先が予想できない系"
+      : (ease ? ease[1] : "そのchの素材タイトルから判定した主ジャンル(素材が無いchは日本切り抜き側から推定)");
+    b.onclick = () => {rankGenre = g; limit = 300; render();};
+    top.appendChild(b);
+  }
+  const rankGenrePass = s => rankGenre === "全部" ||
+    (rankGenre === "😂面白系" ? FUNNY_SET.includes(s.g) : (s.g || "その他") === rankGenre);
+  const list = afterLang.filter(rankGenrePass)
     .sort((a,b) => sort === "企画力" ? (pscore(b) - pscore(a) || b.avg - a.avg)
       : sort === "本数" ? b.n - a.n : sort === "最大" ? b.mx - a.mx : b.avg - a.avg);
   const tb = document.getElementById("tbody"); tb.innerHTML = "";
@@ -1065,11 +1091,13 @@ function render(){
     const tr = document.createElement("tr");
     tr.className = "src-row" + (picked.has(s.k) ? " picked" : "");
     const fixMark = s.fix ? ` <span style="font-size:9.5px;color:var(--ok);font-weight:700" title="訂正を送信済み。全員の画面には翌朝反映されます">✔訂正済み</span>` : "";
+    const discMark = s.dc ? ` <span class="pill" style="background:#e8f0fe;color:#1a5fb4"
+      title="${s.dc === "ChatGPT" ? "ChatGPTリサーチ" : "ワード発掘"}で見つけた発掘ch。競合の引用実績はまだ無い">🧭${s.dc}</span>` : "";
     tr.innerHTML = `<td class="rank sticky1">${i + 1}</td>
-      <td class="who sticky2"><div class="nm">${name}<button class="fixbtn" title="リンクが違う?ここから訂正">✏️</button>${fixMark}${langTag(s)}${isHot(s) ? ` <span class="pill hot">🔥</span>` : ""}</div>
+      <td class="who sticky2"><div class="nm">${name}<button class="fixbtn" title="リンクが違う?ここから訂正">✏️</button>${fixMark}${discMark}${langTag(s)}${isHot(s) ? ` <span class="pill hot">🔥</span>` : ""}</div>
         ${yt ? `<div class="yt">${yt}</div>` : ""}</td>
       ${powCell}
-      <td class="num"><b>${fmt(s.avg)}</b></td><td class="num">${s.n}本</td>${cells}
+      <td class="num">${s.dc ? `<span style="color:var(--mut)" title="発掘chは競合の引用実績なし">—</span>` : `<b>${fmt(s.avg)}</b>`}</td><td class="num">${s.dc ? `<span style="color:var(--mut)">—</span>` : s.n + "本"}</td>${cells}
       <td><button class="pick${picked.has(s.k) ? " on" : ""}" aria-label="着手マーク">✓</button></td>`;
     const ex = document.createElement("tr");
     ex.className = "exp-row"; ex.style.display = "none";
@@ -2716,6 +2744,8 @@ function renderSheet(){
     };
     if(key === "line") inp.onkeydown = ev => {
       if(ev.key !== "Enter") return;
+      // 漢字変換の確定Enterでは分割しない(isComposing / Safari系は keyCode 229)。もう1回押した素のEnterだけ分割
+      if(ev.isComposing || ev.keyCode === 229) return;
       ev.preventDefault();
       shSnap();
       const pos = inp.selectionStart;
@@ -2745,7 +2775,11 @@ function renderSheet(){
         shRows[i].t = nv; shSave(); renderSheet();
       };
       inp.onblur = commit;
-      inp.onkeydown = e => { if(e.key === "Enter") inp.blur(); if(e.key === "Escape"){ inp.onblur = null; renderSheet(); } };
+      inp.onkeydown = e => {
+        if(e.isComposing || e.keyCode === 229) return;  // 変換確定のEnter/Escは無視
+        if(e.key === "Enter") inp.blur();
+        if(e.key === "Escape"){ inp.onblur = null; renderSheet(); }
+      };
     };
   });
   box.querySelectorAll("[data-seek]").forEach(b => b.onclick = () => {
@@ -2852,6 +2886,7 @@ document.getElementById("sh-copy-tsv").onclick = () => {
 // Escで選択解除(照合ビューが開いている間はそちらのEsc処理を優先)
 document.addEventListener("keydown", ev => {
   if(ev.key !== "Escape" || shSel == null) return;
+  if(ev.isComposing || ev.keyCode === 229) return;  // 変換キャンセルのEscでは選択解除しない
   if(document.getElementById("sbmodal2").style.display === "block") return;
   shSel = null; renderSheet();
 });
@@ -3126,7 +3161,8 @@ function switchView(v){
   }
   // 検索窓はrank/pickだけ。右のインライン再生パネルもrank/pick以外は畳む(他タブへの食い込み防止)
   document.querySelector(".qrow").style.display = t.search ? "" : "none";
-  document.getElementById("pick-chips").style.display = v === "pick" ? "" : "none";
+  // rank=ジャンルチップ / pick=並べ替え・尺チップ(各renderが中身を上書き)
+  document.getElementById("pick-chips").style.display = (v === "pick" || v === "rank") ? "" : "none";
   document.getElementById("player").style.display = (v === "rank" || v === "pick") ? "" : "none";
   t.render();
 }
