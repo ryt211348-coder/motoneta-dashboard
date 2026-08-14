@@ -640,6 +640,8 @@ a.chext{font-size:12px;text-decoration:none;margin-left:2px}
         <b style="font-size:12.5px">📝 台本シート</b>
         <button class="chip" id="sh-stamp" style="font-weight:800;border-color:var(--hot);color:var(--hot)" title="動画の現在の秒数を、選択中のカット位置セルに入力して次の行へ進みます">⏱ 現在秒を選択セルへ</button>
         <button class="chip" id="sh-copy-times" title="カット位置列を上から1行=1セルでコピー(空行は空のまま)。スプシC列の先頭セルに貼るだけで行ズレしません">📋 カット位置列コピー</button>
+        <button class="chip" id="sh-copy-who" title="話者列(A)を上から1行=1セルでコピー(空行は空のまま・行ズレなし)">📋 話者列</button>
+        <button class="chip" id="sh-copy-lines" title="台本列(B)を上から1行=1セルでコピー(空行は空のまま・行ズレなし)">📋 台本列</button>
         <button class="chip" id="sh-copy-vv" title="D列(ボイスボックス用)を上から1行=1セルでコピー(空行は空のまま)">🎙 VV列コピー</button>
         <button class="chip" id="sh-vv-gen" title="連続する同じ話者の台本を1つに連結してD列を作り直します(手で直した内容は上書き)">🔄 VV列を自動生成</button>
         <button class="chip" id="sh-copy-tsv" title="話者+台本+カット位置+VV列をタブ区切りでコピー(スプシごと置き換える用)">📋 表ごとコピー(TSV)</button>
@@ -3030,6 +3032,17 @@ document.getElementById("sh-copy-times").onclick = () => {
     navigator.clipboard.writeText(text).then(done).catch(() => fallbackCopy(text, done));
   else fallbackCopy(text, done);
 };
+// A列(話者)・B列(台本)も同じ「1行=1セル・空行は空のまま」でコピー(スプシに行ズレなく貼り戻せる)
+function shCopyCol(key, label){
+  if(!shRows.length){ shMsg("台本を貼り付けてください"); return; }
+  const text = shRows.map(r => r[key] || "").join("\n");
+  const done = () => shMsg(`${label}${shRows.filter(r => (r[key] || "").trim()).length}件をコピー(1行=1セル・行ズレなし)`);
+  if(navigator.clipboard && navigator.clipboard.writeText)
+    navigator.clipboard.writeText(text).then(done).catch(() => fallbackCopy(text, done));
+  else fallbackCopy(text, done);
+}
+document.getElementById("sh-copy-who").onclick = () => shCopyCol("who", "話者");
+document.getElementById("sh-copy-lines").onclick = () => shCopyCol("line", "台本");
 document.getElementById("sh-copy-tsv").onclick = () => {
   if(!shRows.length){ shMsg("台本を貼り付けてください"); return; }
   const text = shRows.map(r => `${r.who || ""}\t${r.line || ""}\t${r.t == null ? "" : shTfCopy(r.t)}\t${r.vv || ""}`).join("\n");
