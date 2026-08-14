@@ -133,8 +133,8 @@ footer{color:var(--mut);font-size:11px;text-align:center;margin-top:20px;line-he
 .layout{display:flex;align-items:flex-start;justify-content:center;gap:20px}
 .wrap{flex:1 1 auto;min-width:0}
 #player{flex:0 0 clamp(420px,calc(100vw - 1180px),640px);position:sticky;top:0;
-  height:100vh;padding:12px 12px 12px 0;display:none;
-  flex-direction:column;justify-content:center}
+  height:100vh;padding:12px 12px 12px 0;display:none;overflow-y:auto;
+  flex-direction:column;justify-content:flex-start}
 @media(min-width:1280px){#player{display:flex}}
 #player .pbox{background:#000;border-radius:12px;overflow:hidden;margin:0 auto;
   aspect-ratio:16/9;width:100%}
@@ -163,6 +163,30 @@ a.chext{font-size:12px;text-decoration:none;margin-left:2px}
 #seglist .seg{display:flex;gap:8px;align-items:center;padding:3px 0;
   border-bottom:1px dashed var(--line);font-variant-numeric:tabular-nums}
 #seglist .seg button{border:none;background:none;cursor:pointer;font-size:12px;padding:0 2px}
+/* 📝 台本シート(疑似スプシ: 本物のスプレッドシートが置いてある見た目) */
+#sh-paste{width:100%;box-sizing:border-box;margin-top:6px;padding:6px 8px;border:1px dashed var(--line);border-radius:8px;
+  background:var(--sur);color:var(--tx);font-size:12px;resize:vertical;font-family:inherit}
+#sheetframe{margin-top:6px;border:1px solid var(--line);border-radius:6px;overflow:hidden;background:var(--sur);
+  box-shadow:0 1px 4px rgba(0,0,0,.10)}
+.shrow{display:flex;align-items:stretch;border-bottom:1px solid var(--line);min-height:26px}
+#sheet .shrow:last-child{border-bottom:none}
+.shrow.shhead{background:var(--sur2);min-height:20px}
+.shrow.shhead .hc{font-size:9.5px;font-weight:700;color:var(--mut);text-align:center;padding:3px 4px;
+  border-left:1px solid var(--line);user-select:none;min-width:0;overflow:hidden;white-space:nowrap}
+.shrow .n{flex:0 0 28px;font-size:10px;color:var(--mut);display:flex;align-items:center;justify-content:center;
+  background:var(--sur2);border-right:1px solid var(--line);font-variant-numeric:tabular-nums;user-select:none}
+.shrow input{border:none;background:none;color:var(--tx);font-size:12px;padding:5px 6px;min-width:0;font-family:inherit}
+.shrow input:focus{outline:2px solid #1a73e8;outline-offset:-2px;background:var(--sur)}
+.shrow input.sh-who{flex:0 0 72px;font-size:10.5px;color:var(--mut);border-right:1px solid var(--line)}
+.shrow input.sh-line{flex:1}
+.shrow .tc{flex:0 0 78px;font-size:11.5px;display:flex;align-items:center;justify-content:center;
+  border-left:1px solid var(--line);cursor:pointer;color:var(--acc);font-weight:700;
+  font-variant-numeric:tabular-nums;user-select:none}
+.shrow .tc:hover{background:var(--sur2)}
+.shrow .tc.sel{outline:2px solid #1a73e8;outline-offset:-2px;background:color-mix(in srgb,#1a73e8 9%,transparent)}
+.shrow .tc input{width:100%;text-align:center;font-size:11.5px;padding:5px 2px}
+.shrow .ops{flex:0 0 56px;display:flex;align-items:center;justify-content:center;gap:2px;border-left:1px solid var(--line)}
+.shrow .ops button{border:none;background:none;cursor:pointer;font-size:11px;padding:0 2px}
 /* 大きめの自前シークバー(埋め込みプレイヤーのバーが小さくて掴みづらい対策) */
 #seekrow{display:flex;align-items:center;gap:8px;margin-top:8px}
 #seekrow .tm{font-size:11px;color:var(--mut);font-variant-numeric:tabular-nums;min-width:46px}
@@ -319,7 +343,8 @@ a.chext{font-size:12px;text-decoration:none;margin-left:2px}
     <b>5+. 素材動画のダウンロード</b> — プレイヤーの「<b>⬇素材DL</b>」でURLがコピーされ、<a href="https://www.litexmedia.com/mhdownload.html" target="_blank">MediaHuman YouTube Downloader</a>が起動していれば自動で追加されます。<b>⚠️全部mp3(音声だけ)になる場合はMediaHumanの環境設定で「形式」がMP3になっているのが原因</b>。「オリジナル」または「MP4」・品質=最高に設定してください<br>
     <div style="border-top:1px dashed var(--line);margin:8px 0 6px"></div>
     <b style="font-size:13px">🅑 動画に仕上げる(カット→テロップ→デモ試聴→Premiere)</b><br>
-    <b>6. 使う区間を決める</b> — 右のプレイヤーで再生しながら「<b>✂IN</b>」を押すとその瞬間がカット開始点として登録されます(INだけでOK・複数可)。区間にしたい時は続けて「<b>→OUT</b>」。プレイヤー下の<b>大きいシークバー</b>と「⏪5秒/◀1秒/⏯/1秒▶/5秒⏩」で位置合わせできます。▶で頭出し、✕で削除。スプシのカット位置列には「<b>📋INだけコピー</b>」(13:09〜形式・1行=1セル)、Premiere書き出し用には「<b>📋カット表コピー</b>」(IN→OUTの区間のみ)<br>
+    <b>6. 使う区間を決める</b> — 右のプレイヤーで再生しながら「<b>✂IN</b>」を押すとその瞬間がカット開始点として登録されます(INだけでOK・複数可)。区間にしたい時は続けて「<b>→OUT</b>」。プレイヤー下の<b>大きいシークバー</b>と「⏪5秒/◀1秒/⏯/1秒▶/5秒⏩」で位置合わせできます。▶で頭出し、✕で削除。スプシのカット位置列には「<b>📋INだけコピー</b>」(13:09〜形式・1行=1セル)、Premiere書き出し用には「<b>📋カット表コピー</b>」(IN→OUTの区間のみ)。
+    <b>おすすめは下の「📝台本シート」</b>: スプシのB列(台本)を貼り付けると疑似スプシになり、<b>カット位置セルを選んで動画を一時停止するだけ</b>でその瞬間の秒数が入って選択が次の行へ進みます(行を飛ばすのも自由)。「📋カット位置列コピー」で空行も空のままコピーされるので、C列に行ズレなく貼り戻せます<br>
     <b>7. テロップ台本を入れる</b> — 「<b>📝テロップ編集</b>」を開き、Claudeが出した台本を1行=1テロップで入力。行の種類は各行のチップで切替: <b>タイトル</b>(全編表示)・<b>ナレ</b>(白・めたんが読む)・<b>緑</b>(めたんが読む)・<b>素材</b>(素材セリフ=ナレ無し・素材音声100%でテロップだけ出す)・<b>間</b>(ナレ無しで聞かせる秒数)。ナレ行の<b>🔉スライダー</b>=そのナレ中の素材音量(ダッキング量)。<b>SE</b>行=効果音(名前を候補から選ぶ・⏱で鳴らす時刻・A3に配置)。コマ送りがある動画は「🎬シーン切替」の時刻チップからSE行をワンタップ追加。スプシに台本がある場合はA〜C列(種別・セリフ・素材時刻)をコピーして「<b>📥スプシ取り込み</b>」で一括変換(C列の時刻は@アンカーとして自動付与)。テキスト選択→「《大きく》」で部分強調、<b>Enterキーでそのまま改行</b>。プレビューは<b>テロップを上下ドラッグで位置調整・ダブルクリックで該当行へ</b>。タイトル/緑セリフの色はカラーピッカー、タイトル黒背景(<b>全幅帯</b>=映像に隠れない黒帯/OFFで角丸ピル)・<b>タイトル2行目サイズ</b>・<b>行間</b>・<b>《》倍率</b>・セリフ影(ぼかし/ふくらみ)もスライダーで変更可(標準はチームテンプレ準拠)。<b>《1.2:文字》のように数字を書くとその文字だけ任意倍率</b>。「📱UIかぶり」でショートUIとの重なりを確認<br>
     <b>8. ナレのタイミング合わせ</b> — 素材のセリフ(叫び声・会話など)の頭で動画を一時停止 → その直前に言い終わってほしいセリフ行をクリック → 「<b>⏱ここまでに言い終わる</b>」。行頭に@時刻が付き、ナレが自動で逆算配置されます<br>
     <b>9. デモ再生で確認</b> — 「<b>▶デモ再生</b>」で、めたんナレ+カット+テロップ+SEを本番とほぼ同じ状態で試聴(ナレ中は素材音声が🔉の値まで自動で小さくなります)。SEの音はSEライブラリのあるMacでのみ鳴ります(<code>python3 scripts/se_server.py</code>・make_edit.py実行時は自動起動)。※要VOICEVOX: Macのターミナルで <code>tools/macos-arm64/run --cors_policy_mode all</code> を起動しておく(「address already in use」と出たら既に起動済みなのでそのままでOK。無いPCはこのステップを飛ばしてOK)<br>
@@ -427,6 +452,7 @@ a.chext{font-size:12px;text-decoration:none;margin-left:2px}
       <div style="font-size:12px;font-weight:800;margin-bottom:4px">③ 初稿と完成形(FB反映後)を登録 → AIが賢くなる</div>
       <div style="font-size:10.5px;color:var(--mut);margin-bottom:6px">
         あなたの初稿と、フィードバックを経た完成形を登録するだけでOK。夜間に差分がノウハウ化され、次からの台本プロンプトに反映されます。</div>
+      <div id="diff-stats" style="display:none;margin-bottom:8px;padding:8px 10px;border:1px solid var(--line);border-radius:8px;background:var(--sur2);font-size:11.5px;line-height:1.8"></div>
       <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:6px">
         <select id="diff-who" style="flex:0 0 130px;padding:6px 8px;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--tx);font-size:12px">
           <option value="">作成者を選択</option>
@@ -594,17 +620,45 @@ a.chext{font-size:12px;text-decoration:none;margin-left:2px}
       <button class="chip" id="sk-f1">1秒 ▶</button>
       <button class="chip" id="sk-f5">5秒 ⏩</button>
     </div>
-    <div class="pbtns" style="margin-top:10px">
-      <button class="chip" id="seg-in" style="font-weight:800;border-color:var(--hot);color:var(--hot)">✂ IN</button>
-      <button class="chip" id="seg-out" style="font-weight:800">→ OUT</button>
-      <button class="chip" id="seg-copy">📋 カット表コピー</button>
-      <button class="chip" id="seg-copy-in" title="INの時刻だけを「13:09〜」形式で1行ずつコピー(スプシのカット位置用)">📋 INだけコピー</button>
-      <span id="seg-copied" style="font-size:11px;color:var(--ok);align-self:center"></span>
+    <div id="sheetwrap" style="margin-top:12px">
+      <div class="pbtns" style="align-items:center">
+        <b style="font-size:12.5px">📝 台本シート</b>
+        <button class="chip" id="sh-copy-times" title="カット位置列を上から1行=1セルでコピー(空行は空のまま)。スプシC列の先頭セルに貼るだけで行ズレしません">📋 カット位置列コピー</button>
+        <button class="chip" id="sh-copy-tsv" title="話者+台本+カット位置をタブ区切りでコピー(ツール内で台本を直した後、スプシごと置き換える用)">📋 表ごとコピー(TSV)</button>
+        <button class="chip" id="sh-add">＋ 行を追加</button>
+        <button class="chip" id="sh-clear" style="color:var(--hot)">🗑 全消去</button>
+        <span id="sh-msg" style="font-size:11px;color:var(--ok);align-self:center"></span>
+      </div>
+      <div id="sheetframe" style="display:none">
+        <div class="shrow shhead">
+          <span class="n"></span>
+          <span class="hc" style="flex:0 0 72px">A 話者</span>
+          <span class="hc" style="flex:1">B 台本</span>
+          <span class="hc" style="flex:0 0 78px">C カット位置</span>
+          <span class="hc" style="flex:0 0 56px;border-left:none"></span>
+        </div>
+        <div id="sheet"></div>
+      </div>
+      <textarea id="sh-paste" rows="4" placeholder="ここにスプシのB列(台本)を貼り付け(A+B列を一緒にコピーしてもOK・空行もそのまま行になります)"></textarea>
+      <div style="font-size:10.5px;color:var(--mut);margin:4px 0 6px;line-height:1.6">
+        <b>カット位置セルをクリックで選択</b>→動画を<b>一時停止するとその瞬間の秒数が入り、選択は次の行へ</b>移ります(行を飛ばす時はクリックで選び直し・Escで解除)。
+        台本セルは直接編集OK・<b>Enterでカーソル位置から行を分割</b>。時刻はダブルクリックで手入力/クリア
+      </div>
     </div>
-    <div style="font-size:10.5px;color:var(--mut);margin-top:4px">
-      「✂IN」を押すとその瞬間が<b>カット開始点</b>として登録されます(INだけでOK・複数可)。
-      区間にしたい時は続けて「→OUT」。▶で頭出し、✕で削除</div>
-    <div id="seglist"></div>
+    <details id="seg-adv" style="margin-top:10px">
+      <summary style="font-size:11px;color:var(--mut);cursor:pointer;user-select:none">✂ IN/OUT区間登録(Premiere用カット表・デモ再生に使う方はこちら)</summary>
+      <div class="pbtns" style="margin-top:8px">
+        <button class="chip" id="seg-in" style="font-weight:800;border-color:var(--hot);color:var(--hot)">✂ IN</button>
+        <button class="chip" id="seg-out" style="font-weight:800">→ OUT</button>
+        <button class="chip" id="seg-copy">📋 カット表コピー</button>
+        <button class="chip" id="seg-copy-in" title="INの時刻だけを「13:09〜」形式で1行ずつコピー(スプシのカット位置用)">📋 INだけコピー</button>
+        <span id="seg-copied" style="font-size:11px;color:var(--ok);align-self:center"></span>
+      </div>
+      <div style="font-size:10.5px;color:var(--mut);margin-top:4px">
+        「✂IN」を押すとその瞬間が<b>カット開始点</b>として登録されます(INだけでOK・複数可)。
+        区間にしたい時は続けて「→OUT」。▶で頭出し、✕で削除</div>
+      <div id="seglist"></div>
+    </details>
   </div>
 </aside>
 </div>
@@ -1090,10 +1144,22 @@ window.onYouTubeIframeAPIReady = () => {
   // 照合ビュー側の2つめのプレイヤー。ここを忘れると初回だけ黒画面になる
   if(mvPendingVid){ mvMount(mvPendingVid); mvPendingVid = null; }
 };
+// 一時停止→台本シートへの自動入力用: 再生中(1)→PAUSED(2)の遷移だけ拾う。
+// プログラム起因のpause(デモ停止・照合ビュー開閉・動画切替)は progPauseAt で1秒間無視する
+let lastYTState = -1, progPauseAt = 0;
+function onMainState(e){
+  const prev = lastYTState;
+  lastYTState = e.data;
+  if(e.data !== 2 || prev !== 1) return;      // シーク(BUFFERING→PAUSED)等では発火しない
+  if(typeof demoTimer !== "undefined" && demoTimer) return;
+  if(Date.now() - progPauseAt < 1000) return;
+  shOnPause();
+}
 function mountYT(vid){
-  if(ytPlayer){ ytPlayer.loadVideoById(vid); return; }
+  if(ytPlayer){ progPauseAt = Date.now(); lastYTState = -1; ytPlayer.loadVideoById(vid); return; }
   ytPlayer = new YT.Player("pframe", {videoId: vid, width: "100%", height: "100%",
-    playerVars: {autoplay: 1, rel: 0, playsinline: 1}});
+    playerVars: {autoplay: 1, rel: 0, playsinline: 1},
+    events: {onStateChange: onMainState}});
 }
 function playInline(vid, title, sub, isShort){
   if(!canDock()){ window.open("https://www.youtube.com/watch?v=" + vid, "_blank", "noopener"); return; }
@@ -1112,7 +1178,7 @@ function playInline(vid, title, sub, isShort){
   document.getElementById("p-dl-hint").style.display = "none";
   document.getElementById("p-com-box").style.display = "none";
   document.getElementById("segwrap").style.display = "";
-  renderSegs(); seekStart();
+  renderSegs(); renderSheet(); seekStart();
   // ストーリーボードがあればボタンを出す
   const sbBtn = document.getElementById("p-sb");
   sbBtn.style.display = "none";
@@ -1378,6 +1444,7 @@ async function mvOpen(vid){
   if(!vid) return;
   mvVid = vid;
   document.getElementById("sbmodal2").style.display = "block";
+  progPauseAt = Date.now();  // 照合ビューを開く時の自動停止は台本シートに入れない
   if(ytPlayer && ytPlayer.pauseVideo) try { ytPlayer.pauseVideo(); } catch(e){}
   mvMount(vid);
   mvLoadDraft(vid);
@@ -2355,6 +2422,7 @@ function demoStop(){
   if(demoTimer){ clearInterval(demoTimer); demoTimer = null; }
   demoAud.forEach(a => { try{ a.pause(); }catch(e){} });
   demoAud = [];
+  progPauseAt = Date.now();  // デモ終了の自動停止は台本シートに入れない
   if(ytPlayer){ try{ ytPlayer.pauseVideo(); ytPlayer.setVolume(100); }catch(e){} }
   document.getElementById("ed-demo").textContent = "▶ デモ再生";
 }
@@ -2575,6 +2643,164 @@ function copySegText(text, msg){
   if(navigator.clipboard && navigator.clipboard.writeText)
     navigator.clipboard.writeText(text).then(done).catch(() => fallbackCopy(text, done));
   else fallbackCopy(text, done);
+}
+// --- 📝 台本シート(疑似スプシ): 行=スプシの1行。カット位置セルを選択→一時停止で秒数が入る ---
+// SHEETの要素は {who, line, t}(t=秒 or null)。空行も行として保持=スプシとの行ズレを起こさない
+let shRows = [], shSel = null, shVid = null;
+function shLoad(vid){
+  if(shVid === vid) return;
+  shVid = vid; shSel = null; shRows = [];
+  try{ shRows = JSON.parse(localStorage.getItem("sheet:" + vid) || "[]"); }catch(e){}
+}
+function shSave(){ try{ localStorage.setItem("sheet:" + shVid, JSON.stringify(shRows)); }catch(e){} }
+function shMsg(msg){
+  const el = document.getElementById("sh-msg");
+  el.textContent = msg;
+  setTimeout(() => { if(el.textContent === msg) el.textContent = ""; }, 4000);
+}
+const shTf = t => `${Math.floor(t/60)}:${String(Math.floor(t%60)).padStart(2,"0")}.${Math.floor(t*10%10)}〜`;
+const shTfCopy = t => `${Math.floor(t/60)}:${String(Math.floor(t%60)).padStart(2,"0")}〜`;  // スプシC列と同じ秒単位
+function shParseTime(s){  // "1:10" "1:10.5" "70.5" "1:10〜" → 秒。空/解釈不能はnull
+  s = (s || "").replace(/[〜~\s]/g, "");
+  if(!s) return null;
+  const m = s.match(/^(?:(\d+):)?(\d+(?:\.\d+)?)$/);
+  if(!m) return null;
+  return Math.round(((+m[1] || 0) * 60 + +m[2]) * 10) / 10;
+}
+function renderSheet(){
+  shLoad(playVid);
+  const box = document.getElementById("sheet");
+  document.getElementById("sheetframe").style.display = shRows.length ? "" : "none";
+  const pasteEl = document.getElementById("sh-paste");
+  pasteEl.rows = shRows.length ? 1 : 4;
+  pasteEl.placeholder = shRows.length
+    ? "貼り直す場合はここに(今のシートを置き換えます)"
+    : "ここにスプシのB列(台本)を貼り付け(A+B列を一緒にコピーしてもOK・空行もそのまま行になります)";
+  box.innerHTML = shRows.map((r, i) => `
+    <div class="shrow"><span class="n">${i+1}</span>
+      <input class="sh-who" data-i="${i}" value="${escapeHtml(r.who || "")}" placeholder="" title="話者">
+      <input class="sh-line" data-i="${i}" value="${escapeHtml(r.line || "")}" placeholder="">
+      <span class="tc${i === shSel ? " sel" : ""}" data-i="${i}"
+        title="クリック=選択(停止でここに入る) / ダブルクリック=手入力">${r.t == null ? "" : shTf(r.t)}</span>
+      <span class="ops">
+        <button data-seek="${i}" title="頭出し" ${r.t == null ? "disabled style='opacity:.25'" : ""}>▶</button>
+        <button data-ins="${i}" title="下に行を追加">＋</button>
+        <button data-del="${i}" title="行を削除" style="color:var(--hot)">✕</button>
+      </span></div>`).join("");
+  // 台本・話者セル: 入力は都度モデルへ(再描画しない=フォーカス維持)。Enterでカーソル位置から行分割
+  box.querySelectorAll("input.sh-line, input.sh-who").forEach(inp => {
+    const i = +inp.dataset.i, key = inp.classList.contains("sh-who") ? "who" : "line";
+    inp.oninput = () => { shRows[i][key] = inp.value; shSave(); };
+    if(key === "line") inp.onkeydown = ev => {
+      if(ev.key !== "Enter") return;
+      ev.preventDefault();
+      const pos = inp.selectionStart;
+      const before = inp.value.slice(0, pos), after = inp.value.slice(pos);
+      shRows[i].line = before;
+      shRows.splice(i + 1, 0, {who: "", line: after, t: null});
+      if(shSel != null && shSel > i) shSel++;
+      shSave(); renderSheet();
+      const nx = box.querySelector(`input.sh-line[data-i="${i+1}"]`);
+      if(nx){ nx.focus(); nx.setSelectionRange(0, 0); }
+    };
+  });
+  // カット位置セル: クリック=選択トグル / ダブルクリック=手入力
+  box.querySelectorAll(".tc").forEach(tc => {
+    const i = +tc.dataset.i;
+    tc.onclick = () => { shSel = shSel === i ? null : i; renderSheet(); };
+    tc.ondblclick = ev => {
+      ev.preventDefault();
+      const cur = shRows[i].t;
+      tc.onclick = null;
+      tc.innerHTML = `<input value="${cur == null ? "" : shTf(cur).replace("〜","")}" placeholder="1:10">`;
+      const inp = tc.firstChild;
+      inp.focus(); inp.select();
+      const commit = () => { shRows[i].t = shParseTime(inp.value); shSave(); renderSheet(); };
+      inp.onblur = commit;
+      inp.onkeydown = e => { if(e.key === "Enter") inp.blur(); if(e.key === "Escape"){ inp.onblur = null; renderSheet(); } };
+    };
+  });
+  box.querySelectorAll("[data-seek]").forEach(b => b.onclick = () => {
+    const t = shRows[+b.dataset.seek].t;
+    if(t != null && ytPlayer && ytPlayer.seekTo) ytPlayer.seekTo(t, true);
+  });
+  box.querySelectorAll("[data-ins]").forEach(b => b.onclick = () => {
+    const i = +b.dataset.ins;
+    shRows.splice(i + 1, 0, {who: "", line: "", t: null});
+    if(shSel != null && shSel > i) shSel++;
+    shSave(); renderSheet();
+  });
+  box.querySelectorAll("[data-del]").forEach(b => b.onclick = () => {
+    const i = +b.dataset.del;
+    shRows.splice(i, 1);
+    if(shSel != null){ if(shSel === i) shSel = null; else if(shSel > i) shSel--; }
+    shSave(); renderSheet();
+  });
+}
+// 貼り付け: 改行区切りで1行=1レコード(空行も保持)。タブがあれば 1列目=話者・2列目=セリフ
+document.getElementById("sh-paste").addEventListener("paste", ev => {
+  const text = (ev.clipboardData || window.clipboardData).getData("text");
+  if(!text) return;
+  ev.preventDefault();
+  if(shRows.length && !confirm("今の台本シートを貼り付けた内容で置き換えます。よろしいですか?")) return;
+  const lines = text.replace(/\r/g, "").split("\n");
+  if(lines.length && lines[lines.length - 1] === "") lines.pop();  // スプシコピー末尾の改行
+  const hasTab = lines.some(l => l.includes("\t"));
+  shRows = lines.map(l => {
+    if(!hasTab) return {who: "", line: l, t: null};
+    const p = l.split("\t");
+    return {who: p[0] || "", line: p.slice(1).join(" ").trim(), t: null};
+  });
+  shSel = shRows.length ? 0 : null;  // 先頭を選択した状態で開始
+  document.getElementById("sh-paste").value = "";
+  shSave(); renderSheet();
+  shMsg(`${shRows.length}行を取り込みました`);
+});
+document.getElementById("sh-add").onclick = () => {
+  if(!playVid) return;
+  shLoad(playVid);
+  shRows.push({who: "", line: "", t: null});
+  shSave(); renderSheet();
+};
+document.getElementById("sh-clear").onclick = () => {
+  if(!shRows.length) return;
+  if(!confirm("台本シートを全消去します。よろしいですか?")) return;
+  shRows = []; shSel = null;
+  shSave(); renderSheet();
+};
+document.getElementById("sh-copy-times").onclick = () => {
+  if(!shRows.length){ shMsg("台本を貼り付けてください"); return; }
+  const text = shRows.map(r => r.t == null ? "" : shTfCopy(r.t)).join("\n");
+  const done = () => shMsg(`カット位置${shRows.filter(r => r.t != null).length}件をコピー(空行は空セルのまま=行ズレなし)`);
+  if(navigator.clipboard && navigator.clipboard.writeText)
+    navigator.clipboard.writeText(text).then(done).catch(() => fallbackCopy(text, done));
+  else fallbackCopy(text, done);
+};
+document.getElementById("sh-copy-tsv").onclick = () => {
+  if(!shRows.length){ shMsg("台本を貼り付けてください"); return; }
+  const text = shRows.map(r => `${r.who || ""}\t${r.line || ""}\t${r.t == null ? "" : shTfCopy(r.t)}`).join("\n");
+  const done = () => shMsg("表ごとコピーしました(タブ区切り)");
+  if(navigator.clipboard && navigator.clipboard.writeText)
+    navigator.clipboard.writeText(text).then(done).catch(() => fallbackCopy(text, done));
+  else fallbackCopy(text, done);
+};
+// Escで選択解除(照合ビューが開いている間はそちらのEsc処理を優先)
+document.addEventListener("keydown", ev => {
+  if(ev.key !== "Escape" || shSel == null) return;
+  if(document.getElementById("sbmodal2").style.display === "block") return;
+  shSel = null; renderSheet();
+});
+// 一時停止(再生中→PAUSED)で選択セルへ現在時刻を書き込み、選択を次の行へ
+function shOnPause(){
+  if(shSel == null || !shRows[shSel]) return;
+  if(!ytPlayer || !ytPlayer.getCurrentTime) return;
+  let t;
+  try{ t = Math.round(ytPlayer.getCurrentTime() * 10) / 10; }catch(e){ return; }
+  const row = shSel;
+  shRows[row].t = t;
+  shSel = row + 1 < shRows.length ? row + 1 : null;
+  shSave(); renderSheet();
+  copyToast(`⏸ ${shTf(t).replace("〜", "")} → ${row + 1}行目に入力`);
 }
 // --- 自前シークバー(埋め込みのバーが小さくて掴みづらい対策) ---
 let seekTimer = null, seekDrag = false, seekLast = 0;
@@ -2921,7 +3147,8 @@ Promise.all([
   initRankDerived();
   initPickDerived();
   render();
-  renderReminder();  // 開封時リマインド(data.jsonに焼かれた reminders から)
+  // renderReminder(); ← 「今週やること」開封時リマインドは廃止(2026-08-15・復活はこの行を戻すだけ)
+  renderDiffStats();  // 📊 差分の蓄積と反映状況(data.jsonのdiffsから)
   renderReasonPanel();  // ④ 伸びなかった台本に理由を添えるパネル
   loadPerf();  // 投稿後実績(共有)を取得。実績タブ表示前でもリマインドに使う
 }).catch(e => {
@@ -3941,6 +4168,37 @@ function renderReminder(){
     else if(g === "reason"){ const k = document.getElementById("kobo"); if(k.style.display === "none") document.getElementById("kobo-toggle").click(); document.getElementById("reason-panel").scrollIntoView({behavior:"smooth", block:"center"}); }
   });
   document.getElementById("reminder-x").onclick = () => { localStorage.setItem("reminder-dismiss", todayISO()); box.style.display = "none"; };
+}
+
+// ===== 📊 差分の蓄積と反映状況(③の登録がどれだけ溜まり、ノウハウに反映されたか) =====
+function renderDiffStats(){
+  const box = document.getElementById("diff-stats");
+  const d = (D && D.diffs) || null;
+  if(!d || !(d.rows || []).length){ box.style.display = "none"; return; }
+  const rows = d.rows;
+  const STATE = {confirmed: ["⭐伸びた", "var(--ok)"], slight: ["📈ちょい伸び", "var(--warn)"],
+                 underperformed: ["❌伸びない", "var(--hot)"], linked: ["👀様子見", "var(--mut)"],
+                 pending: ["⏳判定待ち", "var(--mut)"]};
+  const byWho = {}, bySt = {};
+  rows.forEach(r => {
+    const w = r.who || "(名無し)";
+    byWho[w] = (byWho[w] || 0) + 1;
+    bySt[r.st] = (bySt[r.st] || 0) + 1;
+  });
+  const whoTxt = Object.entries(byWho).map(([w, n]) => `${escapeHtml(w)} ${n}本`).join("・");
+  const stTxt = Object.keys(STATE).filter(k => bySt[k]).map(k =>
+    `<span style="color:${STATE[k][1]};font-weight:700">${STATE[k][0]} ${bySt[k]}</span>`).join(" / ");
+  const rb = d.rebake || {};
+  let rbTxt = "";
+  if(rb.ts){
+    const dt = new Date(rb.ts * 1000);
+    const when = `${dt.getMonth()+1}/${dt.getDate()} ${String(dt.getHours()).padStart(2,"0")}:${String(dt.getMinutes()).padStart(2,"0")}`;
+    rbTxt = rb.fresh === false
+      ? `ノウハウ最終反映: ${when} — <b style="color:var(--warn)">⏳ 未反映の差分あり(次回rebakeで焼き込み)</b>`
+      : `ノウハウ最終反映: ${when} — <b style="color:var(--ok)">✔ 全て台本プロンプトへ反映済み</b>`;
+  } else rbTxt = `<span style="color:var(--mut)">ノウハウ反映(rebake)はまだ実行されていません</span>`;
+  box.style.display = "";
+  box.innerHTML = `<b>📊 差分の蓄積: 累計${rows.length}本</b>(${whoTxt})<br>${stTxt}<br>${rbTxt}`;
 }
 
 // ===== ④ 投稿後の結果に理由を添える(伸びた=勝ち型/伸び悩み=アンチパターン) =====
