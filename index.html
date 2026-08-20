@@ -349,6 +349,7 @@ a.chext{font-size:12px;text-decoration:none;margin-left:2px}
     <b>1. ネタを選ぶ</b> — 「🎯動画ピッカー」を開く。並んでいるのは海外の元動画(日本で需要が証明済みの供給元だけ)。ジャンルで絞って、良さそうな動画の <b>✓</b> を押して着手宣言(全員に共有され、被りを防げます)<br>
     <b>1.5 企画力(×倍率)と言語</b> — 再生数の下の <b>×N</b> は<b>再生数 ÷ そのチャンネルの登録者数</b>。登録者の何倍回ったか＝<b>企画そのものの強さ</b>で、<b>×3以上(赤)が狙い目・×1未満はファン視聴の疑い</b>(その人が出ているから見られただけ＝日本語化しても効きにくい)。既定の<b>「企画力順」</b>は倍率が高い順、引用元ランキングの<b>企画力</b>列は「そのchの素材の中央値×倍率／×3以上が何本あるか」で、<b>強い企画を量産しているch</b>ほど上に来ます。検索窓の右の<b>言語セレクタ</b>で英語だけ/言語別に絞れます(既定=英語。<b>EN?</b>は素材タイトル未収集で名前から推定したもの)<br>
     <b>2. 解析する</b> — その行の <b>🎬</b> を押す、またはリストに無い動画はURLを工房の欄に<b>貼るだけ</b>。解析・サムネ取得・<b>文字起こしの自動取得</b>が全部同時に始まります<br>
+    <b>2b. 貼ったURLのチャンネルは自動で追跡対象になります</b> — ツールに未登録のチャンネルなら、その晩のうちに引用元として登録され、以後<b>毎晩そのchの新作を自動で巡回</b>します。拾った素材は動画ピッカーに<b>🆕新着</b>として並びます(ピッカー上部の「🆕新着」チップで絞り込み)。つまり<b>良い元ネタchを見つけたら工房にURLを1回貼るだけで、そのchをずっと追いかけられます</b><br>
     <b>3. 文字起こしは自動で入る</b> — 30秒〜2分で下の欄に自動で入ります(何もしなくてOK)。<b>「自動取得できませんでした」と出た時だけ</b>「📺文字起こしを開く」→ 拡張機能「YouTube Summary」のCopy transcript → このタブに戻る(自動取り込み)。※自動取得はチームの「ワーカーPC」が担当します。Windowsで担当してくれる人は<a href="tr_worker_win.zip" download style="color:var(--acc);font-weight:700">ワーカーをダウンロード</a>(中のREADMEどおりstart.batを起動しておくだけ・誰か1人でOK)。<b>Instagramのリール・TikTok・X(旧Twitter)の動画も解析欄にURLを貼ればOK</b>(IG 2026-08-06〜 / TikTok・X 2026-08-10〜)。<b>文字起こしはどれも自動で入ります</b>(30秒〜2分。音声をDL→Whisperで文字起こし)。IGで入らなかった時だけ予備の「📸 IG文字起こしサイトを開く(無料・ログイン不要)」→ サイトにURLを貼り付け → 文字起こし → コピー → このタブに戻ると自動で入ります<br>
     <b>4. 台本を作る</b> — <b>①「📋 Claude用プロンプトをコピー」→Claudeに貼る</b>(プロンプト＋文字起こし)。<b>②「🖼 サムネをコピー」→もう1回貼る</b>(サムネ画像が付く)。この2セットで送信準備完了。<b>対話モードON(推奨)</b>なら、まずサムネ言語化・全文和訳(話者ラベル付き)・展開マップ(起承転結)と<b>AIのセンターピン仮説</b>が出て「あなたのセンターピンは? 他に伸びた要素は?」と聞かれるので、自分の読みを返して(OKだけでも可)すり合わせてから→<b>冒頭→台本の叩き台(削り候補マーク付き)→サブタイトルA/B案(後付け)</b>・使用区間リストへ進みます。<b>叩き台は字数で縛りません</b>(2026-08-06変更)。元素材の尺に応じて長くなるのが正常で、<b>文字起こしの流れに沿って展開をほぼ削らない「長いあらすじ」を先に書き切り、そこから縮めるのがライターの腕の見せ所</b>(シーンを削る。1シーンを膨らませない)。<b>さらに2026-08-06、字数指定を完全に撤去して「構造で長さを担保する」方式に変えました</b>: AIは①シーン見出しの数だけブロックを書く ②各ブロックに元動画の秒<b>[m:ss-m:ss]</b>を併記して時間軸に穴が無いか自己検査する(3-c照合表・6-c穴チェック)。<b>対話モードは「読むターン(和訳・見出し)→書くターン(叩き台)→サブタイ」の3ターン</b>に分かれ、叩き台が途中で切れたら<b>「続けて」</b>と言えば続きが出ます(短く畳むことは禁止してあります)。<b>海外の固有名詞は日本人向けに言い換わります</b>(ムース→ヘラジカ／マイル→km／華氏→摂氏／sheriff→保安官／覚えられない人名は「運転手の男」等の役割に)。和訳の最後に<b>【言い換えリスト】</b>(原語→台本で使う日本語)が出るので、意味が変わっていないかはそこで確認してください。縮め方は工房プロンプト内の「叩き台の書き方」章に全部書いてあります。<b>訴求はA案(センターピン直球)から選ぶのが基本</b>。<b>「📖 映像タイムライン」ボタンが出る素材は、画像を貼る必要はありません</b>(2026-08-06)。各コマに何が写っているかを秒ごとに読み取り、その秒のセリフと突き合わせた一覧が<b>プロンプトに自動で入ります</b>。台本が文字起こしだけから作られて映像とズレる問題への対処です。ボタンが出ない素材は従来どおり、セリフがほぼ無いなら「🎞ストーリーボード画像」を、「<b>🎞1秒コマ(密)</b>」が出るなら密シートを全部Claudeへ貼る。60秒台本は<b>映像照合前の叩き台</b>なので、そのまま使わず映像と照らしてセリフ・時刻を確定させる<br>
     <b>5. 編集者に渡す場合</b> — ②の欄に最終台本を貼って「📋 編集指示書プロンプトをコピー」→ Claudeに貼ると、<b>詳細タイムスタンプ付き文字起こし＋台本1行ごとの「元動画のどこ(何秒-何秒)を切るか」対応表</b>が出るので、そのまま編集者へ。URL解析済みなら台本を貼るだけでOK。<b>自分で動画まで仕上げる場合は下の🅑へ</b><br>
@@ -1167,6 +1168,16 @@ const FUNNY_SET = ["コメディ", "検証・実験", "ハプニング", "ドッ
 const genrePass = x => pickGenre === "全部" ||
   (pickGenre === "😂面白系" ? FUNNY_SET.includes(x.g) : x.g === pickGenre);
 const durPass = x => (DUR_BUCKETS.find(b => b[0] === pickDur) || DUR_BUCKETS[0])[1](x.d || 0);
+const koTag = x => {
+  const t = KO_TAG[x.ko];
+  return t ? `<span title="${t[1]}">${t[0]}</span>` : "";
+};
+// 🆕新着フィルタ(2026-08-19)。nw=直近に入った素材 / ko=1 自分で工房に貼った素材・ko=2 自分で
+// 見つけたchから自動収集した素材(工房にURLを貼ると翌朝からそのchを毎晩追いかける)
+let pickNew = false;
+const newPass = x => !pickNew || x.nw;
+const KO_TAG = {1: ["🎬", "自分で工房に貼った素材"],
+                2: ["📡", "自分で見つけたch(工房にURLを貼ったch)から自動で拾った素材"]};
 // ジャンルの「台本化しやすさ」。除外はせず印だけ出す(主力の引用元が犯罪・法廷系のため)
 const GENRE_EASE = {
   "スポーツ":    ["🟢", "文字だけで筋が追えるので台本化が速い。映像も一発でわかる"],
@@ -3224,8 +3235,19 @@ function renderPick(){
     b.onclick = () => {pickPlat = key; pickLimit = 100; renderPick();};
     top.appendChild(b);
   }
+  // 🆕新着チップ: 追いかけているchから今週新しく入った素材だけに絞る
+  const newCnt = SM.filter(x => x.nw && genrePass(x) && platPass(x) &&
+      (!q || (x.t + x.c).toLowerCase().includes(q))).length;
+  if(newCnt){
+    const nb = document.createElement("button");
+    nb.className = "chip" + (pickNew ? " on" : "");
+    nb.textContent = `🆕新着 (${newCnt})`;
+    nb.title = "直近1週間で新しく入った素材だけ。工房にURLを貼ったchは毎晩自動で巡回しているので、そのchの新作もここに出ます";
+    nb.onclick = () => {pickNew = !pickNew; pickLimit = 100; renderPick();};
+    top.appendChild(nb);
+  }else if(pickNew){ pickNew = false; }
   // 尺チップの件数は「ジャンル・検索を適用した後・尺を適用する前」で数える(押す前に結果数が読める)
-  const forDur = SM.filter(x => genrePass(x) && platPass(x) &&
+  const forDur = SM.filter(x => genrePass(x) && platPass(x) && newPass(x) &&
       (!q || (x.t + x.c).toLowerCase().includes(q))).filter(langPass);
   top.appendChild(Object.assign(document.createElement("span"),
     {className: "sub", style: "margin:0 2px 0 6px;align-self:center", textContent: "尺"}));
@@ -3251,7 +3273,7 @@ function renderPick(){
     b.onclick = () => {pickGenre = g; pickLimit = 100; renderPick();};
     el.appendChild(b);
   }
-  const pre = SM.filter(x => genrePass(x) && platPass(x) &&
+  const pre = SM.filter(x => genrePass(x) && platPass(x) && newPass(x) &&
       durPass(x) && (!q || (x.t + x.c).toLowerCase().includes(q)));
   buildLangSelect(pre, () => {pickLimit = 100; renderPick();});
   const list = pre.filter(langPass)
@@ -3283,8 +3305,8 @@ function renderPick(){
             onerror="this.style.visibility='hidden'"></a>
         <div style="min-width:0">
           <a${linkCls} href="${href}"
-            style="color:var(--tx);text-decoration:none;font-weight:700">${(x.im||0) >= 0.95 ? "⚡" : ""}${x.t}</a>
-          <div style="font-size:10.5px;color:var(--mut)">${platTag}${x.c}${langTag(x)}${durHtml}${x.s ? " ・ " + fmt(x.s) + "人" : ""}</div>
+            style="color:var(--tx);text-decoration:none;font-weight:700">${x.nw ? `<span style="color:var(--ok);font-weight:800" title="直近1週間で新しく入った素材">🆕</span>` : ""}${(x.im||0) >= 0.95 ? "⚡" : ""}${x.t}</a>
+          <div style="font-size:10.5px;color:var(--mut)">${platTag}${koTag(x)}${x.c}${langTag(x)}${durHtml}${x.s ? " ・ " + fmt(x.s) + "人" : ""}</div>
         </div></div></td>
       <td class="num"><b>${fmt(x.v)}</b>${x.x != null
         ? `<span class="sub" style="display:block">${powChip(x.x, `登録者${fmt(x.s)}人に対して${powStr(x.x)}回った = 企画の力(×1未満はファン視聴の疑い)`)}</span>` : ""}</td>
