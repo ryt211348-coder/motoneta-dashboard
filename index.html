@@ -158,6 +158,20 @@ footer{color:var(--mut);font-size:11px;text-align:center;margin-top:20px;line-he
   -webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
 #chpane .chp-it .v{font-size:10.5px;color:var(--mut)}
 #chpane .chp-msg{font-size:11.5px;color:var(--mut);padding:8px 0;line-height:1.7}
+#chpane .chp-bar{display:flex;flex-wrap:wrap;gap:5px;margin:10px 0 2px}
+#chpane .chp-bar button{font-size:11px;padding:3px 9px;border-radius:999px;border:1px solid var(--line);
+  background:var(--bg);color:var(--tx);cursor:pointer}
+#chpane .chp-bar button.on{border-color:var(--acc);color:var(--acc);font-weight:800}
+#chpane .chp-note{font-size:10.5px;color:var(--mut);line-height:1.5;margin-top:4px}
+#chpane .chp-it{position:relative}
+#chpane .chp-it .x{position:absolute;top:4px;left:4px;font-size:10.5px;font-weight:800;padding:1px 6px;
+  border-radius:6px;background:rgba(0,0,0,.72);color:#fff}
+#chpane .chp-it .x.hot{background:#d9480f}
+#chpane .chp-it.seen img{opacity:.45}
+#chpane .chp-more{width:100%;margin-top:10px;padding:7px;border-radius:8px;border:1px solid var(--line);
+  background:var(--bg);color:var(--tx);font-size:12px;cursor:pointer}
+#thead th.ch{cursor:pointer}
+#thead th.ch:hover{color:var(--acc)}
 a.chext{font-size:12px;text-decoration:none;margin-left:2px}
 #pframe{width:100%;height:100%;display:none}
 #player iframe{width:100%;height:100%;border:0}
@@ -1009,7 +1023,7 @@ function render(){
     <th class="sticky1"></th><th class="sticky2">引用元アカウント</th>
     <th style="text-align:right" title="素材の再生数÷登録者数。強い企画が多いchほど上">企画力</th>
     <th style="text-align:right">平均再生</th><th style="text-align:right">合計</th>
-    ${shows.map(c => `<th class="ch" style="border-bottom-color:rgb(${rgb(CHS.indexOf(c))})">
+    ${shows.map(c => `<th class="ch" data-ch="${c}" title="クリックでこの競合chの中で伸びた動画を右に表示" style="border-bottom-color:rgb(${rgb(CHS.indexOf(c))})">
       <span class="dot" style="background:rgb(${rgb(CHS.indexOf(c))})"></span>@${c}</th>`).join("")}
     ${rest.length ? `<th>他${rest.length}ch</th>` : ""}<th>✓</th></tr>`;
   const el = document.getElementById("chips"); el.innerHTML = "";
@@ -1675,6 +1689,137 @@ function chpItem(x, isShort, ch){
   d.onclick = () => playInline(x.id, x.t, `@${ch} ・ ${views ? views + "再生" : ""}`, isShort);
   return d;
 }
+// ===== チャンネル深掘り(2026-10-08 坂本さんMTG) =====
+// ライターは「チャンネルを古い順に並べて1本ずつ見て、今の人にも刺さるものを選ぶ」。それをツール内で:
+// 🎯こするチャンス=人気上位の300万+を投稿日の古い順(需要の証明済み×今はかぶりにくい)。×倍率=そのchの最新動画の中央値比
+const CHL_MODES = [["chance", "🎯こするチャンス"], ["videos:new", "動画 新しい順"], ["videos:pop", "動画 人気順"],
+  ["videos:old", "動画 古い順"], ["shorts:new", "ショート 新しい順"], ["shorts:pop", "ショート 人気順"], ["shorts:old", "ショート 古い順"]];
+const chlCache = {};
+const chlMode = () => { try{ return localStorage.getItem("chlMode") || "chance"; }catch(e){ return "chance"; } };
+const chlSeen = (() => { try{ return new Set(JSON.parse(localStorage.getItem("chlSeen") || "[]")); }catch(e){ return new Set(); } })();
+function chlMarkSeen(id){
+  chlSeen.add(id);
+  try{ localStorage.setItem("chlSeen", JSON.stringify([...chlSeen].slice(-3000))); }catch(e){}
+}
+function chlWhen(ts){
+  if(!ts) return "";
+  const d = new Date(ts * 1000), days = (Date.now() / 1000 - ts) / 86400;
+  const ago = days >= 365 ? Math.floor(days / 365) + "年前" : days >= 30 ? Math.floor(days / 30) + "ヶ月前" : Math.max(1, Math.floor(days)) + "日前";
+  return `${d.getFullYear()}/${d.getMonth() + 1}(${ago})`;
+}
+function chlItem(x, ch){
+  const d = document.createElement("div");
+  d.className = "chp-it" + (chlSeen.has(x.id) ? " seen" : "");
+  const im = document.createElement("img");
+  im.loading = "lazy"; im.alt = "";
+  im.src = `https://i.ytimg.com/vi/${x.id}/${x.sh ? "hqdefault" : "mqdefault"}.jpg`;
+  d.appendChild(im);
+  if(x.x){
+    const b = document.createElement("span");
+    b.className = "x" + (x.x >= 3 ? " hot" : "");
+    b.textContent = "×" + x.x;
+    b.title = "このチャンネルの最新動画の中央値に対して何倍伸びたか(このch内で当たった企画ほど大きい)";
+    d.appendChild(b);
+  }
+  const t = document.createElement("div"); t.className = "t"; t.textContent = x.t; d.appendChild(t);
+  const meta = [x.v ? fmt(x.v) + "再生" : "", chlWhen(x.ts), x.len, chlSeen.has(x.id) ? "見た" : ""].filter(Boolean).join(" ・ ");
+  const v = document.createElement("div"); v.className = "v"; v.textContent = meta; d.appendChild(v);
+  d.onclick = () => {
+    chlMarkSeen(x.id); d.classList.add("seen");
+    playInline(x.id, x.t, `@${ch} ・ ${x.v ? fmt(x.v) + "再生" : ""}`, !!x.sh);
+  };
+  return d;
+}
+async function chlFetch(s, mode, cont){
+  const [tab, sort] = mode === "chance" ? ["videos", "chance"] : mode.split(":");
+  const key = `${s.u}|${mode}|${cont || ""}`;
+  if(chlCache[key]) return chlCache[key];
+  const q = `api=chlist&u=${encodeURIComponent(s.u)}&tab=${tab}&sort=${sort}` + (cont ? `&cont=${encodeURIComponent(cont)}` : "");
+  const d = await (await fetch(`${API}?${q}`)).json();
+  if(d && d.items && d.items.length) chlCache[key] = d;
+  return d;
+}
+// 戻り値false=GASが旧版で深掘り未対応(呼び出し側が従来表示にフォールバック)
+async function chlShow(s, mode, seq){
+  const body = document.getElementById("chp-body");
+  const bar = document.createElement("div"); bar.className = "chp-bar";
+  CHL_MODES.forEach(([m, label]) => {
+    const b = document.createElement("button");
+    b.textContent = label; if(m === mode) b.className = "on";
+    b.onclick = () => {
+      try{ localStorage.setItem("chlMode", m); }catch(e){}
+      chlShow(s, m, ++chvSeq);
+    };
+    bar.appendChild(b);
+  });
+  body.innerHTML = "";
+  body.appendChild(bar);
+  const note = document.createElement("div"); note.className = "chp-note";
+  note.textContent = mode === "chance"
+    ? "人気上位のうち300万再生以上を、投稿日の古い順に並べています。需要は証明済みで、最近は誰もこすっていない＝かぶりにくいネタ。×倍率はこのch内で何倍伸びたか。見た動画は薄くなります"
+    : "見た動画は薄くなります(このブラウザに記録)。古い順で1本ずつ見て、今の人にも刺さるかで選ぶ用";
+  body.appendChild(note);
+  const msg = document.createElement("div"); msg.className = "chp-msg";
+  msg.textContent = mode === "chance" ? "こするチャンスを集計中…(初回は10〜20秒)" : "読み込み中…";
+  body.appendChild(msg);
+  let d;
+  try{ d = await chlFetch(s, mode); }catch(e){ d = {error: String(e)}; }
+  if(seq !== chvSeq) return true;
+  if(d && /unknown api/.test(d.error || "")) return false;
+  if(d && d.t && d.t !== s.c) document.getElementById("chp-sub").textContent =
+    [d.t, s.s ? fmt(s.s) + "人" : ""].filter(Boolean).join(" ・ ");
+  if(d && d.av){ const av = document.getElementById("chp-av"); av.src = d.av; av.style.display = ""; }
+  const ch = (d && d.t) || s.c;
+  if(!d || d.error || !(d.items || []).length){
+    msg.innerHTML = d && d.error
+      ? `取得できませんでした(${d.error})。「YouTubeで開く ↗」から直接ご覧ください。`
+      : (mode === "chance" ? "このチャンネルには300万再生以上の動画が見つかりませんでした。「動画 人気順」も見てみてください。" : "動画がありません。");
+    return true;
+  }
+  msg.remove();
+  const isShort = mode === "chance" ? false : mode.startsWith("shorts");
+  const grid = document.createElement("div"); grid.className = "chp-grid" + (isShort ? " shorts" : "");
+  const add = items => items.forEach(x => grid.appendChild(chlItem(x, ch)));
+  if(mode === "chance"){
+    // 動画とショートが混在するので、ショートだけ縦グリッドに分ける
+    const vids = d.items.filter(x => !x.sh), shs = d.items.filter(x => x.sh);
+    if(vids.length){
+      const h = document.createElement("h4"); h.textContent = `動画 ${vids.length}本(古い順)`; body.appendChild(h);
+      vids.forEach(x => grid.appendChild(chlItem(x, ch)));
+      body.appendChild(grid);
+    }
+    if(shs.length){
+      const h = document.createElement("h4"); h.textContent = `ショート ${shs.length}本(古い順)`; body.appendChild(h);
+      const g2 = document.createElement("div"); g2.className = "chp-grid shorts";
+      shs.forEach(x => g2.appendChild(chlItem(x, ch)));
+      body.appendChild(g2);
+    }
+    return true;
+  }
+  add(d.items);
+  body.appendChild(grid);
+  let cont = d.cont;
+  if(cont){
+    const more = document.createElement("button"); more.className = "chp-more"; more.textContent = "もっと見る";
+    more.onclick = async () => {
+      more.disabled = true; more.textContent = "読み込み中…";
+      let n;
+      try{ n = await chlFetch(s, mode, cont); }catch(e){ n = {error: String(e)}; }
+      if(n && n.items && n.items.length){ add(n.items); cont = n.cont; }
+      if(!cont || !n || n.error){ more.remove(); return; }
+      more.disabled = false; more.textContent = "もっと見る";
+    };
+    body.appendChild(more);
+  }
+  return true;
+}
+// 競合列の見出しクリック → その競合chの深掘り(競合の中で何が伸びているか)
+document.getElementById("thead").addEventListener("click", e => {
+  const th = e.target.closest("th.ch[data-ch]");
+  if(!th) return;
+  const c = th.dataset.ch;
+  showChannel({c: "@" + c, u: "https://www.youtube.com/@" + encodeURIComponent(c), k: "comp:" + c});
+});
 async function showChannel(s){
   if(!canDock() || !s.u){ window.open(s.u, "_blank", "noopener"); return; }
   chvSrc = s;
@@ -1690,6 +1835,10 @@ async function showChannel(s){
   const av = document.getElementById("chp-av");
   av.style.display = "none"; av.src = "";
   const body = document.getElementById("chp-body");
+  body.innerHTML = `<div class="chp-msg">読み込み中…</div>`;
+  // 深掘り(並べ替え・もっと見る)が使えればそれで表示。GASが旧版(chlist未対応)なら従来の最新一覧へ
+  if(await chlShow(s, chlMode(), seq)) return;
+  if(seq !== chvSeq) return;
   body.innerHTML = `<div class="chp-msg">読み込み中…</div>`;
   let d = chvCache[s.k];
   if(!d){
